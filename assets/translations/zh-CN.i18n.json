@@ -1,0 +1,1072 @@
+{
+  "common": {
+    "appTitle": "proxy4you",
+    "start": "开始",
+    "version": "版本",
+    "ok": "确定",
+    "cancel": "取消",
+    "kContinue": "继续",
+    "undo": "撤销",
+    "showMore": "显示更多",
+    "showLess": "显示更少",
+    "filter": "筛选",
+    "all": "全部",
+    "pause": "暂停",
+    "resume": "恢复",
+    "clear": "清除",
+    "close": "关闭",
+    "auto": "自动",
+    "manually": "手动",
+    "name": "名称",
+    "url": "URL",
+    "add": "添加",
+    "clipboard": "剪贴板",
+    "addToClipboard": "复制到剪贴板",
+    "qrCode": "二维码",
+    "free": "免费",
+    "warp": "WARP",
+    "fragment": "Fragment",
+    "help": "帮助",
+    "save": "保存",
+    "update": "更新",
+    "pin": "置顶",
+    "unpin": "取消置顶",
+    "share": "分享",
+    "edit": "编辑",
+    "delete": "删除",
+    "discard": "放弃",
+    "import": "导入",
+    "export": "导出",
+    "later": "稍后",
+    "ignore": "忽略",
+    "quit": "退出",
+    "notSet": "未设置",
+    "hide": "隐藏",
+    "exit": "退出",
+    "reset": "重置",
+    "done": "完成",
+    "decline": "拒绝",
+    "agree": "同意",
+    "empty": "空",
+    "unknown": "未知",
+    "hidden": "隐藏",
+    "timeout": "超时",
+    "sort": "排序",
+    "dashboard": "仪表盘",
+    "disable": "关闭",
+    "psiphon": "Psiphon",
+    "profile": "配置",
+    "configuration": "配置",
+    "file": "文件",
+    "interval": {
+      "day": {
+        "zero": "",
+        "one": "$n 天",
+        "other": "$n 天"
+      },
+      "hour": {
+        "zero": "",
+        "one": "$n 小时",
+        "other": "$n 小时"
+      }
+    },
+    "msg": {
+      "permission": {
+        "denied": "权限被拒绝"
+      },
+      "export": {
+        "clipboard": {
+          "success": "已复制到剪贴板",
+          "failure": "复制到剪贴板失败",
+          "contentTooLarge": "内容过大。请改为导出到文件。"
+        },
+        "file": {
+          "success": "已创建 JSON 文件",
+          "failure": "创建文件失败"
+        }
+      },
+      "import": {
+        "confirm": "确认导入",
+        "success": "已导入",
+        "failure": "导入失败"
+      },
+      "autoSave": {
+        "success": "更改已自动保存"
+      }
+    }
+  },
+  "intro": {
+    "banner": "畅享无限制网络的所需一切",
+    "termsAndPolicyCaution(rich)": "继续即表示您同意 ${tap(@:pages.about.termsAndConditions)}",
+    "info(rich)": "由 Hiddify 用 ❤️ 制作。${tap_source(开源)} 和 ${tap_license(许可证)}"
+  },
+  "pages": {
+    "home": {
+      "title": "主页",
+      "quickSettings": "快速设置"
+    },
+    "proxies": {
+      "title": "代理",
+      "sort": "排序代理",
+      "testDelay": "测试延迟",
+      "empty": "无可用代理",
+      "connectToSeeProxies": "连接后可查看代理",
+      "loadFailed": "无法加载代理。点按重试。",
+      "activeProxy": "当前代理",
+      "unknownIp": "未知 IP",
+      "checkingIp": "正在检查 IP…",
+      "switchFailed": "无法切换到此代理。请重试。",
+      "notResponding": "无响应",
+      "noneResponding": "所有代理均无响应",
+      "sortOptions": {
+        "unsorted": "默认",
+        "name": "按名称",
+        "delay": "按延迟",
+        "usage": "按用量",
+        "upload": "按上传速度",
+        "download": "按下载速度"
+      },
+      "ipInfo": {
+        "address": "IP 地址",
+        "country": "国家",
+        "organization": "组织"
+      },
+      "delay": {
+        "result": "延迟：${delay}毫秒",
+        "timeout": "延迟测试超时",
+        "unavailable": "不可用",
+        "testing": "延迟：测试中…"
+      },
+      "status": {
+        "connecting": "正在连接",
+        "registering": "正在注册",
+        "failed": "失败",
+        "ready": "就绪",
+        "searching": "正在搜索",
+        "reconnecting": "正在重新连接"
+      },
+      "signalStyle": "信号样式",
+      "keepTop": {
+        "picking": "正在从 $count 个中寻找最快的 $keep 个…",
+        "pickingBody": "所有代理测试一次后,只有最快的继续运行。",
+        "kept": "最快的 $n 个正在运行",
+        "keptBody": "其余 $paused 个代理已暂停,以节省电量和流量。",
+        "showAll": "显示全部 $count 个",
+        "big": "$count 个代理正在运行",
+        "bigBody": "只保留最快的 $keep 个运行,以节省电量和流量。",
+        "keep": "保留最快的 $keep 个",
+        "change": "更改数量",
+        "chosen": "你选择的 $n 个代理正在运行",
+        "choose": "选择"
+      },
+      "upload": {
+        "test": "测试上传速度",
+        "failed": "无法开始测速",
+        "hint": "点按：上传速度 · 长按：下载速度",
+        "hintBoth": "点按：两个速度 · 长按：下载速度"
+      },
+      "speedTest": {
+        "title": "测速",
+        "what": "测试项目",
+        "download": "下载",
+        "upload": "上传",
+        "amount": "每个代理的数据量",
+        "proxies": "测试哪些代理",
+        "proxiesHint": "按延迟最快的",
+        "all": "全部",
+        "fastest": "最快的 $n 个",
+        "through": "最快的 $count 个代理各 $n MB",
+        "throughAll": "$count 个代理各 $n MB",
+        "throughEach": "每个代理 $n MB",
+        "start": "开始测试",
+        "save": "保存",
+        "testDownload": "测试下载速度",
+        "both": "两者",
+        "bothWays": "下载和上传",
+        "amountHint": "越多越准确",
+        "clear": "清除已保存的结果",
+        "cleared": "已清除",
+        "which": "哪些代理",
+        "shown": "显示的 ($n)",
+        "chosen": "已选 ($n)"
+      }
+    },
+    "profiles": {
+      "title": "配置文件",
+      "add": "添加配置文件",
+      "fromPhone": {
+        "title": "从手机添加",
+        "scan": "用手机相机扫描此二维码，粘贴订阅链接并发送。",
+        "sameNetwork": "手机和这台电视必须连接到同一个 Wi-Fi 网络。",
+        "noNetwork": "这台电视未连接到局域网。请连接 Wi-Fi 后再从手机添加链接。",
+        "locked": "尝试了太多错误的代码，已锁定。关闭后重新打开即可获得新代码。",
+        "received": "收到来自手机的内容",
+        "from": "来自 $address",
+        "page": {
+          "title": "发送到电视上的 Hiddify",
+          "intro": "只需四步即可把订阅添加到电视，无需用遥控器输入。",
+          "steps": {
+            "network": {
+              "title": "连接同一个 Wi-Fi",
+              "body": "手机和电视必须连接到同一个 Wi-Fi 网络，否则此页面无法连接到电视。"
+            },
+            "copy": {
+              "title": "复制链接",
+              "body": "从服务商处复制订阅链接，或任意代理链接或配置。"
+            },
+            "paste": {
+              "title": "粘贴到这里",
+              "body": "点按下方输入框，粘贴链接，然后点按“发送到电视”。"
+            },
+            "confirm": {
+              "title": "在电视上确认",
+              "body": "链接会显示在电视上。用遥控器按“导入”。在你确认之前不会添加任何内容。"
+            }
+          },
+          "label": "订阅链接",
+          "hint": "粘贴订阅链接或配置",
+          "send": "发送到电视",
+          "sentTitle": "已发送到电视",
+          "sent": "现在在电视上按“导入”即可添加。你也可以在下方再发送一个链接。",
+          "empty": "请先粘贴链接。",
+          "footer": "此页面仅在电视上打开“添加配置”时可用，且仅限你的局域网。"
+        }
+      },
+      "update": "更新配置文件",
+      "viewAllProfiles": "查看所有配置文件",
+      "activeProfileName": "当前配置文件：“${name}”",
+      "nonActiveProfileName": "选择“${name}”作为当前配置文件",
+      "freeSubNotFound": "未找到免费订阅",
+      "freeSubNotFoundForRegion": "未找到“${region}”地区的免费订阅",
+      "failedToLoad": "加载失败",
+      "updateSubscriptions": "更新订阅",
+      "share": {
+        "urlToClipboard": "复制 URL",
+        "showUrlQr": "显示二维码",
+        "jsonToClipboard": "复制 JSON"
+      },
+      "msg": {
+        "save": {
+          "success": "配置文件已保存"
+        },
+        "invalidUrl": "无效的 URL",
+        "add": {
+          "failure": "添加配置文件失败"
+        },
+        "update": {
+          "success": "配置文件已更新",
+          "failure": "更新配置文件失败",
+          "failureNamed": "更新“${name}”失败",
+          "bulkSuccess(plural, param=count)": {
+            "other": "已更新 $count 个配置文件"
+          },
+          "bulkPartial": "${success} 个已更新\n${failed} 个失败：${names}"
+        },
+        "delete": {
+          "success": "配置文件已删除"
+        }
+      }
+    },
+    "profileDetails": {
+      "title": "配置文件",
+      "lastUpdate": "最后更新",
+      "form": {
+        "nameHint": "配置文件名称",
+        "emptyName": "名称为必填项",
+        "invalidUrl": "无效的 URL",
+        "urlHint": "完整的配置 URL",
+        "disableAutoUpdate": "关闭自动更新",
+        "autoUpdateInterval": "自动更新间隔",
+        "loading": "正在添加配置文件…",
+        "adminPreference": "管理员权限",
+        "adminPreferenceAskEachTime": "每次询问",
+        "adminPreferencePreferAdmin": "始终使用管理员权限",
+        "adminPreferencePreferNoAdmin": "始终不使用管理员权限继续",
+        "adminPreferenceReset": "每次询问是否使用管理员权限"
+      }
+    },
+    "logs": {
+      "title": "日志",
+      "category": "类别",
+      "level": "级别",
+      "recentLogs": "最近日志",
+      "recentLogsMsg": "本页显示的内容",
+      "errorLog": "应用和核心日志",
+      "errorLogMsg": "两者的错误，跨所有运行",
+      "coreLog": "核心日志",
+      "coreLogMsg": "核心记录的全部内容",
+      "coreCrash": "核心崩溃",
+      "coreCrashMsg": "核心上次崩溃时正在做的事",
+      "exportToFile": "导出到文件",
+      "linesMatch": "$count 行匹配",
+      "fileSaved": "文件已保存",
+      "fileSaveFailed": "无法保存文件",
+      "coreLogLevel": "核心级别",
+      "coreLogLevelMsg": "重新连接后生效",
+      "buffer": "缓冲区"
+    },
+    "about": {
+      "title": "关于",
+      "notAvailableMsg": "您正在使用最新版本",
+      "checkForUpdate": "检查更新",
+      "openWorkingDir": "打开工作目录",
+      "sourceCode": "源代码",
+      "telegramChannel": "Telegram 频道",
+      "termsAndConditions": "条款与条件",
+      "privacyPolicy": "隐私政策"
+    },
+    "settings": {
+      "title": "设置",
+      "resetTunnel": "重置 VPN 配置文件",
+      "options": {
+        "import": {
+          "clipboard": "从剪贴板导入选项",
+          "file": "从文件导入选项"
+        },
+        "export": {
+          "anonymousToClipboard": "复制匿名选项到剪贴板",
+          "anonymousToFile": "导出匿名选项到文件",
+          "allToClipboard": "复制所有选项到剪贴板",
+          "allToFile": "导出所有选项到文件"
+        },
+        "reset": "重置选项"
+      },
+      "general": {
+        "title": "通用",
+        "locale": "语言",
+        "themeMode": "主题模式",
+        "themeModes": {
+          "system": "跟随系统",
+          "dark": "深色模式",
+          "light": "浅色模式",
+          "black": "纯黑模式"
+        },
+        "enableAnalytics": "开启分析",
+        "enableAnalyticsMsg": "从您的设备发送分析数据和崩溃报告，帮助改进应用",
+        "autoIpCheck": "自动检查连接 IP",
+        "dynamicNotification": "在通知中显示速度",
+        "hapticFeedback": "触觉反馈",
+        "alwaysOnVpn": "始终开启 VPN",
+        "actionAtClosing": "关闭窗口时",
+        "autoStart": "开机自启",
+        "silentStart": "静默启动",
+        "ignoreBatteryOptimizations": "关闭电池优化",
+        "ignoreBatteryOptimizationsMsg": "移除限制以获得最佳 VPN 性能",
+        "memoryLimit": "内存限制",
+        "memoryLimitMsg": "如果您遇到内存不足错误或应用频繁崩溃，请开启此选项",
+        "connectionTestUrl": "连接测试 URL",
+        "urlTestInterval": "URL 测试间隔",
+        "clashApiPort": "Clash API 端口",
+        "useXrayCoreWhenPossible": "尽可能使用 xray-core",
+        "useXrayCoreWhenPossibleMsg": "解析订阅链接时使用 xray-core。重新导入订阅即可开启此选项。",
+        "useSystemTlsEngine": "可用时使用系统 TLS",
+        "useSystemTlsEngineMsg": "没有 TLS 指纹的连接，会在系统 TLS 通过本设备上的检查后，使用 macOS、iOS 或 Windows 的 TLS；否则看起来像 Chrome。",
+        "uploadTestSize": "上传测试大小",
+        "megabytes": "$n MB",
+        "speedTest": "测速"
+      },
+      "routing": {
+        "title": "路由",
+        "routeRule": {
+          "add": "添加规则",
+          "delete": "删除规则",
+          "options": {
+            "import": {
+              "clipboard": "从剪贴板导入规则",
+              "file": "从文件导入规则"
+            },
+            "export": {
+              "clipboard": "复制规则到剪贴板",
+              "file": "保存规则到文件"
+            },
+            "reset": "重置为默认规则"
+          },
+          "rule": {
+            "title": "规则",
+            "onlyTunMode": "仅在 TUN 模式下可用",
+            "notAvailableInThisPlatform": "在此平台上不可用",
+            "canNotBeEmpty": "不能为空",
+            "validUrlEx": "https://example.com",
+            "validUrl": "有效的“URL”，例如\n@:pages.settings.routing.routeRule.rule.validUrlEx",
+            "validProcessNameEx": "Chrome.exe 或 google chrome 或 chrome",
+            "validProcessName": "有效的“进程名”，例如\n@:pages.settings.routing.routeRule.rule.validProcessNameEx",
+            "validProcessPathEx": "C:\\Pro...\\chrome.exe\n/App.../Google Chrome\n/usr/lib.../chrome",
+            "validProcessPath": "有效的“进程路径”，例如\n@:pages.settings.routing.routeRule.rule.validProcessPathEx",
+            "validPortRangeEx": "80 或 1:65000",
+            "validPortRange": "有效的“端口”或“端口范围”，例如\n@:pages.settings.routing.routeRule.rule.validPortRangeEx",
+            "validIpCidrEx": "8.8.8.8、10.0.0.0/24 或 fd00::/8",
+            "validIpCidr": "有效的 IP CIDR，例如\n@:pages.settings.routing.routeRule.rule.validIpCidrEx",
+            "validDomainEx": "Google.com 或 dl.google.com",
+            "validDomain": "有效的“域名”，例如\n@:pages.settings.routing.routeRule.rule.validDomainEx",
+            "validDomainSuffixEx": ".com 或 .ir",
+            "validDomainSuffix": "有效的“域名后缀”，例如\n@:pages.settings.routing.routeRule.rule.validDomainSuffixEx",
+            "tileTitle(map)": {
+              "name": "名称",
+              "outbound": "匹配时出站",
+              "rule_set": "规则集 URL",
+              "package_name": "包名",
+              "process_name": "进程名",
+              "process_path": "进程路径",
+              "network": "网络",
+              "port_range": "目标端口",
+              "source_port_range": "源端口",
+              "protocol": "协议",
+              "ip_cidr": "目标 IP CIDR",
+              "source_ip_cidr": "源 IP CIDR",
+              "domain": "域名",
+              "domain_suffixe": "域名后缀",
+              "domain_keyword": "域名关键词",
+              "domain_regex": "域名正则表达式"
+            },
+            "outbound(map)": {
+              "proxy": "代理",
+              "direct": "直连",
+              "direct_with_fragment": "直连并分片",
+              "block": "拦截"
+            },
+            "network(map)": {
+              "all": "全部",
+              "tcp": "TCP",
+              "udp": "UDP"
+            },
+            "protocol(map)": {
+              "": "全部",
+              "tls": "TLS",
+              "http": "HTTP",
+              "quic": "QUIC",
+              "stun": "STUN",
+              "dns": "DNS",
+              "bittorrent": "BitTorrent"
+            }
+          },
+          "genericList": {
+            "addNew": "添加新值",
+            "update": "更新值",
+            "clearList": "清空列表",
+            "clearListMsg": "所有项目将被删除"
+          }
+        },
+        "builtinRules": {
+          "tag": "内置",
+          "bypassLan": "绕过局域网",
+          "blockAds": "拦截广告和恶意软件",
+          "bypassRegion": "绕过${region}的网站"
+        },
+        "appBasedRouting": {
+          "title": "分应用路由",
+          "hideSysApps": "隐藏系统应用",
+          "listTitle": {
+            "bypass": "绕过的应用",
+            "proxy": "代理的应用"
+          },
+          "chooseApps": "选择应用",
+          "apps": {
+            "one": "应用",
+            "other": "应用"
+          },
+          "moreApps": {
+            "one": "+$n 个应用",
+            "other": "+$n 个应用"
+          },
+          "autoTag": "自动",
+          "outsideVpn": "不经过 VPN",
+          "ruleWontApply": "不经过 VPN · 规则不会生效",
+          "notInstalled": "未安装",
+          "share": {
+            "invite": "帮助改进自动选择",
+            "removed": {
+              "one": "已移除 $n 个",
+              "other": "已移除 $n 个"
+            },
+            "added": {
+              "one": "已添加 $n 个",
+              "other": "已添加 $n 个"
+            },
+            "title": "分享您的更改",
+            "where": "将在 GitHub 上打开一个已填好这些应用名称的公开 issue。提交后即可分享。需要 GitHub 账号。",
+            "action": "在 GitHub 上继续"
+          },
+          "options": {
+            "import": {
+              "clipboard": "从剪贴板导入选择",
+              "file": "从文件导入选择",
+              "msg": "导入会替换您当前的选择。要继续吗？"
+            },
+            "export": {
+              "clipboard": "复制选择到剪贴板",
+              "file": "导出选择到文件"
+            },
+            "clearAllSelections": "清除所有选择"
+          },
+          "modes": {
+            "proxy": "仅代理",
+            "bypass": "绕过"
+          },
+          "autoSelection": {
+            "title": "基于${region}自动选择",
+            "performNow": "立即更新",
+            "updated": {
+              "zero": "今天已更新",
+              "one": "$n 天前更新",
+              "other": "$n 天前更新"
+            },
+            "noList": "此地区没有列表",
+            "loadFailed": "无法加载列表",
+            "restore": {
+              "one": "恢复 $n 个自动选择项",
+              "other": "恢复 $n 个自动选择项"
+            },
+            "restored": {
+              "one": "已恢复 $n 个自动选择项",
+              "other": "已恢复 $n 个自动选择项"
+            }
+          }
+        },
+        "region": "地区",
+        "regions": {
+          "ir": "伊朗 (ir)",
+          "cn": "中国 (cn)",
+          "ru": "俄罗斯 (ru)",
+          "af": "阿富汗 (af)",
+          "id": "印度尼西亚 (id)",
+          "tr": "土耳其 (tr)",
+          "br": "巴西 (br)",
+          "other": "其他"
+        },
+        "balancerStrategy": {
+          "title": "Balancer 策略",
+          "roundRobin": "Round robin",
+          "consistentHash": "Consistent hash",
+          "stickySession": "Sticky session",
+          "roundRobinDescription": "每个连接依次使用下一个服务器，网站可能会看到您的 IP 变化",
+          "consistentHashDescription": "每个网站始终使用同一个服务器",
+          "stickySessionDescription": "每个网站使用一个随机服务器，直到您重新连接"
+        },
+        "resolveDestination": "解析目的地",
+        "ipv6Route": "IPv6",
+        "ipv6Modes": {
+          "preferIpv4": "IPv4 优先",
+          "preferIpv6": "IPv6 优先"
+        }
+      },
+      "dns": {
+        "title": "DNS",
+        "remoteDns": "远程 DNS",
+        "remoteDnsDomainStrategy": "远程 DNS 域名策略",
+        "directDns": "出站服务器解析器（直连）",
+        "directDnsDomainStrategy": "出站域名策略",
+        "enableFakeDns": "开启伪造 DNS",
+        "domainStrategy": {
+          "auto": "自动",
+          "preferIpv6": "偏好 IPv6",
+          "preferIpv4": "偏好 IPv4",
+          "ipv4Only": "仅 IPv4",
+          "ipv6Only": "仅 IPv6"
+        }
+      },
+      "inbound": {
+        "title": "入站",
+        "serviceMode": "服务模式",
+        "serviceModes": {
+          "proxy": "仅代理服务",
+          "systemProxy": "设置系统代理",
+          "tun": "VPN"
+        },
+        "shortServiceModes": {
+          "proxy": "代理",
+          "systemProxy": "系统代理",
+          "tun": "VPN"
+        },
+        "strictRoute": "严格路由",
+        "tunImplementation": "TUN 实现",
+        "tunImplementations": {
+          "mixed": "混合",
+          "system": "系统",
+          "gvisor": "gVisor"
+        },
+        "mixedPort": "代理端口(SOCKS5/4、HTTP)",
+        "tproxyPort": "透明代理端口",
+        "directPort": "本地直连端口",
+        "redirectPort": "重定向端口",
+        "lanSharing": "安全 VPN 共享",
+        "connectionSharing": "连接共享",
+        "qrCode": "二维码",
+        "closedInVpn": "VPN 模式下关闭,除非共享",
+        "proxySecret": "代理密钥",
+        "noSecret": "无密钥:任何能访问该端口的应用或设备都可使用",
+        "generateSecret": "生成新的",
+        "removeSecret": "移除密钥?",
+        "removeSecretMsg": "没有密钥时,此设备上的任何应用,以及共享时网络上的任何设备,都能无需用户名和密码使用该代理。风险自负。",
+        "localProxy": "本地代理",
+        "localProxyInVpn": "在 VPN 模式下保持开启",
+        "localProxyInVpnHint": "应用已经走 VPN；仅供设置了此代理的应用使用",
+        "localProxyAuth": "需要密码",
+        "localProxyAuthHint": "部分应用（如浏览器）无法发送 SOCKS 密码",
+        "notAsSystemProxy": "作为系统代理时不要求密码，因为系统代理无法发送",
+        "lanGroup": "局域网共享",
+        "lanSharingPort": "共享端口",
+        "otherPorts": "其他端口",
+        "closedInVpnLocal": "VPN 模式下关闭"
+      },
+      "tlsTricks": {
+        "title": "TLS 技巧",
+        "enable": "开启分片",
+        "packets": "分片数据包",
+        "packetsTlsHello": "TLS Hello",
+        "packets1_1": "1-1",
+        "packets1_2": "1-2",
+        "packets1_3": "1-3",
+        "packets1_4": "1-4",
+        "packets1_5": "1-5",
+        "size": "分片大小",
+        "sleep": "分片延迟",
+        "mixedSniCase": {
+          "enable": "开启混合大小写 SNI"
+        },
+        "padding": {
+          "enable": "开启填充",
+          "size": "填充大小"
+        }
+      },
+      "chain": {
+        "title": "链",
+        "subtitle": "额外安全与解锁器",
+        "finalIp": "最终 IP",
+        "levels": {
+          "app": {
+            "title": "应用",
+            "msg": "起始点：您的应用流量在此进入链条，并经过后续层级以为最终分流做准备"
+          },
+          "extraSecurity": {
+            "title": "额外安全",
+            "msg": "增加一个额外的防护层以保护您的数据隐私，即使您的主配置文件不可信"
+          },
+          "mainProfile": {
+            "title": "主配置"
+          },
+          "unblocker": {
+            "title": "解锁器",
+            "msg": "帮助绕过网络限制。如果辅助程序连接成功，即使您的主配置当前被封锁，它仍可继续工作。"
+          },
+          "filtering": {
+            "title": "分流",
+            "msg": "最终出口：您的流量会通过活动层，即额外安全、主配置或解锁器。应用其效果后，流量将被路由以绕过本地网络过滤。"
+          }
+        },
+        "warp": {
+          "missingConfig": "WARP 配置缺失",
+          "licenseKey": "许可证密钥",
+          "tunnel": "隧道",
+          "cleanIp": "优选 IP",
+          "port": "端口",
+          "noise": {
+            "count": "噪声数量",
+            "mode": "噪声模式",
+            "size": "噪声大小",
+            "delay": "噪声延迟",
+            "modes": {
+              "standard": "标准",
+              "random": "随机",
+              "quic": "QUIC (HTTPS)",
+              "quicMimic": "QUIC 握手",
+              "dns": "DNS (google.com)",
+              "dnsCloudflare": "DNS (cloudflare.com)",
+              "sip": "SIP (VoIP 通话)",
+              "stun": "STUN (视频通话)"
+            },
+            "title": "WireGuard 噪声"
+          },
+          "endpoint": "端点",
+          "endpointSources": {
+            "profile": "Cloudflare 分配",
+            "scan": "扫描",
+            "custom": "自定义"
+          },
+          "customServer": "地址",
+          "mtu": "MTU",
+          "customized": "已自定义",
+          "scanner": {
+            "title": "扫描器"
+          },
+          "masque": {
+            "title": "MASQUE"
+          },
+          "awg": {
+            "title": "AmneziaWG"
+          }
+        },
+        "psiphon": {
+          "selectServerRegion": "选择服务器地区",
+          "regions": {
+            "auto": "@:common.auto",
+            "at": "奥地利 (at)",
+            "au": "澳大利亚 (au)",
+            "be": "比利时 (be)",
+            "bg": "保加利亚 (bg)",
+            "ca": "加拿大 (ca)",
+            "ch": "瑞士 (ch)",
+            "cz": "捷克共和国 (cz)",
+            "de": "德国 (de)",
+            "dk": "丹麦 (dk)",
+            "ee": "爱沙尼亚 (ee)",
+            "es": "西班牙 (es)",
+            "fi": "芬兰 (fi)",
+            "fr": "法国 (fr)",
+            "gb": "英国 (gb)",
+            "hr": "克罗地亚 (hr)",
+            "hu": "匈牙利 (hu)",
+            "ie": "爱尔兰 (ie)",
+            "in": "印度 (in)",
+            "it": "意大利 (it)",
+            "jp": "日本 (jp)",
+            "lv": "拉脱维亚 (lv)",
+            "nl": "荷兰 (nl)",
+            "no": "挪威 (no)",
+            "pl": "波兰 (pl)",
+            "pt": "葡萄牙 (pt)",
+            "ro": "罗马尼亚 (ro)",
+            "rs": "塞尔维亚 (rs)",
+            "se": "瑞典 (se)",
+            "sg": "新加坡 (sg)",
+            "sk": "斯洛伐克 (sk)",
+            "us": "美国 (us)"
+          }
+        },
+        "profile": {
+          "selectProfile": "选择配置",
+          "conduitPairingId": "Conduit 配对 ID"
+        }
+      }
+    }
+  },
+  "components": {
+    "stats": {
+      "connection": "连接",
+      "traffic": "流量",
+      "trafficLive": "实时流量",
+      "trafficTotal": "总流量",
+      "uplink": "上传",
+      "downlink": "下载",
+      "speed": "速度",
+      "totalTransferred": "总传输量"
+    },
+    "subscriptionInfo": {
+      "upload": "上传",
+      "download": "下载",
+      "total": "总流量",
+      "expireDate": "到期日期",
+      "expired": "已过期",
+      "noTraffic": "流量已用尽",
+      "remainingDuration(plural, param=days)": {
+        "other": "剩余 $days 天"
+      },
+      "remainingUnlimited": "无限制",
+      "remainingTrafficSemanticLabel": "已使用 ${consumed} / ${total} 流量",
+      "remainingTraffic": "剩余流量",
+      "openWebPage": "打开网页",
+      "support": "支持",
+      "openLinkTitle": "打开此链接？",
+      "openLinkAction": "打开"
+    }
+  },
+  "dialogs": {
+    "sortProfiles": {
+      "title": "排序方式",
+      "sort": {
+        "name": "按字母顺序",
+        "lastUpdate": "最近更新"
+      },
+      "direction": {
+        "newestFirst": "最新优先",
+        "oldestFirst": "最旧优先"
+      }
+    },
+    "warpLicense": {
+      "title": "Cloudflare WARP 同意书",
+      "description(rich)": "Cloudflare WARP 是一个免费的 WireGuard VPN 提供商。启用此选项即表示您同意 Cloudflare WARP 的 ${tos(服务条款)} 和 ${privacy(隐私政策)}。"
+    },
+    "psiphonLicense": {
+      "title": "Psiphon 许可协议",
+      "description(rich)": "使用 Psiphon 即表示您同意 ${tos(服务条款)} 并确认 ${privacy(隐私政策)}。继续前请仔细阅读。"
+    },
+    "newVersion": {
+      "title": "有可用更新",
+      "msg": "@:common.appTitle 的新版本已发布。现在更新吗？",
+      "currentVersion": "当前版本",
+      "newVersion": "新版本",
+      "updateNow": "立即更新",
+      "downloading": "正在下载…",
+      "installing": "正在启动安装程序…",
+      "allowInstall": "请在打开的设置中允许 Hiddify 安装应用,然后重试。",
+      "failed": "无法安装更新。",
+      "openPage": "打开发布页面",
+      "tryAgain": "重试"
+    },
+    "confirmation": {
+      "settings": {
+        "import": {
+          "msg": "这会用导入的值覆盖所有配置选项。要继续吗？"
+        }
+      },
+      "profile": {
+        "delete": {
+          "title": "删除配置文件",
+          "msg": "删除此配置文件吗？此操作无法撤销。"
+        }
+      },
+      "appList": {
+        "import": {
+          "msg": "这会替换您“绕过”和“仅代理”中的应用。要继续吗？"
+        }
+      },
+      "routeRule": {
+        "delete": {
+          "title": "删除规则",
+          "msg": "删除规则“$rulename”吗？此操作无法撤销。"
+        }
+      },
+      "addProfileByDeepLinkWarning": {
+        "title": "添加配置？",
+        "message": "来自“${host}”的外部链接想要添加新配置。要导入吗？"
+      },
+      "importRouteRuleByDeepLinkWarning": {
+        "title": "导入路由规则？",
+        "message": "路由规则决定您的流量走向。\n请仅从您信任的来源导入。"
+      }
+    },
+    "adminBgService": {
+      "vpnNeedsAdmin": {
+        "title": "需要管理员权限",
+        "msg": "VPN 模式需要一次性的管理员权限来安装 Hiddify 后台服务。之后无需再次授权即可连接。",
+        "connectWithAdmin": "使用管理员权限连接",
+        "waitingTitle": "正在等待管理员权限",
+        "waitingMsg": "请允许管理员权限请求以继续。你可以停止并稍后重试。",
+        "stop": "停止"
+      },
+      "proxyNeedsAdmin": {
+        "title": "建议使用管理员权限",
+        "msg": "此配置文件中的部分设置在管理员权限下效果更好。你可以使用管理员权限运行，或不使用管理员权限继续，并在本次连接中关闭这些设置。",
+        "seeConfigs": "显示配置",
+        "hideConfigs": "隐藏配置",
+        "neverAskAgain": "不再为此配置文件询问",
+        "runAsAdmin": "以管理员身份运行",
+        "continueWithoutAdmin": "不使用管理员权限继续",
+        "elevationFailedTitle": "无法获取管理员权限",
+        "elevationFailedMsg": "管理员权限请求被拒绝或失败。请重试，或在本次连接中不使用管理员权限继续。",
+        "tryAgain": "重试"
+      }
+    },
+    "experimentalNotice": {
+      "title": "正在使用实验性功能",
+      "msg": "您已开启了一些实验性功能，这可能会影响连接质量并导致意外错误。您可以随时在设置中更改或重置这些选项。",
+      "disable": "不再显示"
+    },
+    "noActiveProfile": {
+      "title": "选择一个配置文件",
+      "msg": "让我们开始吧。添加一个包含您 VPN 服务器信息的连接配置文件。\n\n还没有服务器？没关系。下面的指南会告诉您如何免费搭建一个。",
+      "helpBtn": {
+        "label": "告诉我如何操作",
+        "url": "https://hiddify.com/manager/"
+      }
+    },
+    "unknownDomainsWarning": {
+      "title": "请先检查此链接",
+      "cannotVerify": "此链接未经验证",
+      "avoidIfUnsure": "如果您不能完全确定，请勿付款或分享敏感信息",
+      "ownResponsibility": "继续操作的风险由您自行承担",
+      "open": "打开",
+      "openIn": "打开 (${seconds})"
+    },
+    "proxyInfo": {
+      "fullTag": "完整标签",
+      "type": "类型",
+      "status": "状态",
+      "testTime": "测试时间",
+      "testDelay": "测试延迟",
+      "isSelected": "已选择",
+      "isGroup": "组",
+      "isSecure": "安全",
+      "port": "端口",
+      "host": "主机",
+      "ip": "IP",
+      "countryCode": "国家代码",
+      "region": "地区",
+      "city": "城市",
+      "asn": "ASN",
+      "organization": "组织",
+      "location": "位置",
+      "postalCode": "邮政编码",
+      "download": "下载",
+      "upload": "上传",
+      "ping": "延迟",
+      "speed": "速度",
+      "server": "服务器",
+      "country": "国家",
+      "tapToTest": "点击测试"
+    },
+    "windowClosing": {
+      "askEachTime": "每次询问",
+      "alertMessage": "隐藏还是退出应用？",
+      "remember": "记住我的选择"
+    },
+    "qrCode": {
+      "copyFullLink": "复制完整链接",
+      "copied": "已复制",
+      "lanLine": "SOCKS5 · 仅限同一网络",
+      "noLocalNetwork": "未找到局域网",
+      "ip": "IP",
+      "port": "端口",
+      "username": "用户名",
+      "password": "密码",
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码"
+    },
+    "qrScanner": {
+      "notFound": "此图片中未找到二维码"
+    },
+    "keepTop": {
+      "title": "大型订阅",
+      "description": "此配置包含 $count 个代理。全部运行会消耗电量、流量和内存。Hiddify 可以先测试一次,只保留最快的 $keep 个运行,暂停其余代理。",
+      "hint": "您随时可以在代理列表末尾重新运行全部代理。",
+      "keeping": "最快的 $keep 个运行,其余暂停",
+      "all": "全部 $count 个运行",
+      "keep": "保留最快的 $keep 个",
+      "useAll": "使用全部 $count 个",
+      "howMany": "保留运行的数量",
+      "pickByHand": "自己选择代理"
+    },
+    "keepTags": {
+      "title": "选择代理",
+      "hint": "每次连接都只运行这些代理。",
+      "search": "搜索",
+      "all": "全选",
+      "none": "清除",
+      "run": "使用这 $n 个",
+      "sort": "排序",
+      "sortProfile": "配置顺序",
+      "sortPing": "延迟",
+      "sortDownload": "下载",
+      "sortUpload": "上传",
+      "selectFastest": "最快的 $n 个",
+      "statusChosen": "已选",
+      "statusAnswering": "有响应",
+      "statusPaused": "已暂停",
+      "paused": "$n 个代理已暂停：没有延迟，也无法测试。",
+      "wake": "全部运行以测试",
+      "offline": "连接后可查看延迟并测试。",
+      "offlineTitle": "未连接",
+      "shown": "显示 $n 个",
+      "noMatch": "没有匹配的代理",
+      "chosenHint": "点按上方的代理来选择",
+      "allShown": "都在上方列表中",
+      "notShown": "未显示：",
+      "protocol": "协议",
+      "country": "国家",
+      "anyProtocol": "任意协议",
+      "anyCountry": "任意国家",
+      "otherCountries": "其他"
+    },
+    "localProxy": {
+      "steps": [
+        "打开应用的代理设置",
+        "选择 SOCKS5 或 HTTP",
+        "填写下方的值 · 点按即可复制",
+        "保持 Hiddify 连接"
+      ],
+      "hint": "代理模式 · 使用说明",
+      "setPassword": "设置密码",
+      "manual": "手动",
+      "dontShowAgain": "不再显示",
+      "thisDevice": "本设备",
+      "otherDevices": "其他设备",
+      "server": "服务器",
+      "noPassword": "未设置密码",
+      "turnOnSharing": "开启共享",
+      "copyLink": "复制链接",
+      "telegramLink": "Telegram 链接",
+      "fullLink": "完整链接",
+      "portRange": "请使用 1024 到 65535 之间的端口",
+      "passwordTooShort": "至少 4 个字符",
+      "edit": "编辑"
+    }
+  },
+  "connection": {
+    "tapToConnect": "点击连接",
+    "connect": "连接",
+    "connecting": "连接中…",
+    "waiting": "正在寻找自由…",
+    "noAvailableProxies": "连接失败",
+    "hotReloading": "应用更改中…",
+    "connected": "已连接",
+    "disconnect": "断开连接",
+    "disconnecting": "断开连接中…",
+    "failed": "无法连接",
+    "slow": "耗时比平时更长…",
+    "tapToRetry": "点击重试",
+    "errorDetails": "错误详情",
+    "reconnect": "重新连接",
+    "reconnectMsg": "正在重新连接以应用更改…",
+    "health": {
+      "title": "连接检查",
+      "allGood": "流量畅通",
+      "pickDead": "所选代理无响应",
+      "hopPending": "${chain} 正在连接…",
+      "hopFailed": "${chain} 无法连接",
+      "coreTesting": "正在测试服务器…",
+      "coreNone": "没有服务器响应",
+      "fastest": "最快服务器",
+      "yourServer": "所选代理",
+      "notResponding": "无响应",
+      "testing": "正在测试…",
+      "useFastest": "切换到最快",
+      "hopReady": "已连接",
+      "hopConnecting": "正在连接…",
+      "hopBroken": "无法连接",
+      "hopNoReply": "已连接，但无响应",
+      "hopBlocked": "等待所选代理响应",
+      "retry": "重新测试",
+      "change": "更改",
+      "turnOff": "关闭"
+    }
+  },
+  "errors": {
+    "unexpected": "意外错误",
+    "connection": {
+      "unexpected": "意外连接错误",
+      "timeout": "连接超时",
+      "badResponse": "服务器响应无效",
+      "connectionError": "连接错误",
+      "badCertificate": "证书无效"
+    },
+    "profiles": {
+      "unexpected": "意外错误",
+      "notFound": "未找到配置文件",
+      "invalidConfig": "配置无效",
+      "invalidUrl": "URL 无效",
+      "canceledByUser": "用户已取消"
+    },
+    "connectivity": {
+      "unexpected": "意外失败",
+      "missingVpnPermission": "缺少 VPN 权限",
+      "missingNotificationPermission": "缺少通知权限",
+      "core": "核心错误"
+    },
+    "singbox": {
+      "serviceNotRunning": "服务未运行",
+      "missingPrivilege": "缺少权限",
+      "missingPrivilegeMsg": "VPN 模式无法启动。请以管理员身份重新启动应用，或更改服务模式。",
+      "tunAddressInUse": "另一个 VPN 正在运行",
+      "tunAddressInUseMsg": "VPN 模式无法启动。请关闭另一个 VPN，或更改服务模式。",
+      "invalidConfigOptions": "配置选项无效",
+      "invalidConfig": "配置无效"
+    },
+    "warp": {
+      "missingLicense": "WARP 许可证缺失",
+      "missingLicenseMsg": "此配置文件使用 WARP。请同意 WARP 许可证以继续。"
+    },
+    "psiphon": {
+      "missingLicense": "需要 Psiphon 许可证",
+      "missingLicenseMsg": "此配置文件使用 Psiphon。请同意 Psiphon 许可证以继续。"
+    }
+  }
+}

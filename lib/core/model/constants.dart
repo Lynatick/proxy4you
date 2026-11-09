@@ -1,0 +1,159 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hiddify/utils/utils.dart';
+
+abstract class Constants {
+  static const appName = "proxy4you";
+  static const githubUrl = "https://github.com/Lynatick/proxy4you";
+  static const licenseUrl = "https://github.com/Lynatick/proxy4you/blob/main/LICENSE.md";
+  static const githubReleasesApiUrl = "https://api.github.com/repos/Lynatick/proxy4you/releases";
+  static const githubLatestReleaseUrl = "https://github.com/Lynatick/proxy4you/releases/latest";
+  static const downloadPageUrl = "https://lynatick.github.io/proxy4you/";
+  static const telegramChannelUrl = "https://t.me/hiddify";
+  static const privacyPolicyUrl = "https://hiddify.com/privacy-policy/";
+  static const termsAndConditionsUrl = "https://hiddify.com/terms/";
+  static const cfWarpPrivacyPolicy = "https://www.cloudflare.com/application/privacypolicy/";
+  static const cfWarpTermsOfService = "https://www.cloudflare.com/application/terms/";
+}
+
+const kAnimationDuration = Duration(milliseconds: 250);
+
+abstract class AddProfileModalConst {
+  static const fixBtnsGap = 16.0;
+  static const fixBtnsGapCount = 5;
+  static const fixBtnsGapCountDesktop = 4;
+  static const fixBtnsItemCount = 4;
+  static const fixBtnsItemCountDesktop = 3;
+  static const navBarGap = 16.0;
+  static const navBarBottomGap = 4.0;
+  //switch default height
+  static const navBarcontentHeight = 32.0;
+  static const navBarHeight = navBarGap + navBarBottomGap + navBarcontentHeight;
+}
+
+abstract class AlertDialogConst {
+  static const minWidth = 280.0;
+  static const maxWidth = 560.0;
+  static const boxConstraints = BoxConstraints(minWidth: minWidth, maxWidth: maxWidth);
+}
+
+abstract class QrCodeDialogConst {
+  static const qrBoxSize = 208.0;
+
+  /// The shared proxy's name, carried in its link and QR code, also the dialog's title.
+  static const lanProfileName = 'LAN only';
+
+  /// The shared proxy's name when it falls back to 127.0.0.1.
+  static const localhostProfileName = 'Localhost only';
+}
+
+abstract class BottomSheetConst {
+  static const maxWidth = 456.0;
+  static const boxConstraints = BoxConstraints(maxWidth: maxWidth);
+  static const borderRadius = BorderRadius.vertical(top: Radius.circular(32));
+}
+
+abstract class ProfileTileConst {
+  /// Temporarily hides the provider link chips (`profile-web-page-url` /
+  /// `support-url`) below the main profile card, pending a decision from the
+  /// project manager. Set back to `true` to restore them — the chip, its
+  /// carousel and the trusted-link warning are all still in place.
+  static const showProviderLinks = false;
+
+  static const radius = Radius.circular(16);
+  static const cardBorderRadius = BorderRadius.all(radius);
+  static const topOnlyBorderRadius = BorderRadius.vertical(top: radius);
+  static const borderRadiusRight = BorderRadius.horizontal(right: radius);
+  static const borderRadiusLeft = BorderRadius.horizontal(left: radius);
+  static const topRightOnly = BorderRadius.only(topRight: radius);
+  static const topLeftOnly = BorderRadius.only(topLeft: radius);
+
+  /// [squareBottom] zeroes this side's bottom corner — used when a chip
+  /// (profile-web-page-url / support-url) is attached flush below the card.
+  static BorderRadius startBorderRadius(TextDirection direction, {bool squareBottom = false}) {
+    final ltr = direction == TextDirection.ltr;
+    if (squareBottom) return ltr ? topLeftOnly : topRightOnly;
+    return ltr ? borderRadiusLeft : borderRadiusRight;
+  }
+
+  static BorderRadius endBorderRadius(TextDirection direction, {bool squareBottom = false}) {
+    final ltr = direction == TextDirection.ltr;
+    if (squareBottom) return ltr ? topRightOnly : topLeftOnly;
+    return ltr ? borderRadiusRight : borderRadiusLeft;
+  }
+}
+
+abstract class IntroConst {
+  static const maxwidth = 620;
+  static const termsAndConditionsKey = 'terms-and-conditions';
+  static const privacyPolicyKey = 'privacy-policy';
+  static const githubKey = 'github';
+  static const licenseKey = 'license';
+  static const url = <String, String>{
+    IntroConst.termsAndConditionsKey: Constants.termsAndConditionsUrl,
+    IntroConst.privacyPolicyKey: Constants.privacyPolicyUrl,
+    IntroConst.githubKey: Constants.githubUrl,
+    IntroConst.licenseKey: Constants.licenseUrl,
+  };
+}
+
+abstract class WarpConst {
+  static const warpConsentGiven = "warp-consent-given";
+  static const warpTermsOfServiceKey = 'warp-terms-of-service';
+  static const warpPrivacyPolicyKey = 'warp-privacy-policy';
+  static const url = <String, String>{
+    WarpConst.warpTermsOfServiceKey: Constants.cfWarpTermsOfService,
+    WarpConst.warpPrivacyPolicyKey: Constants.cfWarpPrivacyPolicy,
+  };
+}
+
+abstract class PsiphonConst {
+  static const psiphonConsentGiven = "psiphon-consent-given";
+  static const psiphonTermsOfServiceKey = 'psiphon-terms-of-service';
+  static const psiphonPrivacyPolicyKey = 'psiphon-privacy-policy';
+  static const url = <String, String>{
+    PsiphonConst.psiphonTermsOfServiceKey: "https://psiphon.ca/en/license.html",
+    PsiphonConst.psiphonPrivacyPolicyKey: "https://psiphon.ca/en/privacy.html",
+  };
+}
+
+abstract class KeyboardConst {
+  static final allArrows = {
+    LogicalKeyboardKey.arrowUp,
+    LogicalKeyboardKey.arrowDown,
+    LogicalKeyboardKey.arrowLeft,
+    LogicalKeyboardKey.arrowRight,
+  };
+  static final horizontalArrows = {LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight};
+  static final verticalArrows = {LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown};
+  static final select = {LogicalKeyboardKey.select, LogicalKeyboardKey.enter, LogicalKeyboardKey.tab};
+}
+
+abstract class ChainConst {
+  static IconData iconByPlatform() {
+    if (PlatformUtils.isAndroid) return Icons.phone_android;
+    if (PlatformUtils.isIOS) return Icons.phone_iphone;
+    if (PlatformUtils.isWeb) return Icons.web;
+    // Desktops
+    return Icons.laptop;
+  }
+
+  static Color finalIpColor(ThemeData theme) =>
+      theme.brightness == Brightness.dark ? const Color(0xFF99AD7A) : const Color.fromARGB(255, 87, 136, 13);
+  static const warpColor = Color(0xFFF6821F);
+  static const psiphonColor = Color(0xFFD52027);
+  static const profileColor = Color(0xFF3282B8);
+
+  static const finalIpDuration = Duration(milliseconds: 500);
+}
+
+abstract class ConnectionConst {
+  /// url-test delay (ms) boundary. A delay of `0` means "not measured / failed",
+  /// and `delay >= maxDelay` is treated as not a real connection (`> maxDelay` is
+  /// rendered as a timeout); only `0 < delay < maxDelay` is a live connection.
+  /// Single source of truth for connection-quality checks.
+  static const maxDelay = 65000;
+
+  /// Whether a url-test [delay] (ms) represents a live, usable connection.
+  static bool isValidDelay(int delay) => delay > 0 && delay < maxDelay;
+}

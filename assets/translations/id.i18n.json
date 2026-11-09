@@ -1,0 +1,1072 @@
+{
+  "common": {
+    "appTitle": "proxy4you",
+    "start": "Mulai",
+    "version": "Versi",
+    "ok": "Oke",
+    "cancel": "Batal",
+    "kContinue": "Lanjutkan",
+    "undo": "Urungkan",
+    "showMore": "Tampilkan lebih banyak",
+    "showLess": "Tampilkan lebih sedikit",
+    "filter": "Filter",
+    "all": "Semua",
+    "pause": "Jeda",
+    "resume": "Lanjutkan",
+    "clear": "Bersihkan",
+    "close": "Tutup",
+    "auto": "Otomatis",
+    "manually": "Manual",
+    "name": "Nama",
+    "url": "URL",
+    "add": "Tambah",
+    "clipboard": "Papan klip",
+    "addToClipboard": "Salin ke papan klip",
+    "qrCode": "Kode QR",
+    "free": "Gratis",
+    "warp": "WARP",
+    "fragment": "Fragment",
+    "help": "Bantuan",
+    "save": "Simpan",
+    "update": "Perbarui",
+    "pin": "Sematkan",
+    "unpin": "Lepas sematan",
+    "share": "Bagikan",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "discard": "Buang",
+    "import": "Impor",
+    "export": "Ekspor",
+    "later": "Nanti",
+    "ignore": "Abaikan",
+    "quit": "Keluar",
+    "notSet": "Belum diatur",
+    "hide": "Sembunyikan",
+    "exit": "Keluar",
+    "reset": "Setel ulang",
+    "done": "Selesai",
+    "decline": "Tolak",
+    "agree": "Setuju",
+    "empty": "Kosong",
+    "unknown": "Tidak dikenal",
+    "hidden": "Tersembunyi",
+    "timeout": "Waktu habis",
+    "sort": "Urutkan",
+    "dashboard": "Dasbor",
+    "disable": "Nonaktifkan",
+    "psiphon": "Psiphon",
+    "profile": "Profil",
+    "configuration": "Konfigurasi",
+    "file": "Berkas",
+    "interval": {
+      "day": {
+        "zero": "",
+        "one": "$n hari",
+        "other": "$n hari"
+      },
+      "hour": {
+        "zero": "",
+        "one": "$n jam",
+        "other": "$n jam"
+      }
+    },
+    "msg": {
+      "permission": {
+        "denied": "Izin ditolak"
+      },
+      "export": {
+        "clipboard": {
+          "success": "Disalin ke papan klip",
+          "failure": "Gagal menyalin ke papan klip",
+          "contentTooLarge": "Konten terlalu besar. Ekspor ke file saja."
+        },
+        "file": {
+          "success": "File JSON dibuat",
+          "failure": "Gagal membuat file"
+        }
+      },
+      "import": {
+        "confirm": "Konfirmasi impor",
+        "success": "Diimpor",
+        "failure": "Gagal mengimpor"
+      },
+      "autoSave": {
+        "success": "Perubahan disimpan secara otomatis"
+      }
+    }
+  },
+  "intro": {
+    "banner": "Semua yang Anda butuhkan untuk internet tanpa batasan",
+    "termsAndPolicyCaution(rich)": "Dengan melanjutkan, Anda menyetujui ${tap(@:pages.about.termsAndConditions)}",
+    "info(rich)": "Dibuat dengan ❤️ oleh Hiddify. ${tap_source(Sumber terbuka)} dan ${tap_license(Lisensi)}"
+  },
+  "pages": {
+    "home": {
+      "title": "Beranda",
+      "quickSettings": "Pengaturan cepat"
+    },
+    "proxies": {
+      "title": "Proxy",
+      "sort": "Urutkan proxy",
+      "testDelay": "Uji latensi",
+      "empty": "Tidak ada proxy yang tersedia",
+      "connectToSeeProxies": "Sambungkan untuk melihat proksi",
+      "loadFailed": "Tidak dapat memuat proksi. Ketuk untuk mencoba lagi.",
+      "activeProxy": "Proxy aktif",
+      "unknownIp": "IP tidak dikenal",
+      "checkingIp": "Memeriksa IP…",
+      "switchFailed": "Tidak dapat beralih ke proxy ini. Coba lagi.",
+      "notResponding": "Tidak merespons",
+      "noneResponding": "Tidak ada proxy yang merespons",
+      "sortOptions": {
+        "unsorted": "Default",
+        "name": "Berdasarkan abjad",
+        "delay": "Berdasarkan latensi",
+        "usage": "Berdasarkan penggunaan",
+        "upload": "Menurut kecepatan unggah",
+        "download": "Menurut kecepatan unduh"
+      },
+      "ipInfo": {
+        "address": "Alamat IP",
+        "country": "Negara",
+        "organization": "Organisasi"
+      },
+      "delay": {
+        "result": "Latensi: ${delay}ms",
+        "timeout": "Waktu tes latensi habis",
+        "unavailable": "Tidak tersedia",
+        "testing": "Latensi: sedang menguji…"
+      },
+      "status": {
+        "connecting": "Menghubungkan",
+        "registering": "Mendaftar",
+        "failed": "Gagal",
+        "ready": "Siap",
+        "searching": "Mencari",
+        "reconnecting": "Menghubungkan ulang"
+      },
+      "signalStyle": "Gaya sinyal",
+      "keepTop": {
+        "picking": "Mencari $keep tercepat dari $count…",
+        "pickingBody": "Semua proxy diuji sekali; lalu hanya yang tercepat tetap berjalan.",
+        "kept": "$n proxy tercepat sedang berjalan",
+        "keptBody": "$paused proxy lainnya dijeda untuk menghemat baterai dan data.",
+        "showAll": "Tampilkan semua $count",
+        "big": "$count proxy sedang berjalan",
+        "bigBody": "Jalankan hanya $keep yang tercepat untuk menghemat baterai dan data.",
+        "keep": "Pertahankan $keep tercepat",
+        "change": "Ubah jumlah",
+        "chosen": "$n proksi pilihan Anda sedang berjalan",
+        "choose": "Pilih"
+      },
+      "upload": {
+        "test": "Uji kecepatan unggah",
+        "failed": "Uji kecepatan tidak dapat dimulai",
+        "hint": "Ketuk: kecepatan unggah · Tahan: kecepatan unduh",
+        "hintBoth": "Ketuk: kedua kecepatan · Tahan: kecepatan unduh"
+      },
+      "speedTest": {
+        "title": "Tes kecepatan",
+        "what": "Yang dites",
+        "download": "Unduh",
+        "upload": "Unggah",
+        "amount": "Jumlah per proksi",
+        "proxies": "Proksi yang dites",
+        "proxiesHint": "Tercepat menurut ping",
+        "all": "Semua",
+        "fastest": "$n tercepat",
+        "through": "$n MB lewat tiap $count tercepat",
+        "throughAll": "$n MB lewat tiap $count proksi",
+        "throughEach": "$n MB lewat tiap proksi",
+        "start": "Mulai tes",
+        "save": "Simpan",
+        "testDownload": "Tes kecepatan unduh",
+        "both": "Keduanya",
+        "bothWays": "unduh dan unggah",
+        "amountHint": "lebih banyak lebih akurat",
+        "clear": "Hapus hasil tersimpan",
+        "cleared": "Dihapus",
+        "which": "Proksi mana",
+        "shown": "Ditampilkan ($n)",
+        "chosen": "Dipilih ($n)"
+      }
+    },
+    "profiles": {
+      "title": "Profil",
+      "add": "Tambah profil",
+      "fromPhone": {
+        "title": "Tambah dari ponsel",
+        "scan": "Pindai kode ini dengan kamera ponsel, tempel tautan langganan, lalu kirim.",
+        "sameNetwork": "Ponsel dan TV ini harus terhubung ke jaringan Wi-Fi yang sama.",
+        "noNetwork": "TV ini tidak terhubung ke jaringan lokal. Hubungkan ke Wi-Fi untuk menambahkan tautan dari ponsel.",
+        "locked": "Terlalu banyak kode salah dicoba, jadi ini dikunci. Tutup lalu buka lagi untuk mendapatkan kode baru.",
+        "received": "Diterima dari ponsel",
+        "from": "Dari $address",
+        "page": {
+          "title": "Kirim ke Hiddify di TV",
+          "intro": "Tambahkan langganan ke TV dalam empat langkah cepat, tanpa mengetik dengan remote.",
+          "steps": {
+            "network": {
+              "title": "Gunakan Wi-Fi yang sama",
+              "body": "Ponsel dan TV harus terhubung ke jaringan Wi-Fi yang sama, jika tidak halaman ini tidak bisa menjangkau TV."
+            },
+            "copy": {
+              "title": "Salin tautan",
+              "body": "Salin tautan langganan dari penyedia, atau tautan proxy atau konfigurasi apa pun."
+            },
+            "paste": {
+              "title": "Tempel di sini",
+              "body": "Ketuk kotak di bawah, tempel tautan, lalu ketuk “Kirim ke TV”."
+            },
+            "confirm": {
+              "title": "Konfirmasi di TV",
+              "body": "Tautan muncul di TV. Tekan Impor dengan remote. Tidak ada yang ditambahkan sebelum Anda melakukannya."
+            }
+          },
+          "label": "Tautan langganan",
+          "hint": "Tempel tautan langganan atau konfigurasi",
+          "send": "Kirim ke TV",
+          "sentTitle": "Terkirim ke TV",
+          "sent": "Sekarang tekan Impor di TV untuk menambahkannya. Anda bisa mengirim tautan lain di bawah.",
+          "empty": "Tempel tautan terlebih dahulu.",
+          "footer": "Halaman ini hanya berfungsi saat “Tambah profil” terbuka di TV, dan hanya di jaringan lokal Anda."
+        }
+      },
+      "update": "Perbarui profil",
+      "viewAllProfiles": "Lihat semua profil",
+      "activeProfileName": "Nama profil aktif: “${name}”",
+      "nonActiveProfileName": "Pilih “${name}” sebagai profil aktif",
+      "freeSubNotFound": "Tidak ada langganan gratis yang ditemukan",
+      "freeSubNotFoundForRegion": "Tidak ada langganan gratis yang ditemukan untuk wilayah “${region}”",
+      "failedToLoad": "Gagal memuat",
+      "updateSubscriptions": "Perbarui langganan",
+      "share": {
+        "urlToClipboard": "Salin URL",
+        "showUrlQr": "Tampilkan kode QR",
+        "jsonToClipboard": "Salin JSON"
+      },
+      "msg": {
+        "save": {
+          "success": "Profil disimpan"
+        },
+        "invalidUrl": "URL tidak valid",
+        "add": {
+          "failure": "Gagal menambahkan profil"
+        },
+        "update": {
+          "success": "Profil diperbarui",
+          "failure": "Gagal memperbarui profil",
+          "failureNamed": "Gagal memperbarui “${name}”",
+          "bulkSuccess(plural, param=count)": {
+            "other": "$count profil diperbarui"
+          },
+          "bulkPartial": "${success} diperbarui\n${failed} gagal: ${names}"
+        },
+        "delete": {
+          "success": "Profil dihapus"
+        }
+      }
+    },
+    "profileDetails": {
+      "title": "Profil",
+      "lastUpdate": "Terakhir diperbarui",
+      "form": {
+        "nameHint": "Nama profil",
+        "emptyName": "Nama wajib diisi",
+        "invalidUrl": "URL tidak valid",
+        "urlHint": "URL konfigurasi lengkap",
+        "disableAutoUpdate": "Nonaktifkan pembaruan otomatis",
+        "autoUpdateInterval": "Interval pembaruan otomatis",
+        "loading": "Menambahkan profil…",
+        "adminPreference": "Izin administrator",
+        "adminPreferenceAskEachTime": "Tanya setiap kali",
+        "adminPreferencePreferAdmin": "Selalu gunakan izin administrator",
+        "adminPreferencePreferNoAdmin": "Selalu lanjutkan tanpa izin administrator",
+        "adminPreferenceReset": "Tanya setiap kali soal izin administrator"
+      }
+    },
+    "logs": {
+      "title": "Log",
+      "category": "Kategori",
+      "level": "Level",
+      "recentLogs": "Log terbaru",
+      "recentLogsMsg": "Yang Anda lihat di halaman ini",
+      "errorLog": "Log aplikasi dan inti",
+      "errorLogMsg": "Kesalahan keduanya, di seluruh sesi",
+      "coreLog": "Log inti",
+      "coreLogMsg": "Semua yang dicatat inti",
+      "coreCrash": "Crash inti",
+      "coreCrashMsg": "Yang sedang dilakukan inti saat crash terakhir",
+      "exportToFile": "Ekspor ke berkas",
+      "linesMatch": "$count baris cocok",
+      "fileSaved": "Berkas disimpan",
+      "fileSaveFailed": "Tidak dapat menyimpan berkas",
+      "coreLogLevel": "Level inti",
+      "coreLogLevelMsg": "Berlaku setelah menyambung ulang",
+      "buffer": "Bufer"
+    },
+    "about": {
+      "title": "Tentang",
+      "notAvailableMsg": "Anda menggunakan versi terbaru",
+      "checkForUpdate": "Periksa pembaruan",
+      "openWorkingDir": "Buka direktori kerja",
+      "sourceCode": "Kode sumber",
+      "telegramChannel": "Saluran Telegram",
+      "termsAndConditions": "Syarat dan ketentuan",
+      "privacyPolicy": "Kebijakan privasi"
+    },
+    "settings": {
+      "title": "Pengaturan",
+      "resetTunnel": "Setel ulang profil VPN",
+      "options": {
+        "import": {
+          "clipboard": "Impor opsi dari papan klip",
+          "file": "Impor opsi dari file"
+        },
+        "export": {
+          "anonymousToClipboard": "Salin opsi anonim ke papan klip",
+          "anonymousToFile": "Ekspor opsi anonim ke file",
+          "allToClipboard": "Salin semua opsi ke papan klip",
+          "allToFile": "Ekspor semua opsi ke file"
+        },
+        "reset": "Setel ulang opsi"
+      },
+      "general": {
+        "title": "Umum",
+        "locale": "Bahasa",
+        "themeMode": "Tema",
+        "themeModes": {
+          "system": "Default sistem",
+          "dark": "Mode gelap",
+          "light": "Mode terang",
+          "black": "Mode hitam"
+        },
+        "enableAnalytics": "Aktifkan analitik",
+        "enableAnalyticsMsg": "Kirim analitik dan laporan kerusakan dari perangkat Anda untuk membantu meningkatkan aplikasi",
+        "autoIpCheck": "Periksa IP koneksi secara otomatis",
+        "dynamicNotification": "Tampilkan kecepatan di notifikasi",
+        "hapticFeedback": "Umpan balik haptik",
+        "alwaysOnVpn": "VPN selalu aktif",
+        "actionAtClosing": "Saat menutup jendela",
+        "autoStart": "Mulai saat masuk",
+        "silentStart": "Mulai diminimalkan",
+        "ignoreBatteryOptimizations": "Nonaktifkan optimasi baterai",
+        "ignoreBatteryOptimizationsMsg": "Hapus batasan untuk kinerja VPN yang optimal",
+        "memoryLimit": "Batas memori",
+        "memoryLimitMsg": "Aktifkan jika Anda mengalami kesalahan kehabisan memori atau aplikasi sering macet",
+        "connectionTestUrl": "URL uji koneksi",
+        "urlTestInterval": "Interval uji URL",
+        "clashApiPort": "Port API Clash",
+        "useXrayCoreWhenPossible": "Gunakan xray-core jika memungkinkan",
+        "useXrayCoreWhenPossibleMsg": "Gunakan xray-core saat mengurai tautan langganan. Impor ulang langganan untuk mengaktifkan opsi ini.",
+        "useSystemTlsEngine": "Gunakan TLS sistem jika tersedia",
+        "useSystemTlsEngineMsg": "Koneksi tanpa sidik jari TLS menggunakan TLS macOS, iOS, atau Windows setelah lolos pemeriksaan di perangkat ini; jika tidak, koneksi akan terlihat seperti Chrome.",
+        "uploadTestSize": "Ukuran uji unggah",
+        "megabytes": "$n MB",
+        "speedTest": "Tes kecepatan"
+      },
+      "routing": {
+        "title": "Perutean",
+        "routeRule": {
+          "add": "Tambah aturan",
+          "delete": "Hapus aturan",
+          "options": {
+            "import": {
+              "clipboard": "Impor aturan dari papan klip",
+              "file": "Impor aturan dari file"
+            },
+            "export": {
+              "clipboard": "Salin aturan ke papan klip",
+              "file": "Simpan aturan ke file"
+            },
+            "reset": "Setel ulang ke aturan bawaan"
+          },
+          "rule": {
+            "title": "Aturan",
+            "onlyTunMode": "Hanya tersedia dalam mode TUN",
+            "notAvailableInThisPlatform": "Tidak tersedia di platform ini",
+            "canNotBeEmpty": "Tidak boleh kosong",
+            "validUrlEx": "https://example.com",
+            "validUrl": "“URL” yang valid seperti\n@:pages.settings.routing.routeRule.rule.validUrlEx",
+            "validProcessNameEx": "Chrome.exe atau google chrome atau chrome",
+            "validProcessName": "“Nama proses” yang valid seperti\n@:pages.settings.routing.routeRule.rule.validProcessNameEx",
+            "validProcessPathEx": "C:\\Pro...\\chrome.exe\n/App.../Google Chrome\n/usr/lib.../chrome",
+            "validProcessPath": "“Jalur proses” yang valid seperti\n@:pages.settings.routing.routeRule.rule.validProcessPathEx",
+            "validPortRangeEx": "80 atau 1:65000",
+            "validPortRange": "“Port” atau “Rentang port” yang valid seperti\n@:pages.settings.routing.routeRule.rule.validPortRangeEx",
+            "validIpCidrEx": "8.8.8.8, 10.0.0.0/24, atau fd00::/8",
+            "validIpCidr": "IP CIDR yang valid seperti\n@:pages.settings.routing.routeRule.rule.validIpCidrEx",
+            "validDomainEx": "Google.com atau dl.google.com",
+            "validDomain": "“Domain” yang valid seperti\n@:pages.settings.routing.routeRule.rule.validDomainEx",
+            "validDomainSuffixEx": ".com atau .ir",
+            "validDomainSuffix": "“Sufiks domain” yang valid seperti\n@:pages.settings.routing.routeRule.rule.validDomainSuffixEx",
+            "tileTitle(map)": {
+              "name": "Nama",
+              "outbound": "Keluar jika cocok",
+              "rule_set": "URL set aturan",
+              "package_name": "Nama paket",
+              "process_name": "Nama proses",
+              "process_path": "Jalur proses",
+              "network": "Jaringan",
+              "port_range": "Port tujuan",
+              "source_port_range": "Port sumber",
+              "protocol": "Protokol",
+              "ip_cidr": "IP CIDR tujuan",
+              "source_ip_cidr": "IP CIDR sumber",
+              "domain": "Domain",
+              "domain_suffixe": "Sufiks domain",
+              "domain_keyword": "Kata kunci domain",
+              "domain_regex": "Regex domain"
+            },
+            "outbound(map)": {
+              "proxy": "Proxy",
+              "direct": "Langsung",
+              "direct_with_fragment": "Langsung dengan Fragment",
+              "block": "Blokir"
+            },
+            "network(map)": {
+              "all": "Semua",
+              "tcp": "TCP",
+              "udp": "UDP"
+            },
+            "protocol(map)": {
+              "": "Semua",
+              "tls": "TLS",
+              "http": "HTTP",
+              "quic": "QUIC",
+              "stun": "STUN",
+              "dns": "DNS",
+              "bittorrent": "BitTorrent"
+            }
+          },
+          "genericList": {
+            "addNew": "Tambah nilai baru",
+            "update": "Perbarui nilai",
+            "clearList": "Bersihkan daftar",
+            "clearListMsg": "Semua item akan dihapus"
+          }
+        },
+        "builtinRules": {
+          "tag": "Bawaan",
+          "bypassLan": "Lewati LAN",
+          "blockAds": "Blokir iklan dan malware",
+          "bypassRegion": "Lewati situs di $region"
+        },
+        "appBasedRouting": {
+          "title": "Perutean berbasis aplikasi",
+          "hideSysApps": "Sembunyikan aplikasi sistem",
+          "listTitle": {
+            "bypass": "Aplikasi yang dilewati",
+            "proxy": "Aplikasi dengan proxy"
+          },
+          "chooseApps": "Pilih aplikasi",
+          "apps": {
+            "one": "aplikasi",
+            "other": "aplikasi"
+          },
+          "moreApps": {
+            "one": "+$n aplikasi",
+            "other": "+$n aplikasi"
+          },
+          "autoTag": "Otomatis",
+          "outsideVpn": "Di luar VPN",
+          "ruleWontApply": "Di luar VPN · aturan tidak berlaku",
+          "notInstalled": "Tidak terpasang",
+          "share": {
+            "invite": "Bantu tingkatkan pilihan otomatis",
+            "removed": {
+              "one": "$n dihapus",
+              "other": "$n dihapus"
+            },
+            "added": {
+              "one": "$n ditambahkan",
+              "other": "$n ditambahkan"
+            },
+            "title": "Bagikan perubahan Anda",
+            "where": "Membuka issue publik di GitHub yang sudah berisi nama aplikasi ini. Untuk membagikannya, kirim issue itu di sana. Anda memerlukan akun GitHub.",
+            "action": "Lanjutkan di GitHub"
+          },
+          "options": {
+            "import": {
+              "clipboard": "Impor pilihan dari papan klip",
+              "file": "Impor pilihan dari file",
+              "msg": "Mengimpor menggantikan pilihan Anda saat ini. Lanjutkan?"
+            },
+            "export": {
+              "clipboard": "Salin pilihan ke papan klip",
+              "file": "Ekspor pilihan ke file"
+            },
+            "clearAllSelections": "Hapus semua pilihan"
+          },
+          "modes": {
+            "proxy": "Hanya proxy",
+            "bypass": "Lewati"
+          },
+          "autoSelection": {
+            "title": "Pilihan otomatis berdasarkan $region",
+            "performNow": "Perbarui sekarang",
+            "updated": {
+              "zero": "Diperbarui hari ini",
+              "one": "Diperbarui $n hari lalu",
+              "other": "Diperbarui $n hari lalu"
+            },
+            "noList": "Tidak ada daftar untuk wilayah ini",
+            "loadFailed": "Tidak dapat memuat daftar",
+            "restore": {
+              "one": "Pulihkan $n pilihan otomatis",
+              "other": "Pulihkan $n pilihan otomatis"
+            },
+            "restored": {
+              "one": "$n pilihan otomatis dipulihkan",
+              "other": "$n pilihan otomatis dipulihkan"
+            }
+          }
+        },
+        "region": "Wilayah",
+        "regions": {
+          "ir": "Iran (ir)",
+          "cn": "Tiongkok (cn)",
+          "ru": "Rusia (ru)",
+          "af": "Afghanistan (af)",
+          "id": "Indonesia (id)",
+          "tr": "Turki (tr)",
+          "br": "Brasil (br)",
+          "other": "Lainnya"
+        },
+        "balancerStrategy": {
+          "title": "Strategi Balancer",
+          "roundRobin": "Round robin",
+          "consistentHash": "Consistent hash",
+          "stickySession": "Sticky session",
+          "roundRobinDescription": "Setiap koneksi memakai server berikutnya, jadi situs mungkin melihat IP Anda berubah",
+          "consistentHashDescription": "Setiap situs selalu memakai server yang sama",
+          "stickySessionDescription": "Setiap situs memakai server acak sampai Anda menyambung ulang"
+        },
+        "resolveDestination": "Resolusi tujuan",
+        "ipv6Route": "IPv6",
+        "ipv6Modes": {
+          "preferIpv4": "IPv4 dulu",
+          "preferIpv6": "IPv6 dulu"
+        }
+      },
+      "dns": {
+        "title": "DNS",
+        "remoteDns": "DNS jarak jauh",
+        "remoteDnsDomainStrategy": "Strategi domain DNS jarak jauh",
+        "directDns": "Penyelesai server keluar (langsung)",
+        "directDnsDomainStrategy": "Strategi domain keluar",
+        "enableFakeDns": "Aktifkan DNS palsu",
+        "domainStrategy": {
+          "auto": "Otomatis",
+          "preferIpv6": "Pilih IPv6",
+          "preferIpv4": "Pilih IPv4",
+          "ipv4Only": "Hanya IPv4",
+          "ipv6Only": "Hanya IPv6"
+        }
+      },
+      "inbound": {
+        "title": "Masuk",
+        "serviceMode": "Mode layanan",
+        "serviceModes": {
+          "proxy": "Hanya layanan proxy",
+          "systemProxy": "Atur proxy sistem",
+          "tun": "VPN"
+        },
+        "shortServiceModes": {
+          "proxy": "Proxy",
+          "systemProxy": "Proxy sistem",
+          "tun": "VPN"
+        },
+        "strictRoute": "Rute ketat",
+        "tunImplementation": "Implementasi TUN",
+        "tunImplementations": {
+          "mixed": "Campuran",
+          "system": "Sistem",
+          "gvisor": "gVisor"
+        },
+        "mixedPort": "Port proksi (SOCKS5/4, HTTP)",
+        "tproxyPort": "Port proxy transparan",
+        "directPort": "Port langsung",
+        "redirectPort": "Port pengalihan",
+        "lanSharing": "Berbagi VPN yang aman",
+        "connectionSharing": "Berbagi koneksi",
+        "qrCode": "Kode QR",
+        "closedInVpn": "tertutup di mode VPN, kecuali dibagikan",
+        "proxySecret": "Rahasia proksi",
+        "noSecret": "Tanpa rahasia: aplikasi atau perangkat apa pun yang mencapai port dapat memakainya",
+        "generateSecret": "Buat baru",
+        "removeSecret": "Hapus rahasia?",
+        "removeSecretMsg": "Tanpa rahasia, aplikasi apa pun di perangkat ini, dan perangkat apa pun di jaringan saat berbagi, dapat memakai proksi tanpa pengguna atau kata sandi. Risiko ditanggung sendiri.",
+        "localProxy": "Proksi lokal",
+        "localProxyInVpn": "Tetap terbuka dalam mode VPN",
+        "localProxyInVpnHint": "Aplikasi sudah memakai VPN; hanya untuk aplikasi yang diatur ke proksi",
+        "localProxyAuth": "Wajibkan kata sandi",
+        "localProxyAuthHint": "Sebagian aplikasi, seperti peramban, tidak bisa mengirim kata sandi SOCKS",
+        "notAsSystemProxy": "Tidak diminta sebagai proksi sistem, yang tidak bisa mengirimnya",
+        "lanGroup": "Berbagi di jaringan lokal",
+        "lanSharingPort": "Port berbagi",
+        "otherPorts": "Port lain",
+        "closedInVpnLocal": "tertutup dalam mode VPN"
+      },
+      "tlsTricks": {
+        "title": "Trik TLS",
+        "enable": "Aktifkan Fragment",
+        "packets": "Paket Fragment",
+        "packetsTlsHello": "TLS Hello",
+        "packets1_1": "1-1",
+        "packets1_2": "1-2",
+        "packets1_3": "1-3",
+        "packets1_4": "1-4",
+        "packets1_5": "1-5",
+        "size": "Ukuran Fragment",
+        "sleep": "Jeda Fragment",
+        "mixedSniCase": {
+          "enable": "Aktifkan huruf campuran SNI"
+        },
+        "padding": {
+          "enable": "Aktifkan padding",
+          "size": "Ukuran padding"
+        }
+      },
+      "chain": {
+        "title": "Rantai",
+        "subtitle": "Keamanan tambahan & pembuka blokir",
+        "finalIp": "IP akhir",
+        "levels": {
+          "app": {
+            "title": "App",
+            "msg": "Titik awal: Lalu lintas aplikasi Anda masuk ke rantai di sini dan melewati lapisan berikutnya untuk bersiap melakukan bypass akhir"
+          },
+          "extraSecurity": {
+            "title": "Keamanan tambahan",
+            "msg": "Menambahkan pelindung ekstra untuk menjaga privasi data Anda, bahkan jika profil utama Anda tidak dipercaya"
+          },
+          "mainProfile": {
+            "title": "Profil utama"
+          },
+          "unblocker": {
+            "title": "Pembuka blokir",
+            "msg": "Membantu melewati batasan jaringan. Jika pembantu terhubung, profil utama Anda tetap dapat bekerja meskipun saat ini sedang diblokir."
+          },
+          "filtering": {
+            "title": "Pemfilteran",
+            "msg": "Keluar akhir: Lalu lintas Anda melewati lapisan aktif, yaitu Keamanan tambahan, Profil utama, atau Pembuka blokir. Setelah efeknya diterapkan, lalu lintas dirutekan untuk melewati pemfilteran jaringan lokal."
+          }
+        },
+        "warp": {
+          "missingConfig": "Konfigurasi WARP hilang",
+          "licenseKey": "Kunci lisensi",
+          "tunnel": "Terowongan",
+          "cleanIp": "IP bersih",
+          "port": "Port",
+          "noise": {
+            "count": "Jumlah kebisingan",
+            "mode": "Mode kebisingan",
+            "size": "Ukuran kebisingan",
+            "delay": "Penundaan kebisingan",
+            "modes": {
+              "standard": "Standar",
+              "random": "Acak",
+              "quic": "QUIC (HTTPS)",
+              "quicMimic": "Handshake QUIC",
+              "dns": "DNS (google.com)",
+              "dnsCloudflare": "DNS (cloudflare.com)",
+              "sip": "SIP (panggilan VoIP)",
+              "stun": "STUN (panggilan video)"
+            },
+            "title": "Derau WireGuard"
+          },
+          "endpoint": "Titik akhir",
+          "endpointSources": {
+            "profile": "Ditetapkan Cloudflare",
+            "scan": "Pindai",
+            "custom": "Kustom"
+          },
+          "customServer": "Alamat",
+          "mtu": "MTU",
+          "customized": "Disesuaikan",
+          "scanner": {
+            "title": "Pemindai"
+          },
+          "masque": {
+            "title": "MASQUE"
+          },
+          "awg": {
+            "title": "AmneziaWG"
+          }
+        },
+        "psiphon": {
+          "selectServerRegion": "Pilih wilayah server",
+          "regions": {
+            "auto": "@:common.auto",
+            "at": "Austria (at)",
+            "au": "Australia (au)",
+            "be": "Belgia (be)",
+            "bg": "Bulgaria (bg)",
+            "ca": "Kanada (ca)",
+            "ch": "Swiss (ch)",
+            "cz": "Republik Ceko (cz)",
+            "de": "Jerman (de)",
+            "dk": "Denmark (dk)",
+            "ee": "Estonia (ee)",
+            "es": "Spanyol (es)",
+            "fi": "Finlandia (fi)",
+            "fr": "Prancis (fr)",
+            "gb": "Britania Raya (gb)",
+            "hr": "Kroasia (hr)",
+            "hu": "Hongaria (hu)",
+            "ie": "Irlandia (ie)",
+            "in": "India (in)",
+            "it": "Italia (it)",
+            "jp": "Jepang (jp)",
+            "lv": "Latvia (lv)",
+            "nl": "Belanda (nl)",
+            "no": "Norwegia (no)",
+            "pl": "Polandia (pl)",
+            "pt": "Portugal (pt)",
+            "ro": "Rumania (ro)",
+            "rs": "Serbia (rs)",
+            "se": "Swedia (se)",
+            "sg": "Singapura (sg)",
+            "sk": "Slovakia (sk)",
+            "us": "Amerika Serikat (us)"
+          }
+        },
+        "profile": {
+          "selectProfile": "Pilih profil",
+          "conduitPairingId": "ID pemasangan Conduit"
+        }
+      }
+    }
+  },
+  "components": {
+    "stats": {
+      "connection": "Koneksi",
+      "traffic": "Lalu lintas",
+      "trafficLive": "Lalu lintas langsung",
+      "trafficTotal": "Total lalu lintas",
+      "uplink": "Unggah",
+      "downlink": "Unduh",
+      "speed": "Kecepatan",
+      "totalTransferred": "Total ditransfer"
+    },
+    "subscriptionInfo": {
+      "upload": "Unggah",
+      "download": "Unduh",
+      "total": "Total lalu lintas",
+      "expireDate": "Tanggal kedaluwarsa",
+      "expired": "Kedaluwarsa",
+      "noTraffic": "Kuota habis",
+      "remainingDuration(plural, param=days)": {
+        "other": "Sisa $days hari"
+      },
+      "remainingUnlimited": "Tanpa batas",
+      "remainingTrafficSemanticLabel": "${consumed} dari ${total} lalu lintas terpakai",
+      "remainingTraffic": "Sisa lalu lintas",
+      "openWebPage": "Buka halaman web",
+      "support": "Dukungan",
+      "openLinkTitle": "Buka tautan ini?",
+      "openLinkAction": "Buka"
+    }
+  },
+  "dialogs": {
+    "sortProfiles": {
+      "title": "Urut berdasarkan",
+      "sort": {
+        "name": "Menurut abjad",
+        "lastUpdate": "Terakhir diperbarui"
+      },
+      "direction": {
+        "newestFirst": "Terbaru dulu",
+        "oldestFirst": "Terlama dulu"
+      }
+    },
+    "warpLicense": {
+      "title": "Persetujuan Cloudflare WARP",
+      "description(rich)": "Cloudflare WARP adalah penyedia VPN WireGuard gratis. Dengan mengaktifkan opsi ini, Anda menyetujui ${tos(Ketentuan layanan)} dan ${privacy(Kebijakan privasi)} Cloudflare WARP."
+    },
+    "psiphonLicense": {
+      "title": "Perjanjian lisensi Psiphon",
+      "description(rich)": "Dengan menggunakan Psiphon, Anda menyetujui ${tos(Ketentuan layanan)} dan mengakui ${privacy(Kebijakan privasi)}. Baca dengan teliti sebelum melanjutkan."
+    },
+    "newVersion": {
+      "title": "Pembaruan tersedia",
+      "msg": "Versi baru @:common.appTitle tersedia. Perbarui sekarang?",
+      "currentVersion": "Versi saat ini",
+      "newVersion": "Versi baru",
+      "updateNow": "Perbarui sekarang",
+      "downloading": "Mengunduh…",
+      "installing": "Memulai pemasang…",
+      "allowInstall": "Izinkan Hiddify memasang aplikasi di pengaturan yang terbuka, lalu coba lagi.",
+      "failed": "Pembaruan tidak dapat dipasang.",
+      "openPage": "Buka halaman rilis",
+      "tryAgain": "Coba lagi"
+    },
+    "confirmation": {
+      "settings": {
+        "import": {
+          "msg": "Ini menimpa semua opsi konfigurasi dengan nilai yang diimpor. Lanjutkan?"
+        }
+      },
+      "profile": {
+        "delete": {
+          "title": "Hapus profil",
+          "msg": "Hapus profil ini? Tindakan ini tidak dapat dibatalkan."
+        }
+      },
+      "appList": {
+        "import": {
+          "msg": "Ini menggantikan aplikasi Lewati dan Hanya proxy Anda. Lanjutkan?"
+        }
+      },
+      "routeRule": {
+        "delete": {
+          "title": "Hapus aturan",
+          "msg": "Hapus aturan “$rulename”? Tindakan ini tidak dapat dibatalkan."
+        }
+      },
+      "addProfileByDeepLinkWarning": {
+        "title": "Tambah profil?",
+        "message": "Tautan eksternal dari “${host}” ingin menambahkan profil baru. Impor?"
+      },
+      "importRouteRuleByDeepLinkWarning": {
+        "title": "Impor aturan rute?",
+        "message": "Aturan rute menentukan ke mana lalu lintas Anda pergi.\nHanya impor dari sumber yang Anda percayai."
+      }
+    },
+    "adminBgService": {
+      "vpnNeedsAdmin": {
+        "title": "Izin administrator diperlukan",
+        "msg": "Mode VPN memerlukan izin administrator satu kali untuk memasang layanan latar belakang Hiddify. Setelah itu, Anda dapat terhubung tanpa permintaan lagi.",
+        "connectWithAdmin": "Hubungkan dengan izin administrator",
+        "waitingTitle": "Menunggu izin administrator",
+        "waitingMsg": "Izinkan permintaan administrator untuk melanjutkan. Anda dapat berhenti dan mencoba lagi nanti.",
+        "stop": "Berhenti"
+      },
+      "proxyNeedsAdmin": {
+        "title": "Izin administrator disarankan",
+        "msg": "Beberapa pengaturan di profil ini bekerja lebih baik dengan izin administrator. Anda dapat menjalankan dengan izin administrator, atau melanjutkan tanpanya dan mematikan pengaturan tersebut untuk koneksi ini.",
+        "seeConfigs": "Tampilkan konfigurasi",
+        "hideConfigs": "Sembunyikan konfigurasi",
+        "neverAskAgain": "Jangan tanya lagi untuk profil ini",
+        "runAsAdmin": "Jalankan sebagai administrator",
+        "continueWithoutAdmin": "Lanjutkan tanpa izin administrator",
+        "elevationFailedTitle": "Tidak dapat memperoleh izin administrator",
+        "elevationFailedMsg": "Permintaan administrator ditolak atau gagal. Coba lagi, atau lanjutkan tanpa izin administrator untuk koneksi ini.",
+        "tryAgain": "Coba lagi"
+      }
+    },
+    "experimentalNotice": {
+      "title": "Fitur eksperimental sedang digunakan",
+      "msg": "Anda telah mengaktifkan beberapa fitur eksperimental yang mungkin memengaruhi kualitas koneksi dan menyebabkan kesalahan tak terduga. Anda selalu dapat mengubah atau menyetel ulang opsi ini di Pengaturan.",
+      "disable": "Jangan tampilkan lagi"
+    },
+    "noActiveProfile": {
+      "title": "Pilih profil",
+      "msg": "Mari mulai. Tambahkan profil koneksi dengan detail server VPN Anda.\n\nBelum punya server? Tidak masalah. Panduan di bawah ini menunjukkan cara membuatnya secara gratis.",
+      "helpBtn": {
+        "label": "Tunjukkan caranya",
+        "url": "https://hiddify.com/manager/"
+      }
+    },
+    "unknownDomainsWarning": {
+      "title": "Periksa tautan ini dulu",
+      "cannotVerify": "Tautan ini belum diverifikasi",
+      "avoidIfUnsure": "Jika Anda tidak sepenuhnya yakin, jangan membayar atau membagikan informasi sensitif",
+      "ownResponsibility": "Anda melanjutkan dengan risiko sendiri",
+      "open": "Buka",
+      "openIn": "Buka (${seconds})"
+    },
+    "proxyInfo": {
+      "fullTag": "Tag lengkap",
+      "type": "Tipe",
+      "status": "Status",
+      "testTime": "Waktu uji",
+      "testDelay": "Jeda uji",
+      "isSelected": "Dipilih",
+      "isGroup": "Grup",
+      "isSecure": "Aman",
+      "port": "Port",
+      "host": "Host",
+      "ip": "IP",
+      "countryCode": "Kode negara",
+      "region": "Wilayah",
+      "city": "Kota",
+      "asn": "ASN",
+      "organization": "Organisasi",
+      "location": "Lokasi",
+      "postalCode": "Kode pos",
+      "download": "Unduh",
+      "upload": "Unggah",
+      "ping": "Ping",
+      "speed": "Kecepatan",
+      "server": "Server",
+      "country": "Negara",
+      "tapToTest": "Ketuk untuk menguji"
+    },
+    "windowClosing": {
+      "askEachTime": "Tanyakan setiap kali",
+      "alertMessage": "Sembunyikan atau keluar dari aplikasi?",
+      "remember": "Ingat pilihan saya"
+    },
+    "qrCode": {
+      "copyFullLink": "Salin tautan lengkap",
+      "copied": "Disalin",
+      "lanLine": "SOCKS5 · hanya jaringan yang sama",
+      "noLocalNetwork": "Jaringan lokal tidak ditemukan",
+      "ip": "IP",
+      "port": "Port",
+      "username": "Nama pengguna",
+      "password": "Kata sandi",
+      "showPassword": "Tampilkan kata sandi",
+      "hidePassword": "Sembunyikan kata sandi"
+    },
+    "qrScanner": {
+      "notFound": "Tidak ada kode QR di gambar ini"
+    },
+    "keepTop": {
+      "title": "Langganan besar",
+      "description": "Profil ini berisi $count proxy. Menjalankan semuanya menghabiskan baterai, data, dan memori. Hiddify dapat mengujinya sekali, menjalankan $keep yang tercepat, dan menjeda sisanya.",
+      "hint": "Anda bisa menjalankan semuanya lagi kapan saja dari akhir daftar proxy.",
+      "keeping": "$keep tercepat berjalan, sisanya dijeda",
+      "all": "Semua $count berjalan",
+      "keep": "Pertahankan $keep tercepat",
+      "useAll": "Gunakan semua $count",
+      "howMany": "Berapa yang tetap berjalan",
+      "pickByHand": "Pilih proksi sendiri"
+    },
+    "keepTags": {
+      "title": "Pilih proksi",
+      "hint": "Hanya ini yang berjalan, setiap kali tersambung.",
+      "search": "Cari",
+      "all": "Pilih semua",
+      "none": "Hapus",
+      "run": "Gunakan $n ini",
+      "sort": "Urutkan",
+      "sortProfile": "Urutan profil",
+      "sortPing": "Ping",
+      "sortDownload": "Unduh",
+      "sortUpload": "Unggah",
+      "selectFastest": "$n tercepat",
+      "statusChosen": "Dipilih",
+      "statusAnswering": "Merespons",
+      "statusPaused": "Dijeda",
+      "paused": "$n proksi dijeda: tidak ada ping dan tidak bisa dites.",
+      "wake": "Jalankan semua untuk dites",
+      "offline": "Sambungkan untuk melihat ping dan mengetesnya.",
+      "offlineTitle": "Tidak tersambung",
+      "shown": "$n ditampilkan",
+      "noMatch": "Tidak ada proksi yang cocok",
+      "chosenHint": "Ketuk proksi di atas untuk memilihnya",
+      "allShown": "Semuanya ada di daftar di atas",
+      "notShown": "Tidak ditampilkan:",
+      "protocol": "Protokol",
+      "country": "Negara",
+      "anyProtocol": "Protokol apa pun",
+      "anyCountry": "Negara apa pun",
+      "otherCountries": "Lainnya"
+    },
+    "localProxy": {
+      "steps": [
+        "Buka pengaturan proksi aplikasi",
+        "Pilih SOCKS5 atau HTTP",
+        "Masukkan nilai di bawah · ketuk untuk menyalin",
+        "Biarkan Hiddify terhubung"
+      ],
+      "hint": "Mode proksi · cara memakai",
+      "setPassword": "Atur kata sandi",
+      "manual": "Manual",
+      "dontShowAgain": "Jangan tampilkan lagi",
+      "thisDevice": "Perangkat ini",
+      "otherDevices": "Perangkat lain",
+      "server": "Server",
+      "noPassword": "Belum ada kata sandi",
+      "turnOnSharing": "Aktifkan berbagi",
+      "copyLink": "Salin tautan",
+      "telegramLink": "Tautan Telegram",
+      "fullLink": "Tautan lengkap",
+      "portRange": "Gunakan port 1024 sampai 65535",
+      "passwordTooShort": "Minimal 4 karakter",
+      "edit": "Edit"
+    }
+  },
+  "connection": {
+    "tapToConnect": "Ketuk untuk menyambungkan",
+    "connect": "Sambungkan",
+    "connecting": "Menyambungkan…",
+    "waiting": "Mencari kebebasan…",
+    "noAvailableProxies": "Koneksi gagal",
+    "hotReloading": "Menerapkan perubahan…",
+    "connected": "Tersambung",
+    "disconnect": "Putuskan",
+    "disconnecting": "Memutuskan…",
+    "failed": "Tidak dapat tersambung",
+    "slow": "Memakan waktu lebih lama dari biasanya…",
+    "tapToRetry": "Ketuk untuk mencoba lagi",
+    "errorDetails": "Detail kesalahan",
+    "reconnect": "Sambungkan kembali",
+    "reconnectMsg": "Menyambungkan kembali untuk menerapkan perubahan…",
+    "health": {
+      "title": "Pemeriksaan koneksi",
+      "allGood": "Lalu lintas Anda tersambung",
+      "pickDead": "Proxy yang dipilih tidak merespons",
+      "hopPending": "${chain} sedang terhubung…",
+      "hopFailed": "${chain} tidak dapat terhubung",
+      "coreTesting": "Menguji server…",
+      "coreNone": "Tidak ada server yang merespons",
+      "fastest": "Server tercepat",
+      "yourServer": "Proxy terpilih",
+      "notResponding": "Tidak merespons",
+      "testing": "Menguji…",
+      "useFastest": "Beralih ke yang tercepat",
+      "hopReady": "Terhubung",
+      "hopConnecting": "Menghubungkan…",
+      "hopBroken": "Tidak dapat terhubung",
+      "hopNoReply": "Terhubung, tetapi tidak merespons",
+      "hopBlocked": "Menunggu respons proxy terpilih",
+      "retry": "Uji lagi",
+      "change": "Ubah",
+      "turnOff": "Matikan"
+    }
+  },
+  "errors": {
+    "unexpected": "Kesalahan tak terduga",
+    "connection": {
+      "unexpected": "Kesalahan koneksi tak terduga",
+      "timeout": "Waktu koneksi habis",
+      "badResponse": "Respons server tidak valid",
+      "connectionError": "Kesalahan koneksi",
+      "badCertificate": "Sertifikat rusak"
+    },
+    "profiles": {
+      "unexpected": "Kesalahan tak terduga",
+      "notFound": "Profil tidak ditemukan",
+      "invalidConfig": "Konfigurasi tidak valid",
+      "invalidUrl": "URL tidak valid",
+      "canceledByUser": "Dibatalkan oleh pengguna"
+    },
+    "connectivity": {
+      "unexpected": "Kegagalan tak terduga",
+      "missingVpnPermission": "Izin VPN hilang",
+      "missingNotificationPermission": "Izin notifikasi hilang",
+      "core": "Kesalahan inti"
+    },
+    "singbox": {
+      "serviceNotRunning": "Layanan tidak berjalan",
+      "missingPrivilege": "Izin hilang",
+      "missingPrivilegeMsg": "Mode VPN tidak dapat dimulai. Mulai ulang aplikasi sebagai administrator atau ubah mode layanan.",
+      "tunAddressInUse": "VPN lain sedang aktif",
+      "tunAddressInUseMsg": "Mode VPN tidak dapat dimulai. Matikan VPN lain atau ubah mode layanan.",
+      "invalidConfigOptions": "Opsi konfigurasi tidak valid",
+      "invalidConfig": "Konfigurasi tidak valid"
+    },
+    "warp": {
+      "missingLicense": "Lisensi WARP hilang",
+      "missingLicenseMsg": "Profil ini menggunakan WARP. Setujui lisensi WARP untuk melanjutkan."
+    },
+    "psiphon": {
+      "missingLicense": "Lisensi Psiphon diperlukan",
+      "missingLicenseMsg": "Profil ini menggunakan Psiphon. Setujui lisensi Psiphon untuk melanjutkan."
+    }
+  }
+}

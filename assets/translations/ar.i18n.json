@@ -1,0 +1,1109 @@
+{
+  "common": {
+    "appTitle": "proxy4you",
+    "start": "ابدأ",
+    "version": "الإصدار",
+    "ok": "موافق",
+    "cancel": "إلغاء",
+    "kContinue": "متابعة",
+    "undo": "تراجع",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
+    "filter": "تصفية",
+    "all": "الكل",
+    "pause": "إيقاف مؤقت",
+    "resume": "استئناف",
+    "clear": "مسح",
+    "close": "إغلاق",
+    "auto": "تلقائي",
+    "manually": "يدوي",
+    "name": "الاسم",
+    "url": "الرابط",
+    "add": "إضافة",
+    "clipboard": "الحافظة",
+    "addToClipboard": "نسخ إلى الحافظة",
+    "qrCode": "رمز QR",
+    "free": "مجاني",
+    "warp": "WARP",
+    "fragment": "Fragment",
+    "help": "مساعدة",
+    "save": "حفظ",
+    "update": "تحديث",
+    "pin": "تثبيت",
+    "unpin": "إلغاء التثبيت",
+    "share": "مشاركة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "discard": "تجاهل",
+    "import": "استيراد",
+    "export": "تصدير",
+    "later": "لاحقًا",
+    "ignore": "تجاهل",
+    "quit": "خروج",
+    "notSet": "غير محدد",
+    "hide": "إخفاء",
+    "exit": "خروج",
+    "reset": "إعادة تعيين",
+    "done": "تم",
+    "decline": "رفض",
+    "agree": "أوافق",
+    "empty": "فارغ",
+    "unknown": "غير معروف",
+    "hidden": "مخفي",
+    "timeout": "انتهى الوقت",
+    "sort": "فرز",
+    "dashboard": "لوحة التحكم",
+    "disable": "تعطيل",
+    "psiphon": "Psiphon",
+    "profile": "ملف تعريف",
+    "configuration": "تكوين",
+    "file": "ملف",
+    "interval": {
+      "day": {
+        "zero": "",
+        "one": "يوم واحد",
+        "other": "$n يوم",
+        "two": "يومان",
+        "few": "$n أيام",
+        "many": "$n يومًا"
+      },
+      "hour": {
+        "zero": "",
+        "one": "ساعة واحدة",
+        "other": "$n ساعة",
+        "two": "ساعتان",
+        "few": "$n ساعات",
+        "many": "$n ساعة"
+      }
+    },
+    "msg": {
+      "permission": {
+        "denied": "تم رفض الإذن"
+      },
+      "export": {
+        "clipboard": {
+          "success": "تم النسخ إلى الحافظة",
+          "failure": "فشل النسخ إلى الحافظة",
+          "contentTooLarge": "المحتوى كبير جدًا. صدّره إلى ملف بدلاً من ذلك."
+        },
+        "file": {
+          "success": "تم إنشاء ملف JSON",
+          "failure": "فشل إنشاء الملف"
+        }
+      },
+      "import": {
+        "confirm": "تأكيد الاستيراد",
+        "success": "تم الاستيراد",
+        "failure": "فشل الاستيراد"
+      },
+      "autoSave": {
+        "success": "تم حفظ التغييرات تلقائيًا"
+      }
+    }
+  },
+  "intro": {
+    "banner": "كل ما تحتاجه لإنترنت بلا قيود",
+    "termsAndPolicyCaution(rich)": "بالاستمرار، أنت توافق على ${tap(@:pages.about.termsAndConditions)}",
+    "info(rich)": "صُنع بـ ❤️ بواسطة Hiddify. ${tap_source(مفتوح المصدر)} و${tap_license(الرخصة)}"
+  },
+  "pages": {
+    "home": {
+      "title": "الرئيسية",
+      "quickSettings": "الإعدادات السريعة"
+    },
+    "proxies": {
+      "title": "البروكسيات",
+      "sort": "فرز البروكسيات",
+      "testDelay": "اختبار التأخير",
+      "empty": "لا توجد بروكسيات متاحة",
+      "connectToSeeProxies": "اتصل لعرض البروكسيات",
+      "loadFailed": "تعذّر تحميل البروكسيات. انقر لإعادة المحاولة.",
+      "activeProxy": "البروكسي النشط",
+      "unknownIp": "IP غير معروف",
+      "checkingIp": "جارٍ التحقق من عنوان IP…",
+      "switchFailed": "تعذّر التبديل إلى هذا البروكسي. أعد المحاولة.",
+      "notResponding": "لا يستجيب",
+      "noneResponding": "لا يستجيب أي بروكسي",
+      "sortOptions": {
+        "unsorted": "الافتراضي",
+        "name": "أبجديًا",
+        "delay": "حسب التأخير",
+        "usage": "حسب الاستخدام",
+        "upload": "حسب سرعة الرفع",
+        "download": "حسب سرعة التنزيل"
+      },
+      "ipInfo": {
+        "address": "عنوان IP",
+        "country": "الدولة",
+        "organization": "المُنظمة"
+      },
+      "delay": {
+        "result": "التأخير: ${delay} مللي ثانية",
+        "timeout": "انتهى وقت اختبار التأخير",
+        "unavailable": "غير متاح",
+        "testing": "التأخير: قيد الاختبار…"
+      },
+      "status": {
+        "connecting": "جارٍ الاتصال",
+        "registering": "جارٍ التسجيل",
+        "failed": "فشل",
+        "ready": "جاهز",
+        "searching": "جارٍ البحث",
+        "reconnecting": "جارٍ إعادة الاتصال"
+      },
+      "signalStyle": "نمط الإشارة",
+      "keepTop": {
+        "picking": "جارٍ البحث عن أسرع $keep من $count…",
+        "pickingBody": "تُختبر كل الوكلاء مرة واحدة، ثم يبقى الأسرع فقط قيد التشغيل.",
+        "kept": "أسرع $n قيد التشغيل",
+        "keptBody": "$paused وكيلًا آخر متوقفة مؤقتًا لتوفير البطارية والبيانات.",
+        "showAll": "عرض كل الـ $count",
+        "big": "$count وكيلًا قيد التشغيل",
+        "bigBody": "أبقِ أسرع $keep فقط قيد التشغيل لتوفير البطارية والبيانات.",
+        "keep": "إبقاء أسرع $keep",
+        "change": "تغيير العدد",
+        "chosen": "الوكلاء الذين اخترتهم ($n) يعملون",
+        "choose": "اختيار"
+      },
+      "upload": {
+        "test": "اختبار سرعة الرفع",
+        "failed": "تعذّر بدء اختبار السرعة",
+        "hint": "نقرة: سرعة الرفع · ضغط مطوّل: سرعة التنزيل",
+        "hintBoth": "نقرة: السرعتان · ضغط مطوّل: سرعة التنزيل"
+      },
+      "speedTest": {
+        "title": "اختبار السرعة",
+        "what": "ماذا تختبر",
+        "download": "التنزيل",
+        "upload": "الرفع",
+        "amount": "الكمية لكل وكيل",
+        "proxies": "الوكلاء المختبَرون",
+        "proxiesHint": "الأسرع حسب زمن الاستجابة",
+        "all": "الكل",
+        "fastest": "أسرع $n",
+        "through": "$n ميغابايت عبر كل واحد من أسرع $count",
+        "throughAll": "$n ميغابايت عبر كل واحد من $count وكيلًا",
+        "throughEach": "$n ميغابايت عبر كل وكيل",
+        "start": "بدء الاختبار",
+        "save": "حفظ",
+        "testDownload": "اختبار سرعة التنزيل",
+        "both": "كلاهما",
+        "bothWays": "تنزيلًا ورفعًا",
+        "amountHint": "الأكثر أدق",
+        "clear": "مسح النتائج المحفوظة",
+        "cleared": "تم المسح",
+        "which": "أي الوكلاء",
+        "shown": "المعروضة ($n)",
+        "chosen": "المختارة ($n)"
+      }
+    },
+    "profiles": {
+      "title": "الملفات الشخصية",
+      "add": "إضافة ملف شخصي",
+      "fromPhone": {
+        "title": "إضافة من هاتفك",
+        "scan": "امسح هذا الرمز بكاميرا هاتفك، والصق رابط الاشتراك، ثم أرسله.",
+        "sameNetwork": "يجب أن يكون هاتفك وهذا التلفاز على شبكة Wi-Fi نفسها.",
+        "noNetwork": "هذا التلفاز غير متصل بشبكة محلية. صِله بشبكة Wi-Fi لإضافة رابط من هاتفك.",
+        "locked": "تمت تجربة رموز خاطئة كثيرة، لذا تم القفل. أغلق هذا وافتحه مجددًا للحصول على رمز جديد.",
+        "received": "تم الاستلام من هاتفك",
+        "from": "من $address",
+        "page": {
+          "title": "أرسل إلى Hiddify على التلفاز",
+          "intro": "أضف اشتراكًا إلى التلفاز في أربع خطوات سريعة، دون كتابته بجهاز التحكم.",
+          "steps": {
+            "network": {
+              "title": "اتصل بشبكة Wi-Fi نفسها",
+              "body": "يجب أن يكون الهاتف والتلفاز على شبكة Wi-Fi نفسها، وإلا فلن تصل هذه الصفحة إلى التلفاز."
+            },
+            "copy": {
+              "title": "انسخ الرابط",
+              "body": "انسخ رابط الاشتراك من مزوّدك، أو أي رابط وكيل أو إعداد."
+            },
+            "paste": {
+              "title": "الصقه هنا",
+              "body": "اضغط على المربع أدناه، والصق الرابط، ثم اضغط «إرسال إلى التلفاز»."
+            },
+            "confirm": {
+              "title": "أكّد على التلفاز",
+              "body": "سيظهر الرابط على التلفاز. اضغط «استيراد» بجهاز التحكم. لن يُضاف شيء حتى تفعل ذلك."
+            }
+          },
+          "label": "رابط الاشتراك",
+          "hint": "الصق رابط الاشتراك أو الإعداد",
+          "send": "إرسال إلى التلفاز",
+          "sentTitle": "تم الإرسال إلى التلفاز",
+          "sent": "اضغط الآن «استيراد» على التلفاز لإضافته. يمكنك إرسال رابط آخر أدناه.",
+          "empty": "الصق رابطًا أولًا.",
+          "footer": "تعمل هذه الصفحة فقط أثناء فتح «إضافة ملف تعريف» على التلفاز، وعلى شبكتك المحلية فقط."
+        }
+      },
+      "update": "تحديث الملف الشخصي",
+      "viewAllProfiles": "عرض جميع الملفات الشخصية",
+      "activeProfileName": "اسم الملف النشط: «${name}»",
+      "nonActiveProfileName": "تحديد «${name}» كملف نشط",
+      "freeSubNotFound": "لم يتم العثور على اشتراك مجاني",
+      "freeSubNotFoundForRegion": "لم يتم العثور على اشتراك مجاني لمنطقة «${region}»",
+      "failedToLoad": "فشل التحميل",
+      "updateSubscriptions": "تحديث الاشتراكات",
+      "share": {
+        "urlToClipboard": "نسخ الرابط",
+        "showUrlQr": "عرض رمز QR",
+        "jsonToClipboard": "نسخ JSON"
+      },
+      "msg": {
+        "save": {
+          "success": "تم حفظ الملف الشخصي"
+        },
+        "invalidUrl": "رابط غير صالح",
+        "add": {
+          "failure": "فشل إضافة الملف الشخصي"
+        },
+        "update": {
+          "success": "تم تحديث الملف الشخصي",
+          "failure": "فشل تحديث الملف الشخصي",
+          "failureNamed": "فشل تحديث «${name}»",
+          "bulkSuccess(plural, param=count)": {
+            "one": "تم تحديث ملف شخصي واحد",
+            "other": "تم تحديث $count ملف شخصي",
+            "zero": "لم يتم تحديث أي ملف شخصي",
+            "two": "تم تحديث ملفين شخصيين",
+            "few": "تم تحديث $count ملفات شخصية",
+            "many": "تم تحديث $count ملفًا شخصيًا"
+          },
+          "bulkPartial": "${success} تم تحديثها\n${failed} فشلت: ${names}"
+        },
+        "delete": {
+          "success": "تم حذف الملف الشخصي"
+        }
+      }
+    },
+    "profileDetails": {
+      "title": "الملف الشخصي",
+      "lastUpdate": "آخر تحديث",
+      "form": {
+        "nameHint": "اسم الملف الشخصي",
+        "emptyName": "الاسم مطلوب",
+        "invalidUrl": "رابط غير صالح",
+        "urlHint": "رابط الإعدادات الكامل",
+        "disableAutoUpdate": "تعطيل التحديث التلقائي",
+        "autoUpdateInterval": "فاصل التحديث التلقائي",
+        "loading": "جاري إضافة الملف الشخصي…",
+        "adminPreference": "صلاحية المسؤول",
+        "adminPreferenceAskEachTime": "اسأل في كل مرة",
+        "adminPreferencePreferAdmin": "استخدم صلاحية المسؤول دائمًا",
+        "adminPreferencePreferNoAdmin": "تابع دائمًا دون صلاحية المسؤول",
+        "adminPreferenceReset": "اسأل في كل مرة عن صلاحية المسؤول"
+      }
+    },
+    "logs": {
+      "title": "السجلات",
+      "category": "الفئة",
+      "level": "المستوى",
+      "recentLogs": "السجلات الأخيرة",
+      "recentLogsMsg": "ما تراه في هذه الصفحة",
+      "errorLog": "سجل التطبيق والنواة",
+      "errorLogMsg": "أخطاء الاثنين عبر جميع التشغيلات",
+      "coreLog": "سجل النواة",
+      "coreLogMsg": "كل ما سجلته النواة",
+      "coreCrash": "تعطل النواة",
+      "coreCrashMsg": "ما كانت تفعله النواة عند آخر تعطل",
+      "exportToFile": "تصدير إلى ملف",
+      "linesMatch": "الأسطر المطابقة: $count",
+      "fileSaved": "تم حفظ الملف",
+      "fileSaveFailed": "تعذر حفظ الملف",
+      "coreLogLevel": "مستوى النواة",
+      "coreLogLevelMsg": "يسري بعد إعادة الاتصال",
+      "buffer": "المخزن المؤقت"
+    },
+    "about": {
+      "title": "حول التطبيق",
+      "notAvailableMsg": "أنت تستخدم أحدث إصدار",
+      "checkForUpdate": "التحقق من وجود تحديثات",
+      "openWorkingDir": "فتح مجلد العمل",
+      "sourceCode": "الكود المصدري",
+      "telegramChannel": "قناة Telegram",
+      "termsAndConditions": "الشروط والأحكام",
+      "privacyPolicy": "سياسة الخصوصية"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "resetTunnel": "إعادة تعيين ملف VPN",
+      "options": {
+        "import": {
+          "clipboard": "استيراد الخيارات من الحافظة",
+          "file": "استيراد الخيارات من ملف"
+        },
+        "export": {
+          "anonymousToClipboard": "نسخ الخيارات المجهولة إلى الحافظة",
+          "anonymousToFile": "تصدير الخيارات المجهولة إلى ملف",
+          "allToClipboard": "نسخ جميع الخيارات إلى الحافظة",
+          "allToFile": "تصدير جميع الخيارات إلى ملف"
+        },
+        "reset": "إعادة تعيين الخيارات"
+      },
+      "general": {
+        "title": "عام",
+        "locale": "اللغة",
+        "themeMode": "السمة",
+        "themeModes": {
+          "system": "سمة النظام الافتراضية",
+          "dark": "الوضع الداكن",
+          "light": "الوضع الفاتح",
+          "black": "الوضع الأسود"
+        },
+        "enableAnalytics": "تفعيل التحليلات",
+        "enableAnalyticsMsg": "إرسال بيانات التحليل وتقارير الأعطال من جهازك للمساعدة في تحسين التطبيق",
+        "autoIpCheck": "التحقق التلقائي من IP الاتصال",
+        "dynamicNotification": "عرض السرعة في الإشعار",
+        "hapticFeedback": "ردود الفعل اللمسية",
+        "alwaysOnVpn": "VPN قيد التشغيل دائمًا",
+        "actionAtClosing": "عند إغلاق النافذة",
+        "autoStart": "البدء عند تسجيل الدخول",
+        "silentStart": "البدء في الخلفية",
+        "ignoreBatteryOptimizations": "تجاهل تحسينات البطارية",
+        "ignoreBatteryOptimizationsMsg": "إزالة القيود للحصول على أفضل أداء للـ VPN",
+        "memoryLimit": "حد الذاكرة",
+        "memoryLimitMsg": "قم بتفعيل هذا الخيار إذا كنت تواجه أخطاء نفاد الذاكرة أو تعطل التطبيق بشكل متكرر",
+        "connectionTestUrl": "رابط اختبار الاتصال",
+        "urlTestInterval": "فاصل اختبار الرابط",
+        "clashApiPort": "منفذ Clash API",
+        "useXrayCoreWhenPossible": "استخدام xray-core عند الإمكان",
+        "useXrayCoreWhenPossibleMsg": "استخدم xray-core عند تحليل روابط الاشتراك. أعد استيراد الاشتراك لتشغيل هذا الخيار.",
+        "useSystemTlsEngine": "استخدام TLS الخاص بالنظام عند توفره",
+        "useSystemTlsEngineMsg": "تستخدم الاتصالات التي ليس لها بصمة TLS بروتوكول TLS الخاص بـ macOS أو iOS أو Windows بعد اجتيازه فحصًا على هذا الجهاز؛ وإلا فإنها تبدو مثل Chrome.",
+        "uploadTestSize": "حجم اختبار الرفع",
+        "megabytes": "$n ميغابايت",
+        "speedTest": "اختبار السرعة"
+      },
+      "routing": {
+        "title": "التوجيه",
+        "routeRule": {
+          "add": "إضافة قاعدة",
+          "delete": "حذف القاعدة",
+          "options": {
+            "import": {
+              "clipboard": "استيراد القواعد من الحافظة",
+              "file": "استيراد القواعد من ملف"
+            },
+            "export": {
+              "clipboard": "نسخ القواعد إلى الحافظة",
+              "file": "حفظ القواعد في ملف"
+            },
+            "reset": "إعادة التعيين إلى القواعد الافتراضية"
+          },
+          "rule": {
+            "title": "قاعدة",
+            "onlyTunMode": "متوفر فقط في وضع TUN",
+            "notAvailableInThisPlatform": "غير متوفر على هذا النظام",
+            "canNotBeEmpty": "لا يمكن أن يكون فارغًا",
+            "validUrlEx": "https://example.com",
+            "validUrl": "«URL» صالح مثل\n@:pages.settings.routing.routeRule.rule.validUrlEx",
+            "validProcessNameEx": "Chrome.exe or google chrome or chrome",
+            "validProcessName": "«اسم العملية» صالح مثل\n@:pages.settings.routing.routeRule.rule.validProcessNameEx",
+            "validProcessPathEx": "C:\\Pro...\\chrome.exe\n/App.../Google Chrome\n/usr/lib.../chrome",
+            "validProcessPath": "«مسار العملية» صالح مثل\n@:pages.settings.routing.routeRule.rule.validProcessPathEx",
+            "validPortRangeEx": "80 or 1:65000",
+            "validPortRange": "«منفذ» أو «نطاق منافذ» صالح مثل\n@:pages.settings.routing.routeRule.rule.validPortRangeEx",
+            "validIpCidrEx": "8.8.8.8 أو 10.0.0.0/24 أو fd00::/8",
+            "validIpCidr": "IP CIDR صالح مثل\n@:pages.settings.routing.routeRule.rule.validIpCidrEx",
+            "validDomainEx": "Google.com or dl.google.com",
+            "validDomain": "«نطاق» صالح مثل\n@:pages.settings.routing.routeRule.rule.validDomainEx",
+            "validDomainSuffixEx": ".com or .ir",
+            "validDomainSuffix": "«لاحقة نطاق» صالحة مثل\n@:pages.settings.routing.routeRule.rule.validDomainSuffixEx",
+            "tileTitle(map)": {
+              "name": "الاسم",
+              "outbound": "التوجيه عند التطابق",
+              "rule_set": "رابط مجموعة القواعد",
+              "package_name": "أسماء الحزم",
+              "process_name": "أسماء العمليات",
+              "process_path": "مسارات العمليات",
+              "network": "الشبكات",
+              "port_range": "منافذ الوجهة",
+              "source_port_range": "منافذ المصدر",
+              "protocol": "البروتوكول",
+              "ip_cidr": "IP CIDR الوجهة",
+              "source_ip_cidr": "IP CIDR المصدر",
+              "domain": "النطاق",
+              "domain_suffixe": "لاحقة النطاق",
+              "domain_keyword": "كلمة مفتاحية للنطاق",
+              "domain_regex": "تعبير نمطي للنطاق"
+            },
+            "outbound(map)": {
+              "proxy": "بروكسي",
+              "direct": "مباشر",
+              "direct_with_fragment": "مباشر مع Fragment",
+              "block": "حظر"
+            },
+            "network(map)": {
+              "all": "الكل",
+              "tcp": "TCP",
+              "udp": "UDP"
+            },
+            "protocol(map)": {
+              "": "الكل",
+              "tls": "TLS",
+              "http": "HTTP",
+              "quic": "QUIC",
+              "stun": "STUN",
+              "dns": "DNS",
+              "bittorrent": "BitTorrent"
+            }
+          },
+          "genericList": {
+            "addNew": "إضافة قيمة جديدة",
+            "update": "تحديث القيمة",
+            "clearList": "مسح القائمة",
+            "clearListMsg": "سيتم حذف جميع العناصر"
+          }
+        },
+        "builtinRules": {
+          "tag": "مدمجة",
+          "bypassLan": "تجاوز LAN",
+          "blockAds": "حظر الإعلانات والبرامج الضارة",
+          "bypassRegion": "تجاوز المواقع في $region"
+        },
+        "appBasedRouting": {
+          "title": "التوجيه حسب التطبيق",
+          "hideSysApps": "إخفاء تطبيقات النظام",
+          "listTitle": {
+            "bypass": "تطبيقات بدون بروكسي",
+            "proxy": "تطبيقات عبر البروكسي"
+          },
+          "chooseApps": "اختر التطبيقات",
+          "apps": {
+            "one": "تطبيق",
+            "other": "تطبيقات",
+            "two": "تطبيقان",
+            "few": "تطبيقات",
+            "many": "تطبيقات"
+          },
+          "moreApps": {
+            "one": "+$n تطبيق",
+            "other": "+$n تطبيق",
+            "two": "+$n تطبيق",
+            "few": "+$n تطبيقات",
+            "many": "+$n تطبيقًا"
+          },
+          "autoTag": "تلقائي",
+          "outsideVpn": "خارج VPN",
+          "ruleWontApply": "خارج VPN · لن تُطبَّق القاعدة",
+          "notInstalled": "غير مثبّت",
+          "share": {
+            "invite": "ساعد في تحسين الاختيار التلقائي",
+            "removed": {
+              "one": "تمت إزالة $n",
+              "other": "تمت إزالة $n",
+              "two": "تمت إزالة $n",
+              "few": "تمت إزالة $n",
+              "many": "تمت إزالة $n"
+            },
+            "added": {
+              "one": "تمت إضافة $n",
+              "other": "تمت إضافة $n",
+              "two": "تمت إضافة $n",
+              "few": "تمت إضافة $n",
+              "many": "تمت إضافة $n"
+            },
+            "title": "شارك تغييراتك",
+            "where": "يفتح مشكلة عامة على GitHub مُعبّأة مسبقًا بأسماء هذه التطبيقات. لمشاركتها، أرسلها هناك. تحتاج إلى حساب GitHub.",
+            "action": "المتابعة على GitHub"
+          },
+          "options": {
+            "import": {
+              "clipboard": "استيراد التحديد من الحافظة",
+              "file": "استيراد التحديد من ملف",
+              "msg": "يستبدل الاستيراد تحديداتك الحالية. هل تريد المتابعة؟"
+            },
+            "export": {
+              "clipboard": "نسخ التحديد إلى الحافظة",
+              "file": "تصدير التحديد إلى ملف"
+            },
+            "clearAllSelections": "مسح جميع التحديدات"
+          },
+          "modes": {
+            "proxy": "بروكسي فقط",
+            "bypass": "تجاوز"
+          },
+          "autoSelection": {
+            "title": "الاختيار التلقائي بناءً على منطقة $region",
+            "performNow": "التحديث الآن",
+            "updated": {
+              "zero": "تم التحديث اليوم",
+              "one": "تم التحديث منذ يوم",
+              "other": "تم التحديث منذ $n يوم",
+              "two": "تم التحديث منذ يومين",
+              "few": "تم التحديث منذ $n أيام",
+              "many": "تم التحديث منذ $n يومًا"
+            },
+            "noList": "لا توجد قائمة لهذه المنطقة",
+            "loadFailed": "تعذّر تحميل القائمة",
+            "restore": {
+              "one": "استعادة اختيار تلقائي واحد",
+              "other": "استعادة $n اختيار تلقائي",
+              "two": "استعادة اختيارين تلقائيين",
+              "few": "استعادة $n اختيارات تلقائية",
+              "many": "استعادة $n اختيارًا تلقائيًا"
+            },
+            "restored": {
+              "one": "تمت استعادة اختيار تلقائي واحد",
+              "other": "تمت استعادة $n اختيار تلقائي",
+              "two": "تمت استعادة اختيارين تلقائيين",
+              "few": "تمت استعادة $n اختيارات تلقائية",
+              "many": "تمت استعادة $n اختيارًا تلقائيًا"
+            }
+          }
+        },
+        "region": "المنطقة",
+        "regions": {
+          "ir": "إيران (ir)",
+          "cn": "الصين (cn)",
+          "ru": "روسيا (ru)",
+          "af": "أفغانستان (af)",
+          "id": "إندونيسيا (id)",
+          "tr": "تركيا (tr)",
+          "br": "البرازيل (br)",
+          "other": "أخرى"
+        },
+        "balancerStrategy": {
+          "title": "استراتيجية Balancer",
+          "roundRobin": "Round robin",
+          "consistentHash": "Consistent hash",
+          "stickySession": "Sticky session",
+          "roundRobinDescription": "كل اتصال يستخدم الخادم التالي، لذا قد ترى المواقع تغيّر عنوان IP الخاص بك",
+          "consistentHashDescription": "كل موقع يستخدم الخادم نفسه دائمًا",
+          "stickySessionDescription": "كل موقع يحتفظ بخادم عشوائي حتى تعيد الاتصال"
+        },
+        "resolveDestination": "تحديد وجهة الاتصال",
+        "ipv6Route": "IPv6",
+        "ipv6Modes": {
+          "preferIpv4": "IPv4 أولاً",
+          "preferIpv6": "IPv6 أولاً"
+        }
+      },
+      "dns": {
+        "title": "DNS",
+        "remoteDns": "DNS البعيد",
+        "remoteDnsDomainStrategy": "استراتيجية نطاق DNS البعيد",
+        "directDns": "محلل خادم الصادر (مباشر)",
+        "directDnsDomainStrategy": "استراتيجية النطاق الصادر",
+        "enableFakeDns": "تمكين DNS الوهمي",
+        "domainStrategy": {
+          "auto": "تلقائي",
+          "preferIpv6": "تفضيل IPv6",
+          "preferIpv4": "تفضيل IPv4",
+          "ipv4Only": "IPv4 فقط",
+          "ipv6Only": "IPv6 فقط"
+        }
+      },
+      "inbound": {
+        "title": "الوارد",
+        "serviceMode": "وضع الخدمة",
+        "serviceModes": {
+          "proxy": "خدمة البروكسي فقط",
+          "systemProxy": "تعيين بروكسي النظام",
+          "tun": "VPN"
+        },
+        "shortServiceModes": {
+          "proxy": "بروكسي",
+          "systemProxy": "بروكسي النظام",
+          "tun": "VPN"
+        },
+        "strictRoute": "توجيه صارم",
+        "tunImplementation": "تنفيذ TUN",
+        "tunImplementations": {
+          "mixed": "مختلط",
+          "system": "النظام",
+          "gvisor": "gVisor"
+        },
+        "mixedPort": "منفذ الوكيل (SOCKS5/4، HTTP)",
+        "tproxyPort": "منفذ البروكسي الشفاف",
+        "directPort": "منفذ مباشر",
+        "redirectPort": "منفذ إعادة التوجيه",
+        "lanSharing": "مشاركة VPN آمنة",
+        "connectionSharing": "مشاركة الاتصال",
+        "qrCode": "رمز QR",
+        "closedInVpn": "مغلق في وضع VPN ما لم تتم المشاركة",
+        "proxySecret": "كلمة سر الوكيل",
+        "noSecret": "بلا كلمة سر: يمكن لأي تطبيق أو جهاز يصل إلى المنفذ استخدامه",
+        "generateSecret": "إنشاء جديدة",
+        "removeSecret": "إزالة كلمة السر؟",
+        "removeSecretMsg": "دون كلمة سر يمكن لأي تطبيق على هذا الجهاز، ولأي جهاز في الشبكة أثناء المشاركة، استخدام الوكيل دون مستخدم أو كلمة سر. أزلها على مسؤوليتك.",
+        "localProxy": "الوكيل المحلي",
+        "localProxyInVpn": "إبقاؤه مفتوحًا في وضع VPN",
+        "localProxyInVpnHint": "التطبيقات تستخدم VPN أصلًا؛ فقط للتطبيقات المضبوطة على الوكيل",
+        "localProxyAuth": "طلب كلمة المرور",
+        "localProxyAuthHint": "بعض التطبيقات، مثل المتصفحات، لا تستطيع إرسال كلمة مرور SOCKS",
+        "notAsSystemProxy": "لا تُطلب للوكيل العام للنظام، فهو لا يرسلها",
+        "lanGroup": "المشاركة على الشبكة المحلية",
+        "lanSharingPort": "منفذ المشاركة",
+        "otherPorts": "منافذ أخرى",
+        "closedInVpnLocal": "مغلق في وضع VPN"
+      },
+      "tlsTricks": {
+        "title": "حيل TLS",
+        "enable": "تفعيل Fragment",
+        "packets": "حزم Fragment",
+        "packetsTlsHello": "TLS Hello",
+        "packets1_1": "1-1",
+        "packets1_2": "1-2",
+        "packets1_3": "1-3",
+        "packets1_4": "1-4",
+        "packets1_5": "1-5",
+        "size": "حجم Fragment",
+        "sleep": "تأخير Fragment",
+        "mixedSniCase": {
+          "enable": "تفعيل الأحرف المختلطة لـ SNI"
+        },
+        "padding": {
+          "enable": "تفعيل padding",
+          "size": "حجم padding"
+        }
+      },
+      "chain": {
+        "title": "سلسلة",
+        "subtitle": "أمان إضافي وأداة فك حظر",
+        "finalIp": "عنوان IP النهائي",
+        "levels": {
+          "app": {
+            "title": "التطبيق",
+            "msg": "نقطة البداية: تدخل بيانات التطبيق إلى السلسلة هنا وتمر عبر الطبقات التالية للتحضير للتجاوز النهائي"
+          },
+          "extraSecurity": {
+            "title": "أمان إضافي",
+            "msg": "يضيف درعًا إضافيًا للحفاظ على خصوصية بياناتك، حتى لو كان ملفك الشخصي الرئيسي غير موثوق به"
+          },
+          "mainProfile": {
+            "title": "الملف الشخصي الرئيسي"
+          },
+          "unblocker": {
+            "title": "أداة فك الحظر",
+            "msg": "يساعد في تجاوز قيود الشبكة. إذا اتصل المساعد، فيمكن لملفك الشخصي الرئيسي الاستمرار في العمل حتى لو كان محظورًا حاليًا."
+          },
+          "filtering": {
+            "title": "التصفية",
+            "msg": "المخرج النهائي: تمر بياناتك عبر الطبقات النشطة، وهي الأمان الإضافي أو الملف الشخصي الرئيسي أو أداة فك الحظر. وبعد تطبيق تأثيراتها، يتم توجيهها لتجاوز تصفية الشبكة المحلية."
+          }
+        },
+        "warp": {
+          "missingConfig": "تكوين WARP مفقود",
+          "licenseKey": "مفتاح الترخيص",
+          "tunnel": "النفق",
+          "cleanIp": "IP نظيف",
+          "port": "المنفذ",
+          "noise": {
+            "count": "عدد الضوضاء",
+            "mode": "وضع الضوضاء",
+            "size": "حجم الضوضاء",
+            "delay": "تأخير الضوضاء",
+            "modes": {
+              "standard": "قياسي",
+              "random": "عشوائي",
+              "quic": "QUIC (HTTPS)",
+              "quicMimic": "مصافحة QUIC",
+              "dns": "DNS (google.com)",
+              "dnsCloudflare": "DNS (cloudflare.com)",
+              "sip": "SIP (مكالمة VoIP)",
+              "stun": "STUN (مكالمة فيديو)"
+            },
+            "title": "ضجيج WireGuard"
+          },
+          "endpoint": "نقطة الاتصال",
+          "endpointSources": {
+            "profile": "مخصّصة من Cloudflare",
+            "scan": "فحص",
+            "custom": "يدوي"
+          },
+          "customServer": "العنوان",
+          "mtu": "MTU",
+          "customized": "مخصّص",
+          "scanner": {
+            "title": "الفاحص"
+          },
+          "masque": {
+            "title": "MASQUE"
+          },
+          "awg": {
+            "title": "AmneziaWG"
+          }
+        },
+        "psiphon": {
+          "selectServerRegion": "اختر منطقة الخادم",
+          "regions": {
+            "auto": "@:common.auto",
+            "at": "النمسا (at)",
+            "au": "أستراليا (au)",
+            "be": "بلجيكا (be)",
+            "bg": "بلغاريا (bg)",
+            "ca": "كندا (ca)",
+            "ch": "سويسرا (ch)",
+            "cz": "جمهورية التشيك (cz)",
+            "de": "ألمانيا (de)",
+            "dk": "الدانمرك (dk)",
+            "ee": "إستونيا (ee)",
+            "es": "إسبانيا (es)",
+            "fi": "فنلندا (fi)",
+            "fr": "فرنسا (fr)",
+            "gb": "المملكة المتحدة (gb)",
+            "hr": "كرواتيا (hr)",
+            "hu": "المجر (hu)",
+            "ie": "أيرلندا (ie)",
+            "in": "الهند (in)",
+            "it": "إيطاليا (it)",
+            "jp": "اليابان (jp)",
+            "lv": "لاتفيا (lv)",
+            "nl": "هولندا (nl)",
+            "no": "النرويج (no)",
+            "pl": "بولندا (pl)",
+            "pt": "البرتغال (pt)",
+            "ro": "رومانيا (ro)",
+            "rs": "صربيا (rs)",
+            "se": "السويد (se)",
+            "sg": "سنغافورة (sg)",
+            "sk": "سلوفاكيا (sk)",
+            "us": "الولايات المتحدة (us)"
+          }
+        },
+        "profile": {
+          "selectProfile": "اختر ملف تعريف",
+          "conduitPairingId": "معرف اقتران Conduit"
+        }
+      }
+    }
+  },
+  "components": {
+    "stats": {
+      "connection": "الاتصال",
+      "traffic": "البيانات",
+      "trafficLive": "البيانات الحالية",
+      "trafficTotal": "إجمالي البيانات",
+      "uplink": "الإرسال",
+      "downlink": "الاستقبال",
+      "speed": "السرعة",
+      "totalTransferred": "إجمالي النقل"
+    },
+    "subscriptionInfo": {
+      "upload": "الرفع",
+      "download": "التنزيل",
+      "total": "إجمالي البيانات",
+      "expireDate": "تاريخ الانتهاء",
+      "expired": "منتهي الصلاحية",
+      "noTraffic": "نفدت الباقة",
+      "remainingDuration(plural, param=days)": {
+        "one": "يتبقى يوم واحد",
+        "other": "يتبقى $days يوم",
+        "zero": "لم يتبق أي يوم",
+        "two": "يتبقى يومان",
+        "few": "تتبقى $days أيام",
+        "many": "يتبقى $days يومًا"
+      },
+      "remainingUnlimited": "غير محدود",
+      "remainingTrafficSemanticLabel": "تم استهلاك ${consumed} من ${total}",
+      "remainingTraffic": "البيانات المتبقية",
+      "openWebPage": "فتح صفحة الويب",
+      "support": "الدعم",
+      "openLinkTitle": "فتح هذا الرابط؟",
+      "openLinkAction": "فتح"
+    }
+  },
+  "dialogs": {
+    "sortProfiles": {
+      "title": "فرز حسب",
+      "sort": {
+        "name": "أبجديًا",
+        "lastUpdate": "آخر تحديث"
+      },
+      "direction": {
+        "newestFirst": "الأحدث أولاً",
+        "oldestFirst": "الأقدم أولاً"
+      }
+    },
+    "warpLicense": {
+      "title": "موافقة Cloudflare WARP",
+      "description(rich)": "Cloudflare WARP هو مزود VPN مجاني لـ WireGuard. بتشغيل هذا الخيار، فإنك توافق على ${tos(شروط الخدمة)} و ${privacy(سياسة الخصوصية)} الخاصة بـ Cloudflare WARP."
+    },
+    "psiphonLicense": {
+      "title": "اتفاقية رخصة Psiphon",
+      "description(rich)": "باستخدام Psiphon، أنت توافق على ${tos(شروط الخدمة)} وتقر بـ ${privacy(سياسة الخصوصية)}. اقرأها بعناية قبل المتابعة."
+    },
+    "newVersion": {
+      "title": "تحديث متاح",
+      "msg": "إصدار جديد من @:common.appTitle متاح. تحديث الآن؟",
+      "currentVersion": "الإصدار الحالي",
+      "newVersion": "الإصدار الجديد",
+      "updateNow": "التحديث الآن",
+      "downloading": "جارٍ التنزيل…",
+      "installing": "جارٍ تشغيل المثبّت…",
+      "allowInstall": "اسمح لـ Hiddify بتثبيت التطبيقات في الإعدادات التي فُتحت، ثم أعد المحاولة.",
+      "failed": "تعذّر تثبيت التحديث.",
+      "openPage": "فتح صفحة الإصدار",
+      "tryAgain": "إعادة المحاولة"
+    },
+    "confirmation": {
+      "settings": {
+        "import": {
+          "msg": "يستبدل هذا جميع خيارات التكوين بالقيم المستوردة. هل تريد المتابعة؟"
+        }
+      },
+      "profile": {
+        "delete": {
+          "title": "حذف الملف الشخصي",
+          "msg": "حذف هذا الملف الشخصي؟ لا يمكن التراجع عن هذا الإجراء."
+        }
+      },
+      "appList": {
+        "import": {
+          "msg": "يستبدل هذا تطبيقات «تجاوز» و«بروكسي فقط». هل تريد المتابعة؟"
+        }
+      },
+      "routeRule": {
+        "delete": {
+          "title": "حذف القاعدة",
+          "msg": "حذف قاعدة «$rulename»؟ لا يمكن التراجع عن هذا الإجراء."
+        }
+      },
+      "addProfileByDeepLinkWarning": {
+        "title": "إضافة ملف شخصي؟",
+        "message": "رابط خارجي من «${host}» يريد إضافة ملف شخصي جديد. هل تريد استيراده؟"
+      },
+      "importRouteRuleByDeepLinkWarning": {
+        "title": "استيراد قاعدة توجيه؟",
+        "message": "قواعد التوجيه تحدد وجهة بياناتك.\nلا تستوردها إلا من مصدر تثق به."
+      }
+    },
+    "adminBgService": {
+      "vpnNeedsAdmin": {
+        "title": "صلاحية المسؤول مطلوبة",
+        "msg": "يحتاج وضع VPN إلى صلاحية المسؤول لمرة واحدة لتثبيت خدمة Hiddify في الخلفية. بعد ذلك، يمكنك الاتصال دون طلب آخر.",
+        "connectWithAdmin": "الاتصال بصلاحية المسؤول",
+        "waitingTitle": "في انتظار صلاحية المسؤول",
+        "waitingMsg": "وافق على طلب صلاحية المسؤول للمتابعة. يمكنك الإيقاف والمحاولة لاحقًا.",
+        "stop": "إيقاف"
+      },
+      "proxyNeedsAdmin": {
+        "title": "يُنصح بصلاحية المسؤول",
+        "msg": "تعمل بعض الإعدادات في هذا الملف الشخصي بشكل أفضل مع صلاحية المسؤول. يمكنك التشغيل بصلاحية المسؤول، أو المتابعة دونها وإيقاف تلك الإعدادات لهذا الاتصال.",
+        "seeConfigs": "عرض التكوينات",
+        "hideConfigs": "إخفاء التكوينات",
+        "neverAskAgain": "لا تسأل مرة أخرى لهذا الملف الشخصي",
+        "runAsAdmin": "التشغيل كمسؤول",
+        "continueWithoutAdmin": "المتابعة دون صلاحية المسؤول",
+        "elevationFailedTitle": "تعذّر الحصول على صلاحية المسؤول",
+        "elevationFailedMsg": "تم رفض طلب صلاحية المسؤول أو فشل. أعد المحاولة، أو تابع دون صلاحية المسؤول لهذا الاتصال.",
+        "tryAgain": "أعد المحاولة"
+      }
+    },
+    "experimentalNotice": {
+      "title": "ميزات تجريبية قيد الاستخدام",
+      "msg": "لقد فعّلت ميزات تجريبية قد تؤثر على جودة الاتصال وتسبب أخطاء غير متوقعة. يمكنك دائمًا تغيير هذه الخيارات أو إعادة تعيينها من صفحة الإعدادات.",
+      "disable": "لا تعرض مرة أخرى"
+    },
+    "noActiveProfile": {
+      "title": "اختر ملفًا شخصيًا",
+      "msg": "لنبدأ. أضف ملف اتصال يحتوي على تفاصيل خادم VPN الخاص بك.\n\nليس لديك خادم بعد؟ لا مشكلة. يوضح لك الدليل أدناه كيفية إعداد واحد مجانًا.",
+      "helpBtn": {
+        "label": "أرني كيف",
+        "url": "https://hiddify.com/manager/"
+      }
+    },
+    "unknownDomainsWarning": {
+      "title": "تحقق من هذا الرابط أولاً",
+      "cannotVerify": "لم يتم التحقق من هذا الرابط",
+      "avoidIfUnsure": "إذا لم تكن متأكدًا تمامًا، لا تدفع ولا تشارك معلومات حساسة",
+      "ownResponsibility": "أنت تتابع على مسؤوليتك الخاصة",
+      "open": "فتح",
+      "openIn": "فتح (${seconds})"
+    },
+    "proxyInfo": {
+      "fullTag": "العلامة الكاملة",
+      "type": "النوع",
+      "status": "الحالة",
+      "testTime": "وقت الاختبار",
+      "testDelay": "تأخير الاختبار",
+      "isSelected": "محدد",
+      "isGroup": "مجموعة",
+      "isSecure": "آمن",
+      "port": "المنفذ",
+      "host": "المضيف",
+      "ip": "IP",
+      "countryCode": "رمز الدولة",
+      "region": "المنطقة",
+      "city": "المدينة",
+      "asn": "ASN",
+      "organization": "المُنظمة",
+      "location": "الموقع",
+      "postalCode": "الرمز البريدي",
+      "download": "تنزيل",
+      "upload": "رفع",
+      "ping": "البينغ",
+      "speed": "السرعة",
+      "server": "الخادم",
+      "country": "الدولة",
+      "tapToTest": "انقر للاختبار"
+    },
+    "windowClosing": {
+      "askEachTime": "السؤال كل مرة",
+      "alertMessage": "هل تريد إخفاء التطبيق أم الخروج منه؟",
+      "remember": "تذكر خياري"
+    },
+    "qrCode": {
+      "copyFullLink": "نسخ الرابط الكامل",
+      "copied": "تم النسخ",
+      "lanLine": "SOCKS5 · الشبكة نفسها فقط",
+      "noLocalNetwork": "لم يُعثر على شبكة محلية",
+      "ip": "IP",
+      "port": "المنفذ",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور"
+    },
+    "qrScanner": {
+      "notFound": "لم يتم العثور على رمز QR في هذه الصورة"
+    },
+    "keepTop": {
+      "title": "اشتراك كبير",
+      "description": "يحتوي هذا الملف الشخصي على $count وكيلًا. تشغيلها كلها يستهلك البطارية والبيانات والذاكرة. يمكن لـ Hiddify اختبارها مرة واحدة، وإبقاء أسرع $keep قيد التشغيل وإيقاف البقية مؤقتًا.",
+      "hint": "يمكنك تشغيلها كلها مجددًا في أي وقت، من نهاية قائمة الوكلاء.",
+      "keeping": "تعمل أسرع $keep، والبقية متوقفة",
+      "all": "تعمل كل الـ $count",
+      "keep": "إبقاء أسرع $keep",
+      "useAll": "استخدام كل الـ $count",
+      "howMany": "كم وكيلًا يبقى قيد التشغيل",
+      "pickByHand": "اختر الوكلاء بنفسك"
+    },
+    "keepTags": {
+      "title": "اختيار الوكلاء",
+      "hint": "هؤلاء فقط يعملون، في كل اتصال.",
+      "search": "بحث",
+      "all": "تحديد الكل",
+      "none": "مسح",
+      "run": "استخدم هذه الـ $n",
+      "sort": "ترتيب",
+      "sortProfile": "ترتيب الملف",
+      "sortPing": "زمن الاستجابة",
+      "sortDownload": "التنزيل",
+      "sortUpload": "الرفع",
+      "selectFastest": "أسرع $n",
+      "statusChosen": "المختارة",
+      "statusAnswering": "تستجيب",
+      "statusPaused": "متوقفة",
+      "paused": "$n وكيلًا متوقفة: لا زمن استجابة لها ولا يمكن اختبارها.",
+      "wake": "تشغيل الكل للاختبار",
+      "offline": "اتصل لترى زمن استجابتها وتختبرها.",
+      "offlineTitle": "غير متصل",
+      "shown": "$n معروضة",
+      "noMatch": "لا وكيل مطابق",
+      "chosenHint": "انقر على وكيل أعلاه لاختياره",
+      "allShown": "كلها في القائمة أعلاه",
+      "notShown": "غير معروضة:",
+      "protocol": "البروتوكول",
+      "country": "البلد",
+      "anyProtocol": "أي بروتوكول",
+      "anyCountry": "أي بلد",
+      "otherCountries": "أخرى"
+    },
+    "localProxy": {
+      "steps": [
+        "افتح إعدادات الوكيل في التطبيق",
+        "اختر SOCKS5 أو HTTP",
+        "أدخل القيم أدناه · انقر للنسخ",
+        "أبقِ Hiddify متصلًا"
+      ],
+      "hint": "وضع الوكيل · طريقة الاستخدام",
+      "setPassword": "تعيين كلمة سر",
+      "manual": "يدوي",
+      "dontShowAgain": "لا تعرض هذا مجددًا",
+      "thisDevice": "هذا الجهاز",
+      "otherDevices": "أجهزة أخرى",
+      "server": "الخادم",
+      "noPassword": "لم تُعيَّن كلمة مرور",
+      "turnOnSharing": "تشغيل المشاركة",
+      "copyLink": "نسخ الرابط",
+      "telegramLink": "رابط Telegram",
+      "fullLink": "الرابط الكامل",
+      "portRange": "استخدم منفذًا من 1024 إلى 65535",
+      "passwordTooShort": "4 أحرف على الأقل",
+      "edit": "تعديل"
+    }
+  },
+  "connection": {
+    "tapToConnect": "انقر للاتصال",
+    "connect": "اتصال",
+    "connecting": "جار الاتصال…",
+    "waiting": "البحث عن الحرية…",
+    "noAvailableProxies": "فشل الاتصال",
+    "hotReloading": "جاري تطبيق التغييرات…",
+    "connected": "متصل",
+    "disconnect": "قطع الاتصال",
+    "disconnecting": "جاري قطع الاتصال…",
+    "failed": "تعذّر الاتصال",
+    "slow": "يستغرق وقتًا أطول من المعتاد…",
+    "tapToRetry": "انقر لإعادة المحاولة",
+    "errorDetails": "تفاصيل الخطأ",
+    "reconnect": "إعادة الاتصال",
+    "reconnectMsg": "جاري إعادة الاتصال لتطبيق التغييرات…",
+    "health": {
+      "title": "فحص الاتصال",
+      "allGood": "حركة مرورك تمر",
+      "pickDead": "البروكسي المحدد لا يستجيب",
+      "hopPending": "${chain} قيد الاتصال…",
+      "hopFailed": "تعذّر اتصال ${chain}",
+      "coreTesting": "جارٍ اختبار الخوادم…",
+      "coreNone": "لا يستجيب أي خادم",
+      "fastest": "أسرع خادم",
+      "yourServer": "الوكيل المحدد",
+      "notResponding": "لا يستجيب",
+      "testing": "جارٍ الاختبار…",
+      "useFastest": "التبديل إلى الأسرع",
+      "hopReady": "متصل",
+      "hopConnecting": "جارٍ الاتصال…",
+      "hopBroken": "تعذّر الاتصال",
+      "hopNoReply": "متصل، لكنه لا يستجيب",
+      "hopBlocked": "ينتظر استجابة الوكيل المحدد",
+      "retry": "اختبار مجددًا",
+      "change": "تغيير",
+      "turnOff": "إيقاف"
+    }
+  },
+  "errors": {
+    "unexpected": "خطأ غير متوقع",
+    "connection": {
+      "unexpected": "خطأ اتصال غير متوقع",
+      "timeout": "انتهى وقت الاتصال",
+      "badResponse": "استجابة خادم غير صالحة",
+      "connectionError": "خطأ في الاتصال",
+      "badCertificate": "شهادة غير صالحة"
+    },
+    "profiles": {
+      "unexpected": "خطأ غير متوقع",
+      "notFound": "لم يتم العثور على الملف الشخصي",
+      "invalidConfig": "تكوين غير صالح",
+      "invalidUrl": "رابط غير صالح",
+      "canceledByUser": "تم الإلغاء من قبل المستخدم"
+    },
+    "connectivity": {
+      "unexpected": "فشل غير متوقع",
+      "missingVpnPermission": "إذن الـ VPN مفقود",
+      "missingNotificationPermission": "إذن الإشعارات مفقود",
+      "core": "خطأ في النواة"
+    },
+    "singbox": {
+      "serviceNotRunning": "الخدمة لا تعمل",
+      "missingPrivilege": "صلاحيات مطلوبة",
+      "missingPrivilegeMsg": "لا يمكن بدء وضع الـ VPN. أعد تشغيل التطبيق كمسؤول أو غيّر وضع الخدمة.",
+      "tunAddressInUse": "يوجد VPN آخر نشط",
+      "tunAddressInUseMsg": "لا يمكن بدء وضع الـ VPN. أوقف تشغيل الـ VPN الآخر أو غيّر وضع الخدمة.",
+      "invalidConfigOptions": "خيارات تكوين غير صالحة",
+      "invalidConfig": "تكوين غير صالح"
+    },
+    "warp": {
+      "missingLicense": "رخصة WARP مفقودة",
+      "missingLicenseMsg": "يستخدم هذا الملف الشخصي WARP. وافق على رخصة WARP للمتابعة."
+    },
+    "psiphon": {
+      "missingLicense": "رخصة Psiphon مطلوبة",
+      "missingLicenseMsg": "يستخدم هذا الملف الشخصي Psiphon. وافق على رخصة Psiphon للمتابعة."
+    }
+  }
+}

@@ -1,0 +1,4 @@
+// Standalone local Apple Silicon build without Apple Network Extension signing.
+#include "Unsigned.xcconfig"
+ARCHS = arm64
+ONLY_ACTIVE_ARCH = YES

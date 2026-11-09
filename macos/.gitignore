@@ -1,0 +1,10 @@
+# Flutter-related
+**/Flutter/ephemeral/
+**/Pods/
+
+# Xcode-related
+**/dgph
+**/xcuserdata/
+Runner/Configs/NetworkExtension.local.xcconfig
+Runner/Configs/*.local.env
+/build/

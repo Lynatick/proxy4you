@@ -1,0 +1,295 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:hiddify/core/haptic/haptic_service.dart';
+import 'package:hiddify/core/http_client/http_client_provider.dart';
+import 'package:hiddify/core/localization/translations.dart';
+import 'package:hiddify/core/model/failures.dart';
+import 'package:hiddify/core/notification/in_app_notification_controller.dart';
+import 'package:hiddify/core/preferences/preferences_provider.dart';
+import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
+import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
+import 'package:hiddify/features/profile/add/model/free_profiles_model.dart';
+import 'package:hiddify/features/profile/data/profile_data_providers.dart';
+import 'package:hiddify/features/profile/data/profile_repository.dart';
+import 'package:hiddify/features/profile/data/subscription_groups.dart';
+import 'package:hiddify/features/profile/model/profile_entity.dart';
+import 'package:hiddify/features/profile/model/profile_failure.dart';
+import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
+import 'package:hiddify/features/profile/overview/profiles_notifier.dart';
+import 'package:hiddify/features/settings/data/config_option_repository.dart';
+import 'package:hiddify/utils/riverpod_utils.dart';
+import 'package:hiddify/utils/utils.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'profile_notifier.g.dart';
+
+@riverpod
+class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
+  @override
+  AsyncValue<Unit?> build() {
+    ref.disposeDelay(const Duration(minutes: 1));
+    ref.onDispose(() {
+      loggy.debug("disposing");
+      _cancelToken?.cancel();
+    });
+    listenSelf((previous, next) {
+      final t = ref.read(translationsProvider).requireValue;
+      final notification = ref.read(inAppNotificationControllerProvider);
+      switch (next) {
+        case AsyncData(value: final _?):
+          notification.showSuccessToast(t.pages.profiles.msg.save.success);
+        case AsyncError(:final error):
+          if (error case ProfileInvalidUrlFailure()) {
+            notification.showErrorToast(t.pages.profiles.msg.invalidUrl);
+          } else if (error case ProfileCancelByUserFailure()) {
+            return;
+          } else {
+            ref
+                .read(dialogNotifierProvider.notifier)
+                .showCustomAlertFromErr(t.presentError(error, action: t.pages.profiles.msg.add.failure));
+          }
+      }
+    });
+    ref.onDispose(() {
+      if (!(_cancelToken?.isCancelled ?? true)) _cancelToken?.cancel();
+    });
+    return const AsyncData(null);
+  }
+
+  ProfileRepository get _profilesRepo => ref.read(profileRepositoryProvider).requireValue;
+  CancelToken? _cancelToken;
+
+  Future<bool> _maybeAddSubscriptionList(String url, {String? name}) async {
+    String? content;
+    try {
+      final response = await ref
+          .read(httpClientProvider)
+          .get<String>(url, cancelToken: _cancelToken, responseType: ResponseType.plain);
+      content = response.data;
+    } on DioException {
+      // Let the ordinary profile importer report its own download error.
+      return false;
+    }
+    final urls = content == null ? null : parseRemoteSubscriptionList(content);
+    if (urls == null) return false;
+
+    final store = SubscriptionGroupsStore(await ref.read(sharedPreferencesProvider.future));
+    final existingProfiles = (await ref.read(
+      profilesNotifierProvider.future,
+    )).whereType<RemoteProfileEntity>().toList();
+    final existingUrls = existingProfiles.map((profile) => profile.url).toSet();
+    final group = await importRemoteSubscriptionList(
+      store: store,
+      sourceUrl: url,
+      content: content!,
+      name: name,
+      ensureSubscription: (subscriptionUrl) async {
+        if (existingUrls.contains(subscriptionUrl)) return true;
+        final result = await _profilesRepo
+            .upsertRemote(subscriptionUrl, activate: false, cancelToken: _cancelToken)
+            .run();
+        return result.match((_) => false, (_) => true);
+      },
+    );
+
+    final importedProfiles = (await _profilesRepo.watchAll().first).match(
+      (error) => throw error,
+      (profiles) => profiles.whereType<RemoteProfileEntity>().toList(),
+    );
+    final first = [
+      for (final memberUrl in group.urls) ...importedProfiles.where((p) => p.url == memberUrl),
+    ].firstOrNull;
+    if (first == null) throw StateError('Не удалось выбрать подписку из списка');
+    await store.selectGroup(group.id);
+    await ref.read(profilesNotifierProvider.notifier).selectActiveProfile(first.id);
+    ref.read(subscriptionGroupsRevisionProvider.notifier).state++;
+    return true;
+  }
+
+  Future<void> addClipboard(String rawInput) async {
+    if (state.isLoading) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      // final activeProfile = await ref.read(activeProfileProvider.future);
+      // final markAsActive = activeProfile == null || ref.read(Preferences.markNewProfileActive);
+      final TaskEither<ProfileFailure, Unit> task;
+      if (LinkParser.parse(rawInput) case (final rs)?) {
+        loggy.debug("adding profile, url: [${rs.url}]");
+        _cancelToken = CancelToken();
+        if (await _maybeAddSubscriptionList(rs.url, name: rs.name)) return unit;
+        task = _profilesRepo.upsertRemote(
+          rs.url,
+          userOverride: rs.name.isNotEmpty ? UserOverride(name: rs.name) : null,
+          cancelToken: _cancelToken,
+        );
+      } else {
+        loggy.debug("adding profile, content");
+        task = _profilesRepo.addLocal(safeDecodeBase64(rawInput));
+      }
+      return await task
+          .match(
+            (err) {
+              loggy.warning("failed to add profile", err);
+              throw err;
+            },
+            (_) {
+              loggy.info("successfully added profile");
+              return unit;
+            },
+          )
+          .run();
+    });
+  }
+
+  /// Adds all the files of a zip as one profile named [name]. The files are merged into one text that goes straight to
+  /// the core, which decides which of them are valid configs.
+  Future<void> addArchive(Uint8List zipBytes, {required String name}) async {
+    if (state.isLoading) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final text = readZipText(zipBytes);
+      if (text.isEmpty) throw const ProfileFailure.invalidConfig();
+      return await _profilesRepo
+          .addLocal(text, userOverride: UserOverride(name: name))
+          .match(
+            (err) {
+              loggy.warning("failed to add profile from zip", err);
+              throw err;
+            },
+            (_) {
+              loggy.info("successfully added profile from zip");
+              return unit;
+            },
+          )
+          .run();
+    });
+  }
+
+  Future<void> addManual({required String url, required UserOverride userOverride}) async {
+    if (state.isLoading) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      _cancelToken = CancelToken();
+      if (await _maybeAddSubscriptionList(url, name: userOverride.name)) return unit;
+      final task = _profilesRepo.upsertRemote(url, userOverride: userOverride);
+      return await task
+          .match(
+            (err) {
+              loggy.warning("failed to add profile", err);
+              throw err;
+            },
+            (r) {
+              loggy.info("successfully added profile, mark as active? [true]");
+              return r;
+            },
+          )
+          .run();
+    });
+  }
+}
+
+@riverpod
+class UpdateProfileNotifier extends _$UpdateProfileNotifier with AppLogger {
+  Timer? _resetTimer;
+
+  @override
+  AsyncValue<Unit?> build(String id) {
+    ref.disposeDelay(const Duration(minutes: 1));
+    ref.onDispose(() => _resetTimer?.cancel());
+    return const AsyncData(null);
+  }
+
+  ProfileRepository get _profilesRepo => ref.read(profileRepositoryProvider).requireValue;
+
+  Future<void> updateProfile(RemoteProfileEntity profile, {bool isBulk = false}) async {
+    if (state.isLoading) return;
+    _resetTimer?.cancel();
+    state = const AsyncLoading();
+    if (!isBulk) await ref.read(hapticServiceProvider.notifier).lightImpact();
+    state = await AsyncValue.guard(() async {
+      return await _profilesRepo
+          .upsertRemote(profile.url)
+          .match(
+            (err) {
+              loggy.warning("failed to update profile", err);
+              throw err;
+            },
+            (_) async {
+              loggy.info('successfully updated profile');
+
+              await ref.read(activeProfileProvider.future).then((active) async {
+                if (active != null && active.id == profile.id) {
+                  await ref.read(connectionNotifierProvider.notifier).reconnect(profile);
+                }
+              });
+              return unit;
+            },
+          )
+          .run();
+    });
+
+    // Single, user-initiated updates report failure via a dialog; success is
+    // shown inline by the button indicator. Bulk runs stay silent here and are
+    // summarized in one aggregate toast by ForegroundProfilesUpdateNotifier.
+    if (state case AsyncError(:final error) when !isBulk) {
+      final t = ref.read(translationsProvider).requireValue;
+      ref
+          .read(dialogNotifierProvider.notifier)
+          .showCustomAlertFromErr(t.presentError(error, action: t.pages.profiles.msg.update.failure));
+    }
+
+    // Hold the success/failure result for 2s so the leading can flash an icon,
+    // then reset to idle. Kept in the provider (not widget state) so it survives
+    // the profile list re-sorting that happens right after an update.
+    _resetTimer?.cancel();
+    _resetTimer = Timer(const Duration(seconds: 2), () => state = const AsyncData(null));
+  }
+}
+
+@riverpod
+class FreeSwitchNotifier extends _$FreeSwitchNotifier {
+  @override
+  bool build() {
+    return false;
+  }
+
+  Future<void> onChange(bool value) async => state = value;
+}
+
+@riverpod
+class AddProfilePageNotifier extends _$AddProfilePageNotifier {
+  @override
+  AddProfilePages build() => AddProfilePages.options;
+
+  void goOptions() => state = AddProfilePages.options;
+  void goManual() => state = AddProfilePages.manual;
+}
+
+enum AddProfilePages { options, manual }
+
+@riverpod
+class FreeProfilesNotifier extends _$FreeProfilesNotifier {
+  @override
+  Future<List<FreeProfile>> build() async {
+    final httpClient = ref.watch(httpClientProvider);
+    final res = await httpClient.get(
+      'https://raw.githubusercontent.com/hiddify/hiddify-app/refs/heads/main/test.configs/free_configs',
+    );
+    if (res.statusCode == 200) {
+      return FreeProfilesModel.fromJson(jsonDecode(res.data.toString()) as Map<String, dynamic>).profiles;
+    }
+    return <FreeProfile>[];
+  }
+}
+
+@riverpod
+Future<List<FreeProfile>> freeProfilesFilteredByRegion(Ref ref) async {
+  final freeProfiles = await ref.watch(freeProfilesNotifierProvider.future);
+  final region = ref.watch(ConfigOptions.region);
+  return freeProfiles.where((e) => e.region.contains(region.name) || e.region.isEmpty).toList();
+}
