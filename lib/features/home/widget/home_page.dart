@@ -1,6 +1,7 @@
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hiddify/core/app_info/app_info_provider.dart';
 import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/preferences/preferences_provider.dart';
@@ -15,6 +16,7 @@ import 'package:hiddify/features/profile/widget/profile_tile.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_card.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/gen/assets.gen.dart';
+import 'package:hiddify/utils/platform_utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -28,6 +30,8 @@ class HomePage extends HookConsumerWidget {
     // final hasAnyProfile = ref.watch(hasAnyProfileProvider);
     final activeProfile = ref.watch(activeProfileProvider);
     final isTv = ref.watch(isAndroidTvProvider).valueOrNull ?? false;
+    final hasAnyProfile = ref.watch(hasAnyProfileProvider).value ?? false;
+    final showTopQuickSettings = hasAnyProfile && (PlatformUtils.isAndroid || PlatformUtils.isMacOS);
     ref.watch(subscriptionGroupsRevisionProvider);
     final preferences = ref.watch(sharedPreferencesProvider).valueOrNull;
     final individualSelectionEnabled =
@@ -58,12 +62,28 @@ class HomePage extends HookConsumerWidget {
           ],
         ),
         actions: [
-          // IconButton(
-          //     onPressed: () => const QuickSettingsRoute().push(context),
-          //     icon: const Icon(FluentIcons.options_24_filled),
-          //     material: (context, platform) => MaterialIconButtonData(
-          //           tooltip: t.config.quickSettings,
-          //         )),
+          if (showTopQuickSettings)
+            Semantics(
+              label: t.pages.home.quickSettings,
+              button: true,
+              child: IconButton(
+                key: const ValueKey('home_quick_settings_button'),
+                tooltip: t.pages.home.quickSettings,
+                icon: const Icon(Icons.tune_rounded),
+                onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showQuickSettings(),
+              ),
+            ),
+          if (PlatformUtils.isAndroid)
+            Semantics(
+              label: t.pages.settings.title,
+              button: true,
+              child: IconButton(
+                key: const ValueKey('home_settings_button'),
+                tooltip: t.pages.settings.title,
+                icon: const Icon(Icons.settings_rounded),
+                onPressed: () => context.go('/settings'),
+              ),
+            ),
           // IconButton(
           //     onPressed: () => const AddProfileRoute().push(context),
           //     icon: const Icon(FluentIcons.add_circle_24_filled),
@@ -149,15 +169,6 @@ class HomePage extends HookConsumerWidget {
                                   selectionEnabled: individualSelectionEnabled,
                                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 ),
-                              const Gap(20),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: FilledButton.icon(
-                                  onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showQuickSettings(),
-                                  icon: const Icon(Icons.tune_rounded),
-                                  label: Text(t.pages.home.quickSettings),
-                                ),
-                              ),
                               const Gap(12),
                               const LocalProxyHint(),
                             ],
@@ -240,45 +251,14 @@ class HomePage extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                if (ref.watch(hasAnyProfileProvider).value ?? false)
-                  Positioned(
+                if (hasAnyProfile)
+                  const Positioned(
                     right: 0,
                     left: 0,
                     bottom: 0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      // tabs of either height stand on the bottom edge
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // in proxy mode, a smaller tab beside this one on how to point apps at the proxy
-                        const Flexible(child: LocalProxyHint()),
-                        Material(
-                          color: theme.colorScheme.primaryContainer,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                          child: InkWell(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            ),
-                            onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showQuickSettings(),
-                            child: Container(
-                              height: 32,
-                              padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(t.pages.home.quickSettings),
-                                  const Gap(4),
-                                  const Icon(Icons.arrow_drop_up_rounded, size: 16),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      children: [Flexible(child: LocalProxyHint())],
                     ),
                   ),
               ],
