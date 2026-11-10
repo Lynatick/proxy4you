@@ -31,7 +31,7 @@ class HomePage extends HookConsumerWidget {
     final activeProfile = ref.watch(activeProfileProvider);
     final isTv = ref.watch(isAndroidTvProvider).valueOrNull ?? false;
     final hasAnyProfile = ref.watch(hasAnyProfileProvider).value ?? false;
-    final showTopQuickSettings = hasAnyProfile && (PlatformUtils.isAndroid || PlatformUtils.isMacOS);
+    final showTopQuickSettings = hasAnyProfile && (PlatformUtils.isMacOS || (PlatformUtils.isAndroid && !isTv));
     ref.watch(subscriptionGroupsRevisionProvider);
     final preferences = ref.watch(sharedPreferencesProvider).valueOrNull;
     final individualSelectionEnabled =
@@ -73,7 +73,7 @@ class HomePage extends HookConsumerWidget {
                 onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showQuickSettings(),
               ),
             ),
-          if (PlatformUtils.isAndroid)
+          if (PlatformUtils.isAndroid && !isTv)
             Semantics(
               label: t.pages.settings.title,
               button: true,
@@ -147,122 +147,102 @@ class HomePage extends HookConsumerWidget {
               ),
             ),
           ),
-          if (isTv && MediaQuery.sizeOf(context).width >= 900)
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 20, 32, 28),
-                  child: FocusTraversalGroup(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          width: 400,
-                          child: ListView(
-                            children: [
-                              const HomeSubscriptionGroupSelector(),
-                              if (activeProfile case AsyncData(value: final profile?))
-                                ProfileTile(
-                                  profile: profile,
-                                  isMain: true,
-                                  selectionEnabled: individualSelectionEnabled,
-                                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                ),
-                              const Gap(12),
-                              const LocalProxyHint(),
-                            ],
-                          ),
-                        ),
-                        const Gap(28),
-                        const Expanded(
-                          child: SingleChildScrollView(
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 600, // Set the maximum width here
+                  ),
+                  child: CustomScrollView(
+                    slivers: [
+                      // switch (activeProfile) {
+                      // AsyncData(value: final profile?) =>
+                      MultiSliver(
+                        children: [
+                          // const Gap(100),
+                          const HomeSubscriptionGroupSelector(),
+                          switch (activeProfile) {
+                            AsyncData(value: final profile?) => ProfileTile(
+                              profile: profile,
+                              isMain: true,
+                              selectionEnabled: individualSelectionEnabled,
+                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            ),
+                            _ => const Text(""),
+                          },
+                          const SliverFillRemaining(
+                            hasScrollBody: false,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Gap(32),
-                                ConnectionButton(),
-                                ActiveProxyDelayIndicator(),
-                                Gap(24),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [ConnectionButton(), ActiveProxyDelayIndicator()],
+                                  ),
+                                ),
                                 ActiveProxyFooter(),
+                                Gap(32),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                      // AsyncData() => switch (hasAnyProfile) {
+                      //     AsyncData(value: true) => const EmptyActiveProfileHomeBody(),
+                      //     _ => const EmptyProfilesHomeBody(),
+                      //   },
+                      // AsyncError(:final error) => SliverErrorBodyPlaceholder(t.presentShortError(error)),
+                      // _ => const SliverToBoxAdapter(),
+                      // },
+                    ],
                   ),
                 ),
               ),
-            )
-          else
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 600, // Set the maximum width here
-                    ),
-                    child: CustomScrollView(
-                      slivers: [
-                        // switch (activeProfile) {
-                        // AsyncData(value: final profile?) =>
-                        MultiSliver(
-                          children: [
-                            // const Gap(100),
-                            const HomeSubscriptionGroupSelector(),
-                            switch (activeProfile) {
-                              AsyncData(value: final profile?) => ProfileTile(
-                                profile: profile,
-                                isMain: true,
-                                selectionEnabled: individualSelectionEnabled,
-                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              ),
-                              _ => const Text(""),
-                            },
-                            const SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              if (hasAnyProfile)
+                Positioned(
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Flexible(child: LocalProxyHint()),
+                      if (isTv)
+                        Material(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                          ),
+                          child: InkWell(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                            onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showQuickSettings(),
+                            child: Container(
+                              height: 32,
+                              padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [ConnectionButton(), ActiveProxyDelayIndicator()],
-                                    ),
-                                  ),
-                                  ActiveProxyFooter(),
-                                  Gap(32),
+                                  Text(t.pages.home.quickSettings),
+                                  const Gap(4),
+                                  const Icon(Icons.arrow_drop_up_rounded, size: 16),
                                 ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                        // AsyncData() => switch (hasAnyProfile) {
-                        //     AsyncData(value: true) => const EmptyActiveProfileHomeBody(),
-                        //     _ => const EmptyProfilesHomeBody(),
-                        //   },
-                        // AsyncError(:final error) => SliverErrorBodyPlaceholder(t.presentShortError(error)),
-                        // _ => const SliverToBoxAdapter(),
-                        // },
-                      ],
-                    ),
+                    ],
                   ),
                 ),
-                if (hasAnyProfile)
-                  const Positioned(
-                    right: 0,
-                    left: 0,
-                    bottom: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Flexible(child: LocalProxyHint())],
-                    ),
-                  ),
-              ],
-            ),
+            ],
+          ),
         ],
       ),
     );

@@ -8,7 +8,7 @@ abstract class Constants {
   static const licenseUrl = "https://github.com/Lynatick/proxy4you/blob/main/LICENSE.md";
   static const githubReleasesApiUrl = "https://api.github.com/repos/Lynatick/proxy4you/releases";
   static const githubLatestReleaseUrl = "https://github.com/Lynatick/proxy4you/releases/latest";
-  static const downloadPageUrl = "https://lynatick.github.io/proxy4you/";
+  static const downloadPageUrl = "https://github.com/Lynatick/proxy4you/releases/latest";
   static const telegramChannelUrl = "https://t.me/hiddify";
   static const privacyPolicyUrl = "https://hiddify.com/privacy-policy/";
   static const termsAndConditionsUrl = "https://hiddify.com/terms/";

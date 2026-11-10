@@ -2,11 +2,10 @@
 
 Клиент подписок на основе Hiddify 5.5.5 для macOS Apple Silicon и Android.
 
-В публичном выпуске 5.0.1 пока доступна только версия для Android. Сборка macOS не публикуется.
+В публичном выпуске 5.0.2 пока доступна только версия для Android. Сборка macOS не публикуется.
 
 ## Скачать
 
-- [Страница загрузки](https://lynatick.github.io/proxy4you/)
 - [Последний выпуск](https://github.com/Lynatick/proxy4you/releases/latest)
 - [Конфигурации и подписки](https://lynatick.github.io/goida/)
 

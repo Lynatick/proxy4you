@@ -1,7 +1,7 @@
 name: hiddify
 description: Cross Platform Multi Protocol Proxy Frontend.
 publish_to: "none"
-version: 5.0.1+50001
+version: 5.0.2+50002
 
 environment:
   # Dart 3.12 keeps the current Freezed 2 / Riverpod 2 generated API while
