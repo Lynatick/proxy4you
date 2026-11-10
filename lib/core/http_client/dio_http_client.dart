@@ -162,6 +162,10 @@ class DioHttpClient with InfraLogger {
     ResponseType? responseType,
   }) {
     final uri = Uri.parse(url);
+    final requestedAgent = userAgent?.trim();
+    final effectiveAgent = requestedAgent == null || requestedAgent.isEmpty || requestedAgent.startsWith('Dart')
+        ? this.userAgent
+        : requestedAgent;
 
     String? userInfo;
     if (credentials != null) {
@@ -178,7 +182,7 @@ class DioHttpClient with InfraLogger {
     return Options(
       responseType: responseType,
       headers: {
-        "User-Agent": userAgent ?? this.userAgent,
+        "User-Agent": effectiveAgent,
         if (basicAuth != null) "authorization": basicAuth,
         // "Accept": "application/json",
         // "Content-Type": "application/json",
