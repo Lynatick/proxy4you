@@ -145,23 +145,11 @@ class _HomeSubscriptionGroupSelectorState extends ConsumerState<HomeSubscription
 
     Widget selectedValue(SubscriptionGroup? group) => Align(
       alignment: AlignmentDirectional.centerStart,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            group?.name ?? 'Список подписок',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleMedium,
-          ),
-          Text(
-            group == null ? 'Нет' : 'Список подписок · ${group.urls.length}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-        ],
+      child: Text(
+        group == null ? 'Список подписок: Нет' : 'Список подписок: ${group.name} · ${group.urls.length}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleMedium,
       ),
     );
 
@@ -176,7 +164,7 @@ class _HomeSubscriptionGroupSelectorState extends ConsumerState<HomeSubscription
         elevation: selectedGroup == null ? 1 : 0,
         child: IntrinsicHeight(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 64),
+            constraints: const BoxConstraints(minHeight: 52),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

@@ -9,6 +9,7 @@ import 'package:hiddify/core/router/go_router/helper/active_breakpoint_notifier.
 import 'package:hiddify/core/router/go_router/routing_config_notifier.dart';
 import 'package:hiddify/features/profile/add/phone_import/phone_import_notifier.dart';
 import 'package:hiddify/features/stats/widget/side_bar_stats_overview.dart';
+import 'package:hiddify/utils/platform_utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class MyAdaptiveLayout extends HookConsumerWidget {
@@ -131,7 +132,7 @@ class MyAdaptiveLayout extends HookConsumerWidget {
                       Expanded(child: navigationShell),
                     ],
                   ),
-            bottomNavigationBar: isMobileBreakpoint
+            bottomNavigationBar: isMobileBreakpoint && !PlatformUtils.isAndroid
                 ? FocusScope(
                     node: navScopeNode,
                     child: NavigationBar(
