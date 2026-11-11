@@ -1,0 +1,408 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hiddify/core/localization/translations.dart';
+import 'package:hiddify/core/model/constants.dart';
+import 'package:hiddify/core/model/environment.dart';
+
+@JsonEnum(valueField: 'key')
+enum ServiceMode {
+  proxy("proxy"),
+  systemProxy("system-proxy"),
+  tun("vpn"),
+
+  /// Linux only: the TUN for the whole network this device routes (a router or gateway), see
+  /// hiddify-core docs/router-mode.md.
+  router("router")
+  // tunService("vpn-service")
+  ;
+
+  const ServiceMode(this.key);
+
+  final String key;
+
+  /// The Mac App Store build: its VPN is the Network Extension, and its sandbox can not set the
+  /// system proxy.
+  static bool get _macAppStore => Platform.isMacOS && Release.read() == Release.appStore;
+
+  /// VPN everywhere: on desktop it asks for administrator permission once when connecting, and
+  /// the user can switch to the system proxy from that prompt instead.
+  static ServiceMode get defaultMode => tun;
+
+  /// supported service mode based on platform, use this instead of [values] in UI
+  static List<ServiceMode> get choices {
+    if (Platform.isLinux) {
+      return values;
+    } else if (Platform.isWindows) {
+      return [proxy, systemProxy, tun];
+    } else if (_macAppStore) {
+      return [proxy, tun];
+    } else if (Platform.isMacOS) {
+      return [proxy, systemProxy, tun];
+    }
+    // mobile
+    return [proxy, tun];
+  }
+
+  // bool get isExperimental => switch (this) {
+  //       tun => PlatformUtils.isDesktop,
+  //       tunService => PlatformUtils.isDesktop,
+  //       _ => false,
+  //     };
+
+  String present(TranslationsEn t) => switch (this) {
+    proxy => t.pages.settings.inbound.serviceModes.proxy,
+    systemProxy => t.pages.settings.inbound.serviceModes.systemProxy,
+    tun => t.pages.settings.inbound.serviceModes.tun,
+    router => t.pages.settings.inbound.serviceModes.router,
+    // tunService => t.pages.settings.inbound.serviceModes.tunService,
+  };
+
+  String presentShort(TranslationsEn t) => switch (this) {
+    proxy => t.pages.settings.inbound.shortServiceModes.proxy,
+    systemProxy => t.pages.settings.inbound.shortServiceModes.systemProxy,
+    tun => t.pages.settings.inbound.shortServiceModes.tun,
+    router => t.pages.settings.inbound.shortServiceModes.router,
+    // tunService => t.pages.settings.inbound.shortServiceModes.tunService,
+  };
+}
+
+@JsonEnum(valueField: 'key')
+enum BalancerStrategy {
+  roundRobin("round-robin"),
+  consistentHash("consistent-hashing"),
+  stickySession("sticky-sessions");
+
+  const BalancerStrategy(this.key);
+
+  final String key;
+
+  String present(TranslationsEn t) => switch (this) {
+    roundRobin => t.pages.settings.routing.balancerStrategy.roundRobin,
+    consistentHash => t.pages.settings.routing.balancerStrategy.consistentHash,
+    stickySession => t.pages.settings.routing.balancerStrategy.stickySession,
+  };
+
+  String describe(TranslationsEn t) => switch (this) {
+    roundRobin => t.pages.settings.routing.balancerStrategy.roundRobinDescription,
+    consistentHash => t.pages.settings.routing.balancerStrategy.consistentHashDescription,
+    stickySession => t.pages.settings.routing.balancerStrategy.stickySessionDescription,
+  };
+}
+
+/// What a profile's select group starts on until the user picks a proxy in it; their pick is kept.
+@JsonEnum(valueField: 'key')
+enum DefaultProxy {
+  lowest("lowest"),
+  balance("balance"),
+  first("first");
+
+  const DefaultProxy(this.key);
+
+  final String key;
+
+  String present(TranslationsEn t) => switch (this) {
+    lowest => t.pages.settings.routing.defaultProxy.lowest,
+    balance => t.pages.settings.routing.defaultProxy.balance,
+    first => t.pages.settings.routing.defaultProxy.first,
+  };
+
+  String describe(TranslationsEn t) => switch (this) {
+    lowest => t.pages.settings.routing.defaultProxy.lowestDescription,
+    balance => t.pages.settings.routing.defaultProxy.balanceDescription,
+    first => t.pages.settings.routing.defaultProxy.firstDescription,
+  };
+}
+
+/// IPv6 for the apps. Off by default ([ipv4Only]): most proxies have no IPv6 at their exit, and a
+/// connection the proxy cannot carry dies after it opened, which browsers never retry over IPv4
+/// (#2307, #2420). On ([preferIPv4], [preferIPv6]), the core verifies each proxy once at its URL
+/// test and uses IPv6 only through a proxy found carrying it, carrying the rest over IPv4. IPv6
+/// always routes into the VPN, so nothing leaks past it. A subscription may turn it on with an
+/// `ipv6-mode` header.
+@JsonEnum(valueField: 'key')
+enum IPv6Mode {
+  ipv4Only("ipv4_only"),
+  preferIPv4("prefer_ipv4"),
+  preferIPv6("prefer_ipv6");
+
+  const IPv6Mode(this.key);
+
+  final String key;
+
+  /// The stored value; the retired ipv6_only counts as the preference nearest it.
+  static IPv6Mode fromKey(String? key) => switch (key) {
+    "prefer_ipv4" => preferIPv4,
+    "prefer_ipv6" || "ipv6_only" => preferIPv6,
+    _ => ipv4Only,
+  };
+
+  String present(TranslationsEn t) => switch (this) {
+    ipv4Only => t.pages.settings.routing.ipv6Modes.ipv4Only,
+    preferIPv4 => t.pages.settings.routing.ipv6Modes.preferIpv4,
+    preferIPv6 => t.pages.settings.routing.ipv6Modes.preferIpv6,
+  };
+
+  String describe(TranslationsEn t) => switch (this) {
+    ipv4Only => t.pages.settings.routing.ipv6Modes.ipv4OnlyDescription,
+    preferIPv4 => t.pages.settings.routing.ipv6Modes.preferIpv4Description,
+    preferIPv6 => t.pages.settings.routing.ipv6Modes.preferIpv6Description,
+  };
+}
+
+@JsonEnum(valueField: 'key')
+enum DomainStrategy {
+  auto(""),
+  preferIpv6("prefer_ipv6"),
+  preferIpv4("prefer_ipv4"),
+  ipv4Only("ipv4_only"),
+  ipv6Only("ipv6_only");
+
+  const DomainStrategy(this.key);
+
+  final String key;
+
+  String present(TranslationsEn t) => switch (this) {
+    auto => t.pages.settings.dns.domainStrategy.auto,
+    preferIpv6 => t.pages.settings.dns.domainStrategy.preferIpv6,
+    preferIpv4 => t.pages.settings.dns.domainStrategy.preferIpv4,
+    ipv4Only => t.pages.settings.dns.domainStrategy.ipv4Only,
+    ipv6Only => t.pages.settings.dns.domainStrategy.ipv6Only,
+  };
+}
+
+/// The TUN's TCP/IP stack. [sing15] is sing-tun's own stack, the default since sing-box 1.15: the
+/// core then sends no `stack` option. The others are the legacy stacks, sent as chosen, kept for a
+/// user who needs one until sing-box 1.17 removes them.
+/// What a speed test of a proxy measures: its download, its upload, or both, one after the other.
+enum SpeedTestDirection { download, upload, both }
+
+enum TunImplementation {
+  sing15,
+  mixed,
+  system,
+  gvisor;
+
+  String present(TranslationsEn t) => switch (this) {
+    sing15 => t.pages.settings.inbound.tunImplementations.sing15,
+    mixed => t.pages.settings.inbound.tunImplementations.mixed,
+    system => t.pages.settings.inbound.tunImplementations.system,
+    gvisor => t.pages.settings.inbound.tunImplementations.gvisor,
+  };
+}
+
+@JsonEnum(valueField: 'key')
+enum ChainStatus {
+  off('off'),
+  extraSecurity('extra_security'),
+  unblocker('unblocker');
+
+  const ChainStatus(this.key);
+
+  final String key;
+
+  bool isOff() => this == off;
+  bool isUnblocker() => this == unblocker;
+  bool isExtraSecurity() => this == extraSecurity;
+}
+
+@JsonEnum(valueField: 'key')
+enum ChainMode {
+  psiphon('psiphon'),
+  // WARP races WireGuard, AmneziaWG and MASQUE in the core and keeps the fastest. The core's own
+  // "warp" is WireGuard only, so this sends "warp_auto".
+  warp('warp_auto'),
+  profile('profile');
+
+  const ChainMode(this.key);
+
+  final String key;
+
+  // Modes offered in the UI. Using another profile as a chain hop is not supported by the core
+  // yet (it refuses "profile"), so it is hidden until then.
+  static const selectable = [psiphon, warp];
+
+  // A stored mode that is no longer selectable falls back to [fallback].
+  static ChainMode fromStored(String name, ChainMode fallback) {
+    final mode = ChainMode.values.asNameMap()[name];
+    return mode != null && selectable.contains(mode) ? mode : fallback;
+  }
+
+  /// The mode of a core mode key; every WARP tunnel's key is [warp].
+  static ChainMode? fromKey(String key) =>
+      WarpTunnel.values.any((e) => e.key == key) ? warp : values.where((e) => e.key == key).firstOrNull;
+
+  /// The key the core runs this mode by: WARP's says which tunnel.
+  String coreKey(WarpTunnel tunnel) => this == warp ? tunnel.key : key;
+
+  String present(Translations t) => switch (this) {
+    psiphon => t.common.psiphon,
+    warp => t.common.warp,
+    profile => t.common.profile,
+  };
+
+  IconData icon() => switch (this) {
+    psiphon => Icons.local_parking,
+    warp => Icons.cloud,
+    profile => Icons.link,
+  };
+
+  Color color() => switch (this) {
+    psiphon => ChainConst.psiphonColor,
+    warp => ChainConst.warpColor,
+    profile => ChainConst.profileColor,
+  };
+
+  bool isPsiphon() => this == psiphon;
+  bool isWarp() => this == warp;
+  bool isProfile() => this == profile;
+}
+
+/// The tunnel a WARP chain hop runs, by the core's chain mode key.
+enum WarpTunnel {
+  // races WireGuard, AmneziaWG and MASQUE and keeps the fastest
+  auto('warp_auto'),
+  wireguard('warp'),
+  amneziaWg('warp_awg'),
+  masque('warp_masque');
+
+  const WarpTunnel(this.key);
+
+  final String key;
+
+  String present(Translations t) => switch (this) {
+    auto => t.common.auto,
+    wireguard => 'WireGuard',
+    amneziaWg => 'AmneziaWG',
+    masque => 'MASQUE',
+  };
+
+  /// MASQUE has no WireGuard peer: the clean IP, port and noise do not apply to it.
+  bool get usesWireGuardPeer => this != masque;
+}
+
+/// Where a WARP chain hop finds its peer.
+@JsonEnum(valueField: 'key')
+enum WarpEndpointSource {
+  /// the endpoint Cloudflare assigned to the device
+  profile('profile'),
+
+  /// found by the scanner, which remembers what answered on this network
+  scan('scan'),
+
+  /// the address the user typed (the clean IP and port)
+  custom('custom');
+
+  const WarpEndpointSource(this.key);
+
+  final String key;
+
+  /// The sources a hop can use. A hop behind a detour (extra security dials through the user's
+  /// pick) never scans: probing endpoints through a proxy only measures the proxy, so the core
+  /// takes the assigned endpoint instead.
+  static List<WarpEndpointSource> of({required bool detour}) => detour ? const [profile, custom] : values;
+
+  String present(Translations t) => switch (this) {
+    profile => t.pages.settings.chain.warp.endpointSources.profile,
+    scan => t.pages.settings.chain.warp.endpointSources.scan,
+    custom => t.pages.settings.chain.warp.endpointSources.custom,
+  };
+}
+
+@JsonEnum(valueField: 'key')
+enum PsiphonRegion {
+  auto('AUTO'),
+  austria('AT'),
+  australia('AU'),
+  belgium('BE'),
+  bulgaria('BG'),
+  canada('CA'),
+  switzerland('CH'),
+  czechRepublic('CZ'),
+  germany('DE'),
+  denmark('DK'),
+  estonia('EE'),
+  spain('ES'),
+  finland('FI'),
+  france('FR'),
+  unitedKingdom('GB'),
+  croatia('HR'),
+  hungary('HU'),
+  ireland('IE'),
+  india('IN'),
+  italy('IT'),
+  japan('JP'),
+  latvia('LV'),
+  netherlands('NL'),
+  norway('NO'),
+  poland('PL'),
+  portugal('PT'),
+  romania('RO'),
+  serbia('RS'),
+  sweden('SE'),
+  singapore('SG'),
+  slovakia('SK'),
+  unitedStates('US');
+
+  const PsiphonRegion(this.key);
+
+  final String key;
+
+  String present(Translations t) => switch (this) {
+    auto => t.pages.settings.chain.psiphon.regions.auto,
+    austria => t.pages.settings.chain.psiphon.regions.at,
+    australia => t.pages.settings.chain.psiphon.regions.au,
+    belgium => t.pages.settings.chain.psiphon.regions.be,
+    bulgaria => t.pages.settings.chain.psiphon.regions.bg,
+    canada => t.pages.settings.chain.psiphon.regions.ca,
+    switzerland => t.pages.settings.chain.psiphon.regions.ch,
+    czechRepublic => t.pages.settings.chain.psiphon.regions.cz,
+    germany => t.pages.settings.chain.psiphon.regions.de,
+    denmark => t.pages.settings.chain.psiphon.regions.dk,
+    estonia => t.pages.settings.chain.psiphon.regions.ee,
+    spain => t.pages.settings.chain.psiphon.regions.es,
+    finland => t.pages.settings.chain.psiphon.regions.fi,
+    france => t.pages.settings.chain.psiphon.regions.fr,
+    unitedKingdom => t.pages.settings.chain.psiphon.regions.gb,
+    croatia => t.pages.settings.chain.psiphon.regions.hr,
+    hungary => t.pages.settings.chain.psiphon.regions.hu,
+    ireland => t.pages.settings.chain.psiphon.regions.ie,
+    india => t.pages.settings.chain.psiphon.regions.kIn,
+    italy => t.pages.settings.chain.psiphon.regions.it,
+    japan => t.pages.settings.chain.psiphon.regions.jp,
+    latvia => t.pages.settings.chain.psiphon.regions.lv,
+    netherlands => t.pages.settings.chain.psiphon.regions.nl,
+    norway => t.pages.settings.chain.psiphon.regions.no,
+    poland => t.pages.settings.chain.psiphon.regions.pl,
+    portugal => t.pages.settings.chain.psiphon.regions.pt,
+    romania => t.pages.settings.chain.psiphon.regions.ro,
+    serbia => t.pages.settings.chain.psiphon.regions.rs,
+    sweden => t.pages.settings.chain.psiphon.regions.se,
+    singapore => t.pages.settings.chain.psiphon.regions.sg,
+    slovakia => t.pages.settings.chain.psiphon.regions.sk,
+    unitedStates => t.pages.settings.chain.psiphon.regions.us,
+  };
+}
+
+enum MuxProtocol { h2mux, smux, yamux }
+
+// @JsonEnum(valueField: 'key')
+// enum WarpDetourMode {
+//   proxyOverWarp("proxy_over_warp"),
+//   warpOverProxy("warp_over_proxy");
+
+//   const WarpDetourMode(this.key);
+
+//   final String key;
+
+//   String present(TranslationsEn t) => switch (this) {
+//     proxyOverWarp => t.pages.settings.warp.detourModes.proxyOverWarp,
+//     warpOverProxy => t.pages.settings.warp.detourModes.warpOverProxy,
+//   };
+
+//   String presentExplain(TranslationsEn t) => switch (this) {
+//     proxyOverWarp => t.pages.settings.warp.detourModes.proxyOverWarpExplain,
+//     warpOverProxy => t.pages.settings.warp.detourModes.warpOverProxyExplain,
+//   };
+// }

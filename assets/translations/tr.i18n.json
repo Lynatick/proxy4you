@@ -1,0 +1,1092 @@
+{
+  "common": {
+    "appTitle": "Proxy4You",
+    "start": "Başlat",
+    "version": "Sürüm",
+    "ok": "Tamam",
+    "cancel": "İptal",
+    "kContinue": "Devam et",
+    "undo": "Geri al",
+    "showMore": "Daha fazla göster",
+    "showLess": "Daha az göster",
+    "filter": "Filtrele",
+    "all": "Tümü",
+    "pause": "Duraklat",
+    "resume": "Devam et",
+    "clear": "Temizle",
+    "close": "Kapat",
+    "auto": "Otomatik",
+    "manually": "Manuel",
+    "name": "İsim",
+    "url": "URL",
+    "add": "Ekle",
+    "clipboard": "Pano",
+    "addToClipboard": "Panoya kopyala",
+    "qrCode": "QR kod",
+    "free": "Ücretsiz",
+    "warp": "WARP",
+    "fragment": "Fragment",
+    "help": "Yardım",
+    "save": "Kaydet",
+    "update": "Güncelle",
+    "pin": "Sabitle",
+    "unpin": "Sabitlemeyi kaldır",
+    "share": "Paylaş",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "discard": "Vazgeç",
+    "import": "İçe aktar",
+    "export": "Dışa aktar",
+    "later": "Daha sonra",
+    "ignore": "Yoksay",
+    "quit": "Çık",
+    "notSet": "Ayarlanmadı",
+    "hide": "Gizle",
+    "exit": "Çıkış",
+    "reset": "Sıfırla",
+    "done": "Bitti",
+    "decline": "Reddet",
+    "agree": "Kabul et",
+    "empty": "Boş",
+    "unknown": "Bilinmeyen",
+    "hidden": "Gizli",
+    "timeout": "Zaman aşımı",
+    "sort": "Sırala",
+    "dashboard": "Gösterge paneli",
+    "disable": "Kapat",
+    "psiphon": "Psiphon",
+    "profile": "Profil",
+    "configuration": "Yapılandırma",
+    "file": "Dosya",
+    "interval": {
+      "day": {
+        "zero": "",
+        "one": "$n gün",
+        "other": "$n gün"
+      },
+      "hour": {
+        "zero": "",
+        "one": "$n saat",
+        "other": "$n saat"
+      }
+    },
+    "msg": {
+      "permission": {
+        "denied": "İzin reddedildi"
+      },
+      "export": {
+        "clipboard": {
+          "success": "Panoya kopyalandı",
+          "failure": "Panoya kopyalanamadı",
+          "contentTooLarge": "İçerik çok büyük. Bunun yerine dosyaya aktarın."
+        },
+        "file": {
+          "success": "JSON dosyası oluşturuldu",
+          "failure": "Dosya oluşturulamadı"
+        }
+      },
+      "import": {
+        "confirm": "İçe aktarmayı onayla",
+        "success": "İçe aktarıldı",
+        "failure": "İçe aktarılamadı"
+      },
+      "autoSave": {
+        "success": "Değişiklikler otomatik olarak kaydedildi"
+      }
+    }
+  },
+  "intro": {
+    "banner": "Sınırsız bir internet için ihtiyacınız olan her şey",
+    "termsAndPolicyCaution(rich)": "Devam ederek ${tap(@:pages.about.termsAndConditions)} kabul etmiş olursunuz",
+    "info(rich)": "Proxy4You tarafından ❤️ ile yapıldı. ${tap_source(Açık kaynak)} ve ${tap_license(Lisans)}"
+  },
+  "pages": {
+    "home": {
+      "title": "Ana sayfa",
+      "quickSettings": "Hızlı ayarlar"
+    },
+    "proxies": {
+      "title": "Proxy'ler",
+      "sort": "Proxy'leri sırala",
+      "testDelay": "Gecikmeyi test et",
+      "empty": "Kullanılabilir proxy yok",
+      "connectToSeeProxies": "Proxy’leri görmek için bağlanın",
+      "loadFailed": "Proxy’ler yüklenemedi. Yeniden denemek için dokunun.",
+      "activeProxy": "Aktif proxy",
+      "unknownIp": "Bilinmeyen IP",
+      "checkingIp": "IP kontrol ediliyor…",
+      "switchFailed": "Bu proxy'ye geçilemedi. Tekrar deneyin.",
+      "notResponding": "Yanıt vermiyor",
+      "noneResponding": "Hiçbir proxy yanıt vermiyor",
+      "sortOptions": {
+        "unsorted": "Varsayılan",
+        "name": "Alfabetik",
+        "delay": "Gecikmeye göre",
+        "usage": "Kullanıma göre",
+        "upload": "Yükleme hızına göre",
+        "download": "İndirme hızına göre"
+      },
+      "ipInfo": {
+        "address": "IP adresi",
+        "country": "Ülke",
+        "organization": "Kuruluş"
+      },
+      "delay": {
+        "result": "Gecikme: ${delay}ms",
+        "timeout": "Gecikme testi zaman aşımına uğradı",
+        "unavailable": "Kullanılamıyor",
+        "testing": "Gecikme: test ediliyor…"
+      },
+      "status": {
+        "connecting": "Bağlanıyor",
+        "registering": "Kaydediliyor",
+        "failed": "Başarısız",
+        "ready": "Hazır",
+        "searching": "Aranıyor",
+        "reconnecting": "Yeniden bağlanıyor"
+      },
+      "signalStyle": "Sinyal stili",
+      "keepTop": {
+        "picking": "$count proxy içinden en hızlı $keep tanesi aranıyor…",
+        "pickingBody": "Tüm proxy'ler bir kez test edilir; sonra yalnızca en hızlılar çalışmaya devam eder.",
+        "kept": "En hızlı $n tanesi çalışıyor",
+        "keptBody": "Pil ve veri tasarrufu için diğer $paused proxy duraklatıldı.",
+        "showAll": "$count tanesini de göster",
+        "big": "$count proxy çalışıyor",
+        "bigBody": "Pil ve veri tasarrufu için yalnızca en hızlı $keep tanesini çalışır bırakın.",
+        "keep": "En hızlı $keep taneyi tut",
+        "change": "Sayıyı değiştir",
+        "chosen": "Seçtiğiniz $n proxy çalışıyor",
+        "choose": "Seç"
+      },
+      "upload": {
+        "test": "Yükleme hızını test et",
+        "failed": "Hız testi başlatılamadı",
+        "hint": "Dokun: yükleme hızı · Basılı tut: indirme hızı",
+        "hintBoth": "Dokun: iki hız · Basılı tut: indirme hızı"
+      },
+      "speedTest": {
+        "title": "Hız testi",
+        "what": "Ne test edilsin",
+        "download": "İndirme",
+        "upload": "Yükleme",
+        "amount": "Proxy başına miktar",
+        "proxies": "Test edilecek proxy'ler",
+        "proxiesHint": "Ping'e göre en hızlılar",
+        "all": "Tümü",
+        "fastest": "En hızlı $n",
+        "through": "En hızlı $count proxy'nin her birinden $n MB",
+        "throughAll": "$count proxy'nin her birinden $n MB",
+        "throughEach": "Her proxy'den $n MB",
+        "start": "Testi başlat",
+        "save": "Kaydet",
+        "testDownload": "İndirme hızını test et",
+        "both": "İkisi",
+        "bothWays": "indirme ve yükleme",
+        "amountHint": "daha fazlası daha doğru",
+        "clear": "Kayıtlı sonuçları temizle",
+        "cleared": "Temizlendi",
+        "which": "Hangi proxy'ler",
+        "shown": "Gösterilen ($n)",
+        "chosen": "Seçilen ($n)"
+      }
+    },
+    "profiles": {
+      "title": "Profiller",
+      "add": "Profil ekle",
+      "fromPhone": {
+        "title": "Telefonundan ekle",
+        "scan": "Bu kodu telefonunun kamerasıyla tara, bir abonelik bağlantısı yapıştır ve gönder.",
+        "sameNetwork": "Telefonun ve bu TV aynı Wi-Fi ağında olmalı.",
+        "noNetwork": "Bu TV yerel bir ağa bağlı değil. Telefonundan bağlantı eklemek için onu Wi-Fi'ye bağla.",
+        "locked": "Çok fazla yanlış kod denendi, bu yüzden kilitlendi. Yeni bir kod için kapatıp yeniden aç.",
+        "received": "Telefonundan alındı",
+        "from": "Gönderen: $address",
+        "page": {
+          "title": "TV'deki Proxy4You'a gönder",
+          "intro": "Kumandayla yazmadan, dört kısa adımda TV'ye abonelik ekle.",
+          "steps": {
+            "network": {
+              "title": "Aynı Wi-Fi'ye bağlan",
+              "body": "Telefon ve TV aynı Wi-Fi ağında olmalı, yoksa bu sayfa TV'ye ulaşamaz."
+            },
+            "copy": {
+              "title": "Bağlantıyı kopyala",
+              "body": "Sağlayıcından abonelik bağlantısını ya da herhangi bir proxy bağlantısını veya yapılandırmayı kopyala."
+            },
+            "paste": {
+              "title": "Buraya yapıştır",
+              "body": "Aşağıdaki kutuya dokun, bağlantıyı yapıştır, sonra “TV'ye gönder”e dokun."
+            },
+            "confirm": {
+              "title": "TV'de onayla",
+              "body": "Bağlantı TV'de görünür. Kumandayla İçe aktar'a bas. Sen basmadan hiçbir şey eklenmez."
+            }
+          },
+          "label": "Abonelik bağlantısı",
+          "hint": "Abonelik bağlantısını veya yapılandırmayı yapıştır",
+          "send": "TV'ye gönder",
+          "sentTitle": "TV'ye gönderildi",
+          "sent": "Eklemek için şimdi TV'de İçe aktar'a bas. Aşağıdan başka bir bağlantı da gönderebilirsin.",
+          "empty": "Önce bir bağlantı yapıştır.",
+          "footer": "Bu sayfa yalnızca TV'de “Profil ekle” açıkken ve yalnızca yerel ağında çalışır."
+        }
+      },
+      "update": "Profili güncelle",
+      "viewAllProfiles": "Tüm profilleri görüntüle",
+      "activeProfileName": "Aktif profil adı: “${name}”",
+      "nonActiveProfileName": "Aktif profil olarak “${name}” seçin",
+      "freeSubNotFound": "Ücretsiz abonelik bulunamadı",
+      "freeSubNotFoundForRegion": "“${region}” bölgesi için ücretsiz abonelik bulunamadı",
+      "failedToLoad": "Yüklenemedi",
+      "updateSubscriptions": "Abonelikleri güncelle",
+      "share": {
+        "urlToClipboard": "URL'yi kopyala",
+        "showUrlQr": "QR kodu göster",
+        "jsonToClipboard": "JSON'u kopyala"
+      },
+      "msg": {
+        "save": {
+          "success": "Profil kaydedildi"
+        },
+        "invalidUrl": "Geçersiz URL",
+        "add": {
+          "failure": "Profil eklenemedi"
+        },
+        "update": {
+          "success": "Profil güncellendi",
+          "failure": "Profil güncellenemedi",
+          "failureNamed": "“${name}” güncellenemedi",
+          "bulkSuccess(plural, param=count)": {
+            "other": "$count profil güncellendi"
+          },
+          "bulkPartial": "${success} güncellendi\n${failed} başarısız: ${names}"
+        },
+        "delete": {
+          "success": "Profil silindi"
+        }
+      }
+    },
+    "profileDetails": {
+      "title": "Profil",
+      "lastUpdate": "Son güncelleme",
+      "form": {
+        "nameHint": "Profil adı",
+        "emptyName": "İsim gerekli",
+        "invalidUrl": "Geçersiz URL",
+        "urlHint": "Tam yapılandırma URL'si",
+        "disableAutoUpdate": "Otomatik güncellemeyi kapat",
+        "autoUpdateInterval": "Otomatik güncelleme aralığı",
+        "loading": "Profil ekleniyor…",
+        "adminPreference": "Yönetici izni",
+        "adminPreferenceAskEachTime": "Her seferinde sor",
+        "adminPreferencePreferAdmin": "Her zaman yönetici izni kullan",
+        "adminPreferencePreferNoAdmin": "Her zaman yönetici izni olmadan devam et",
+        "adminPreferenceReset": "Yönetici izni için her seferinde sor"
+      }
+    },
+    "logs": {
+      "title": "Loglar",
+      "category": "Kategori",
+      "level": "Seviye",
+      "recentLogs": "Son loglar",
+      "recentLogsMsg": "Bu sayfada gördükleriniz",
+      "errorLog": "Uygulama ve çekirdek logu",
+      "errorLogMsg": "İkisinin de hataları, tüm çalıştırmalarda",
+      "coreLog": "Çekirdek logu",
+      "coreLogMsg": "Çekirdeğin kaydettiği her şey",
+      "coreCrash": "Çekirdek çökmesi",
+      "coreCrashMsg": "Çekirdeğin son çökmede yaptıkları",
+      "exportToFile": "Dosyaya aktar",
+      "linesMatch": "$count satır eşleşiyor",
+      "fileSaved": "Dosya kaydedildi",
+      "fileSaveFailed": "Dosya kaydedilemedi",
+      "coreLogLevel": "Çekirdek seviyesi",
+      "coreLogLevelMsg": "Yeniden bağlandıktan sonra geçerli olur",
+      "buffer": "Arabellek"
+    },
+    "about": {
+      "title": "Hakkında",
+      "notAvailableMsg": "En son sürümü kullanıyorsunuz",
+      "checkForUpdate": "Güncellemeleri kontrol et",
+      "openWorkingDir": "Çalışma dizinini aç",
+      "sourceCode": "Kaynak kodu",
+      "telegramChannel": "Telegram kanalı",
+      "termsAndConditions": "Şartlar ve koşullar",
+      "privacyPolicy": "Gizlilik politikası"
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "resetTunnel": "VPN profilini sıfırla",
+      "options": {
+        "import": {
+          "clipboard": "Seçenekleri panodan içe aktar",
+          "file": "Seçenekleri dosyadan içe aktar"
+        },
+        "export": {
+          "anonymousToClipboard": "Anonim seçenekleri panoya kopyala",
+          "anonymousToFile": "Anonim seçenekleri dosyaya aktar",
+          "allToClipboard": "Tüm seçenekleri panoya kopyala",
+          "allToFile": "Tüm seçenekleri dosyaya aktar"
+        },
+        "reset": "Seçenekleri sıfırla"
+      },
+      "general": {
+        "title": "Genel",
+        "locale": "Dil",
+        "themeMode": "Tema modu",
+        "themeModes": {
+          "system": "Sistem varsayılanı",
+          "dark": "Karanlık mod",
+          "light": "Açık mod",
+          "black": "Siyah mod"
+        },
+        "enableAnalytics": "Analizi aç",
+        "enableAnalyticsMsg": "Uygulamayı iyileştirmeye yardımcı olmak için cihazınızdan analiz ve kilitlenme raporları gönderin",
+        "autoIpCheck": "Bağlantı IP'sini otomatik kontrol et",
+        "reduceAnimations": "Animasyonları azalt",
+        "reduceAnimationsMsg": "Bağlan düğmesini sabit tutar ve tekrar eden efektleri durdurarak pil tasarrufu sağlar",
+        "dynamicNotification": "Hızı bildirimde göster",
+        "hapticFeedback": "Dokunsal geri bildirim",
+        "alwaysOnVpn": "Her zaman açık VPN",
+        "actionAtClosing": "Pencere kapatılırken",
+        "autoStart": "Oturum açılışında başlat",
+        "silentStart": "Simge durumunda başlat",
+        "ignoreBatteryOptimizations": "Pil optimizasyonunu kapat",
+        "ignoreBatteryOptimizationsMsg": "Optimum VPN performansı için kısıtlamaları kaldırın",
+        "memoryLimit": "Bellek sınırı",
+        "memoryLimitMsg": "Bellek yetersizliği hataları veya sık uygulama çökmeleri yaşıyorsanız açın",
+        "connectionTestUrl": "Bağlantı testi URL'si",
+        "urlTestInterval": "URL testi aralığı",
+        "clashApiPort": "Clash API portu",
+        "useSystemTlsEngine": "Varsa sistemin TLS’ini kullan",
+        "useSystemTlsEngineMsg": "TLS parmak izi olmayan bağlantılar, bu cihazda bir denetimden geçtikten sonra macOS, iOS veya Windows’un TLS’ini kullanır; aksi hâlde Chrome gibi görünür.",
+        "uploadTestSize": "Yükleme testi boyutu",
+        "megabytes": "$n MB",
+        "speedTest": "Hız testi"
+      },
+      "routing": {
+        "title": "Yönlendirme",
+        "routeRule": {
+          "add": "Kural ekle",
+          "delete": "Kuralı sil",
+          "options": {
+            "import": {
+              "clipboard": "Kuralları panodan içe aktar",
+              "file": "Kuralları dosyadan içe aktar"
+            },
+            "export": {
+              "clipboard": "Kuralları panoya kopyala",
+              "file": "Kuralları dosyaya kaydet"
+            },
+            "reset": "Varsayılan kurallara sıfırla"
+          },
+          "rule": {
+            "title": "Kural",
+            "onlyTunMode": "Yalnızca TUN modunda kullanılabilir",
+            "notAvailableInThisPlatform": "Bu platformda mevcut değil",
+            "canNotBeEmpty": "Boş olamaz",
+            "validUrlEx": "https://example.com",
+            "validUrl": "Geçerli “URL”, örn.\n@:pages.settings.routing.routeRule.rule.validUrlEx",
+            "validProcessNameEx": "Chrome.exe veya google chrome veya chrome",
+            "validProcessName": "Geçerli “İşlem adı”, örn.\n@:pages.settings.routing.routeRule.rule.validProcessNameEx",
+            "validProcessPathEx": "C:\\Pro...\\chrome.exe\n/App.../Google Chrome\n/usr/lib.../chrome",
+            "validProcessPath": "Geçerli “İşlem yolu”, örn.\n@:pages.settings.routing.routeRule.rule.validProcessPathEx",
+            "validPortRangeEx": "80 veya 1:65000",
+            "validPortRange": "Geçerli “Port” veya “Port aralığı”, örn.\n@:pages.settings.routing.routeRule.rule.validPortRangeEx",
+            "validIpCidrEx": "8.8.8.8, 10.0.0.0/24 veya fd00::/8",
+            "validIpCidr": "Geçerli IP CIDR, örn.\n@:pages.settings.routing.routeRule.rule.validIpCidrEx",
+            "validDomainEx": "Google.com veya dl.google.com",
+            "validDomain": "Geçerli “Alan adı”, örn.\n@:pages.settings.routing.routeRule.rule.validDomainEx",
+            "validDomainSuffixEx": ".com veya .tr",
+            "validDomainSuffix": "Geçerli “Alan adı son eki”, örn.\n@:pages.settings.routing.routeRule.rule.validDomainSuffixEx",
+            "tileTitle(map)": {
+              "name": "İsim",
+              "outbound": "Eşleşirse giden",
+              "rule_set": "Kural seti URL'si",
+              "package_name": "Paket adları",
+              "process_name": "İşlem adları",
+              "process_path": "İşlem yolları",
+              "network": "Ağlar",
+              "port_range": "Hedef portlar",
+              "source_port_range": "Kaynak portlar",
+              "protocol": "Protokol",
+              "ip_cidr": "Hedef IP CIDR",
+              "source_ip_cidr": "Kaynak IP CIDR",
+              "domain": "Alan adı",
+              "domain_suffixe": "Alan adı son eki",
+              "domain_keyword": "Alan adı anahtar kelimesi",
+              "domain_regex": "Alan adı regex"
+            },
+            "outbound(map)": {
+              "proxy": "Proxy",
+              "direct": "Doğrudan",
+              "direct_with_fragment": "Doğrudan (fragment ile)",
+              "block": "Engelle"
+            },
+            "network(map)": {
+              "all": "Tümü",
+              "tcp": "TCP",
+              "udp": "UDP"
+            },
+            "protocol(map)": {
+              "": "Tümü",
+              "tls": "TLS",
+              "http": "HTTP",
+              "quic": "QUIC",
+              "stun": "STUN",
+              "dns": "DNS",
+              "bittorrent": "BitTorrent"
+            }
+          },
+          "genericList": {
+            "addNew": "Yeni değer ekle",
+            "update": "Değeri güncelle",
+            "clearList": "Listeyi temizle",
+            "clearListMsg": "Tüm öğeler silinecek"
+          }
+        },
+        "builtinRules": {
+          "tag": "Yerleşik",
+          "bypassLan": "LAN'ı atla",
+          "blockAds": "Reklam ve zararlı yazılımı engelle",
+          "bypassRegion": "$region sitelerini atla"
+        },
+        "appBasedRouting": {
+          "title": "Uygulama bazlı yönlendirme",
+          "hideSysApps": "Sistem uygulamalarını gizle",
+          "listTitle": {
+            "bypass": "Proxy'siz uygulamalar",
+            "proxy": "Proxy'li uygulamalar"
+          },
+          "chooseApps": "Uygulama seç",
+          "apps": {
+            "one": "uygulama",
+            "other": "uygulamalar"
+          },
+          "moreApps": {
+            "one": "+$n uygulama",
+            "other": "+$n uygulama"
+          },
+          "autoTag": "Otomatik",
+          "outsideVpn": "VPN dışında",
+          "ruleWontApply": "VPN dışında · kural uygulanmaz",
+          "notInstalled": "Yüklü değil",
+          "share": {
+            "invite": "Otomatik seçimi geliştirmeye yardım edin",
+            "removed": {
+              "one": "$n kaldırıldı",
+              "other": "$n kaldırıldı"
+            },
+            "added": {
+              "one": "$n eklendi",
+              "other": "$n eklendi"
+            },
+            "title": "Değişikliklerinizi paylaşın",
+            "where": "GitHub'da bu uygulama adlarıyla önceden doldurulmuş herkese açık bir issue açar. Paylaşmak için orada gönderin. Bir GitHub hesabı gerekir.",
+            "action": "GitHub'da devam et"
+          },
+          "options": {
+            "import": {
+              "clipboard": "Seçimi panodan içe aktar",
+              "file": "Seçimi dosyadan içe aktar",
+              "msg": "İçe aktarma mevcut seçimlerinizi değiştirir. Devam edilsin mi?"
+            },
+            "export": {
+              "clipboard": "Seçimi panoya kopyala",
+              "file": "Seçimi dosyaya aktar"
+            },
+            "clearAllSelections": "Tüm seçimleri temizle"
+          },
+          "modes": {
+            "proxy": "Yalnızca proxy",
+            "bypass": "Bypass"
+          },
+          "autoSelection": {
+            "title": "$region bölgesine göre otomatik seçim",
+            "performNow": "Şimdi güncelle",
+            "updated": {
+              "zero": "Bugün güncellendi",
+              "one": "$n gün önce güncellendi",
+              "other": "$n gün önce güncellendi"
+            },
+            "noList": "Bu bölge için liste yok",
+            "loadFailed": "Liste yüklenemedi",
+            "restore": {
+              "one": "$n otomatik seçimi geri getir",
+              "other": "$n otomatik seçimi geri getir"
+            },
+            "restored": {
+              "one": "$n otomatik seçim geri getirildi",
+              "other": "$n otomatik seçim geri getirildi"
+            }
+          }
+        },
+        "region": "Bölge",
+        "regions": {
+          "ir": "İran (ir)",
+          "cn": "Çin (cn)",
+          "ru": "Rusya (ru)",
+          "af": "Afganistan (af)",
+          "id": "Endonezya (id)",
+          "tr": "Türkiye (tr)",
+          "br": "Brezilya (br)",
+          "other": "Diğer"
+        },
+        "balancerStrategy": {
+          "title": "Balancer stratejisi",
+          "roundRobin": "Round robin",
+          "consistentHash": "Consistent hash",
+          "stickySession": "Sticky session",
+          "roundRobinDescription": "Her bağlantı sıradaki sunucuyu kullanır, bu yüzden siteler IP adresinizin değiştiğini görebilir",
+          "consistentHashDescription": "Her site her zaman aynı sunucuyu kullanır",
+          "stickySessionDescription": "Her site, yeniden bağlanana kadar rastgele bir sunucuda kalır"
+        },
+        "resolveDestination": "Hedefi çözümle",
+        "ipv6Route": "IPv6",
+        "ipv6Modes": {
+          "preferIpv4": "Önce IPv4",
+          "preferIpv6": "Önce IPv6"
+        }
+      },
+      "dns": {
+        "title": "DNS",
+        "remoteDns": "Uzak DNS",
+        "remoteDnsDomainStrategy": "Uzak DNS alan adı stratejisi",
+        "directDns": "Giden sunucu çözümleyicisi (doğrudan)",
+        "directDnsDomainStrategy": "Giden alan adı stratejisi",
+        "enableFakeDns": "Sahte DNS’i aç",
+        "domainStrategy": {
+          "auto": "Otomatik",
+          "preferIpv6": "IPv6 tercih et",
+          "preferIpv4": "IPv4 tercih et",
+          "ipv4Only": "Sadece IPv4",
+          "ipv6Only": "Sadece IPv6"
+        }
+      },
+      "inbound": {
+        "title": "Gelen",
+        "serviceMode": "Servis modu",
+        "serviceModes": {
+          "proxy": "Yalnızca proxy servisi",
+          "systemProxy": "Sistem proxy'sini ayarla",
+          "tun": "VPN"
+        },
+        "shortServiceModes": {
+          "proxy": "Proxy",
+          "systemProxy": "Sistem proxy'si",
+          "tun": "VPN",
+          "router": "Yönlendirici"
+        },
+        "strictRoute": "Katı yönlendirme",
+        "tunImplementation": "TUN uygulaması",
+        "tunImplementations": {
+          "mixed": "Karışık",
+          "system": "Sistem",
+          "gvisor": "gVisor"
+        },
+        "mixedPort": "Proxy portu (SOCKS5/4, HTTP)",
+        "tproxyPort": "Şeffaf proxy portu",
+        "directPort": "Direct portu",
+        "redirectPort": "Yönlendirme portu",
+        "lanSharing": "Güvenli VPN paylaşımı",
+        "connectionSharing": "Bağlantı paylaşımı",
+        "qrCode": "QR kod",
+        "closedInVpn": "VPN modunda kapalı, paylaşılmadıkça",
+        "proxySecret": "Proxy parolası",
+        "noSecret": "Parola yok: porta erişen her uygulama veya cihaz kullanabilir",
+        "generateSecret": "Yeni oluştur",
+        "removeSecret": "Parola kaldırılsın mı?",
+        "removeSecretMsg": "Parola olmadan bu cihazdaki her uygulama ve paylaşım açıkken ağdaki her cihaz proxy'yi kullanıcı adı ve parola olmadan kullanabilir. Riski size aittir.",
+        "localProxy": "Yerel proxy",
+        "localProxyInVpn": "VPN modunda açık tut",
+        "localProxyInVpnHint": "Uygulamalar zaten VPN'i kullanır; yalnızca proxy'ye ayarlanmış uygulamalar için",
+        "localProxyAuth": "Parola iste",
+        "localProxyAuthHint": "Tarayıcılar gibi bazı uygulamalar SOCKS parolası gönderemez",
+        "notAsSystemProxy": "Sistem proxy'si için istenmez, çünkü onu gönderemez",
+        "lanGroup": "Yerel ağda paylaşım",
+        "lanSharingPort": "Paylaşım portu",
+        "otherPorts": "Diğer portlar",
+        "closedInVpnLocal": "VPN modunda kapalı"
+      },
+      "tlsTricks": {
+        "title": "TLS hileleri",
+        "enable": "Fragment’ı aç",
+        "packets": "Fragmentation paketleri",
+        "packetsTlsHello": "TLS Hello",
+        "packets1_1": "1-1",
+        "packets1_2": "1-2",
+        "packets1_3": "1-3",
+        "packets1_4": "1-4",
+        "packets1_5": "1-5",
+        "size": "Fragment boyutu",
+        "sleep": "Fragment gecikmesi",
+        "mixedSniCase": {
+          "enable": "Karışık SNI harf durumunu aç"
+        },
+        "padding": {
+          "enable": "Padding’i aç",
+          "size": "Padding boyutu"
+        }
+      },
+      "chain": {
+        "quick": {
+          "off": "Kapalı",
+          "extraSecurity": {
+            "title": "Ekstra güvenlik",
+            "subtitle": "Proxy'ye güvenmediğinizde",
+            "ipBy": "IP adresinizi $mode belirler",
+            "notTracked": "VPN sağlayıcınız trafiğinizi göremez",
+            "forPublic": "Herkese açık ve anonim proxy'ler için uygun",
+            "slower": "Hızı düşürebilir"
+          },
+          "unblocker": {
+            "title": "Proxy engel kaldırıcı",
+            "subtitle": "Proxy'nin filtrelemeyi aşmasını sağlar",
+            "mayConnect": "Filtrelenmiş bir proxy bağlanabilir",
+            "personalOnly": "Yalnızca kişisel bir proxy için yararlı",
+            "notForPublic": "Herkese açık proxy'ler için uygun değil",
+            "slower": "Proxy biraz yavaşlar"
+          }
+        },
+        "title": "Zincir",
+        "subtitle": "Ekstra güvenlik ve engel kaldırıcı",
+        "finalIp": "Nihai IP",
+        "levels": {
+          "app": {
+            "title": "Uygulama",
+            "msg": "Başlangıç noktası: Uygulama trafiğiniz burada zincire girer ve son bypass'a hazırlanmak için sonraki katmanlardan geçer"
+          },
+          "extraSecurity": {
+            "title": "Ekstra güvenlik",
+            "msg": "Ana profiliniz güvenilir olmasa bile verilerinizi gizli tutmak için ekstra bir kalkan ekler"
+          },
+          "mainProfile": {
+            "title": "Ana profil"
+          },
+          "unblocker": {
+            "title": "Engel kaldırıcı",
+            "msg": "Ağ kısıtlamalarını aşmaya yardımcı olur. Yardımcı bağlanırsa, ana profiliniz şu anda engellenmiş olsa bile çalışmaya devam edebilir."
+          },
+          "filtering": {
+            "title": "Filtreleme",
+            "msg": "Son çıkış: Trafiğiniz aktif katmanlardan geçer. Bunlar Ekstra güvenlik, Ana profil veya Engel kaldırıcı olabilir. Etkileri uygulandıktan sonra trafik, yerel ağ filtrelemesini aşacak şekilde yönlendirilir."
+          }
+        },
+        "warp": {
+          "missingConfig": "WARP yapılandırması eksik",
+          "licenseKey": "Lisans anahtarı",
+          "tunnel": "Tünel",
+          "cleanIp": "Temiz IP",
+          "port": "Port",
+          "noise": {
+            "count": "Gürültü sayısı",
+            "mode": "Gürültü modu",
+            "size": "Gürültü boyutu",
+            "delay": "Gürültü gecikmesi",
+            "modes": {
+              "standard": "Standart",
+              "random": "Rastgele",
+              "quic": "QUIC (HTTPS)",
+              "quicMimic": "QUIC el sıkışması",
+              "dns": "DNS (google.com)",
+              "dnsCloudflare": "DNS (cloudflare.com)",
+              "sip": "SIP (VoIP araması)",
+              "stun": "STUN (görüntülü arama)"
+            },
+            "title": "WireGuard gürültüsü"
+          },
+          "endpoint": "Uç nokta",
+          "endpointSources": {
+            "profile": "Cloudflare'in atadığı",
+            "scan": "Tarama",
+            "custom": "Özel"
+          },
+          "customServer": "Adres",
+          "mtu": "MTU",
+          "customized": "Özelleştirildi",
+          "scanner": {
+            "title": "Tarayıcı"
+          },
+          "masque": {
+            "title": "MASQUE"
+          },
+          "awg": {
+            "title": "AmneziaWG"
+          }
+        },
+        "psiphon": {
+          "selectServerRegion": "Sunucu bölgesini seçin",
+          "regions": {
+            "auto": "@:common.auto",
+            "at": "Avusturya (at)",
+            "au": "Avustralya (au)",
+            "be": "Belçika (be)",
+            "bg": "Bulgaristan (bg)",
+            "ca": "Kanada (ca)",
+            "ch": "İsviçre (ch)",
+            "cz": "Çek Cumhuriyeti (cz)",
+            "de": "Almanya (de)",
+            "dk": "Danimarka (dk)",
+            "ee": "Estonya (ee)",
+            "es": "İspanya (es)",
+            "fi": "Finlandiya (fi)",
+            "fr": "Fransa (fr)",
+            "gb": "Birleşik Krallık (gb)",
+            "hr": "Hırvatistan (hr)",
+            "hu": "Macaristan (hu)",
+            "ie": "İrlanda (ie)",
+            "in": "Hindistan (in)",
+            "it": "İtalya (it)",
+            "jp": "Japonya (jp)",
+            "lv": "Letonya (lv)",
+            "nl": "Hollanda (nl)",
+            "no": "Norveç (no)",
+            "pl": "Polonya (pl)",
+            "pt": "Portekiz (pt)",
+            "ro": "Romanya (ro)",
+            "rs": "Sırbistan (rs)",
+            "se": "İsveç (se)",
+            "sg": "Singapur (sg)",
+            "sk": "Slovakya (sk)",
+            "us": "Amerika Birleşik Devletleri (us)"
+          }
+        },
+        "profile": {
+          "selectProfile": "Profil seçin",
+          "conduitPairingId": "Conduit eşleşme ID'si"
+        }
+      }
+    }
+  },
+  "components": {
+    "stats": {
+      "connection": "Bağlantı",
+      "traffic": "Trafik",
+      "trafficLive": "Canlı trafik",
+      "trafficTotal": "Toplam trafik",
+      "uplink": "Yükleme",
+      "downlink": "İndirme",
+      "speed": "Hız",
+      "totalTransferred": "Toplam aktarılan"
+    },
+    "subscriptionInfo": {
+      "upload": "Yükleme",
+      "download": "İndirme",
+      "total": "Toplam trafik",
+      "expireDate": "Bitiş tarihi",
+      "expired": "Süresi doldu",
+      "noTraffic": "Kota doldu",
+      "remainingDuration(plural, param=days)": {
+        "other": "$days gün kaldı"
+      },
+      "remainingUnlimited": "Sınırsız",
+      "remainingTrafficSemanticLabel": "${consumed} / ${total} trafik kullanıldı",
+      "remainingTraffic": "Kalan trafik",
+      "openWebPage": "Web sayfasını aç",
+      "support": "Destek",
+      "openLinkTitle": "Bu bağlantı açılsın mı?",
+      "openLinkAction": "Aç"
+    }
+  },
+  "dialogs": {
+    "sortProfiles": {
+      "title": "Sıralama ölçütü",
+      "sort": {
+        "name": "Alfabetik",
+        "lastUpdate": "Son güncelleme"
+      },
+      "direction": {
+        "newestFirst": "Önce en yeni",
+        "oldestFirst": "Önce en eski"
+      }
+    },
+    "warpLicense": {
+      "title": "Cloudflare WARP onayı",
+      "description(rich)": "Cloudflare WARP ücretsiz bir WireGuard VPN sağlayıcısıdır. Bu seçeneği etkinleştirerek Cloudflare WARP'ın ${tos(Hizmet şartları)}'nı ve ${privacy(Gizlilik politikası)}'nı kabul etmiş olursunuz."
+    },
+    "psiphonLicense": {
+      "title": "Psiphon lisans sözleşmesi",
+      "description(rich)": "Psiphon’u kullanarak, ${tos(Hizmet şartları)}’nı kabul etmiş olursunuz ve ${privacy(Gizlilik politikası)}’nı onaylamış olursunuz. Devam etmeden önce bunları dikkatle okuyun."
+    },
+    "newVersion": {
+      "title": "Güncelleme mevcut",
+      "msg": "@:common.appTitle'ın yeni bir sürümü mevcut. Şimdi güncellensin mi?",
+      "currentVersion": "Mevcut sürüm",
+      "newVersion": "Yeni sürüm",
+      "updateNow": "Şimdi güncelle",
+      "downloading": "İndiriliyor…",
+      "installing": "Yükleyici başlatılıyor…",
+      "allowInstall": "Açılan ayarlarda Proxy4You'ın uygulama yüklemesine izin verin, sonra tekrar deneyin.",
+      "failed": "Güncelleme yüklenemedi.",
+      "openPage": "Sürüm sayfasını aç",
+      "tryAgain": "Tekrar dene"
+    },
+    "confirmation": {
+      "settings": {
+        "import": {
+          "msg": "Bu işlem tüm yapılandırma seçeneklerinin üzerine içe aktarılan değerleri yazar. Devam edilsin mi?"
+        }
+      },
+      "profile": {
+        "delete": {
+          "title": "Profili sil",
+          "msg": "Bu profil silinsin mi? Bu işlem geri alınamaz."
+        }
+      },
+      "appList": {
+        "import": {
+          "msg": "Bu işlem Bypass ve Yalnızca proxy uygulamalarınızı değiştirir. Devam edilsin mi?"
+        }
+      },
+      "routeRule": {
+        "delete": {
+          "title": "Kuralı sil",
+          "msg": "“$rulename” kuralı silinsin mi? Bu işlem geri alınamaz."
+        }
+      },
+      "addProfileByDeepLinkWarning": {
+        "title": "Profil ekle?",
+        "message": "“${host}” adresinden bir dış bağlantı yeni bir profil eklemek istiyor. İçe aktarılsın mı?"
+      },
+      "importRouteRuleByDeepLinkWarning": {
+        "title": "Rota kuralını içe aktar?",
+        "message": "Rota kuralları trafiğinizin nereye gideceğini belirler.\nYalnızca güvendiğiniz bir kaynaktan içe aktarın."
+      }
+    },
+    "adminBgService": {
+      "vpnNeedsAdmin": {
+        "title": "Yönetici izni gerekli",
+        "msg": "VPN modu, Proxy4You arka plan hizmetini yüklemek için bir kerelik yönetici izni gerektirir. Bundan sonra başka bir istem olmadan bağlanabilirsiniz.",
+        "connectWithAdmin": "Yönetici izniyle bağlan",
+        "waitingTitle": "Yönetici izni bekleniyor",
+        "waitingMsg": "Devam etmek için yönetici istemini onaylayın. Durdurup daha sonra tekrar deneyebilirsiniz.",
+        "stop": "Durdur"
+      },
+      "proxyNeedsAdmin": {
+        "title": "Yönetici izni önerilir",
+        "msg": "Bu profildeki bazı ayarlar yönetici izniyle daha iyi çalışır. Yönetici izniyle çalıştırabilir veya izin olmadan devam edip bu ayarları bu bağlantı için kapatabilirsiniz.",
+        "seeConfigs": "Yapılandırmaları göster",
+        "hideConfigs": "Yapılandırmaları gizle",
+        "neverAskAgain": "Bu profil için bir daha sorma",
+        "runAsAdmin": "Yönetici olarak çalıştır",
+        "continueWithoutAdmin": "Yönetici izni olmadan devam et",
+        "elevationFailedTitle": "Yönetici izni alınamadı",
+        "elevationFailedMsg": "Yönetici istemi reddedildi veya başarısız oldu. Tekrar deneyin veya bu bağlantı için yönetici izni olmadan devam edin.",
+        "tryAgain": "Tekrar dene"
+      }
+    },
+    "experimentalNotice": {
+      "title": "Deneysel özellikler kullanılıyor",
+      "msg": "Bağlantı kalitesini etkileyebilecek ve beklenmedik hatalara neden olabilecek bazı deneysel özellikleri etkinleştirdiniz. Bu seçenekleri istediğiniz zaman Ayarlar'dan değiştirebilir veya sıfırlayabilirsiniz.",
+      "disable": "Tekrar gösterme"
+    },
+    "noActiveProfile": {
+      "title": "Bir profil seçin",
+      "msg": "Başlayalım. VPN sunucu bilgilerinizle bir bağlantı profili ekleyin.\n\nHenüz sunucunuz yok mu? Sorun değil. Aşağıdaki rehber ücretsiz bir tane kurmayı gösteriyor.",
+      "helpBtn": {
+        "label": "Nasıl yapıldığını göster",
+        "url": "https://hiddify.com/manager/"
+      }
+    },
+    "unknownDomainsWarning": {
+      "title": "Önce bu bağlantıyı kontrol edin",
+      "cannotVerify": "Bu bağlantı doğrulanmamış",
+      "avoidIfUnsure": "Tamamen emin değilseniz ödeme yapmayın ve hassas bilgi paylaşmayın",
+      "ownResponsibility": "Devam ederseniz sorumluluk size aittir",
+      "open": "Aç",
+      "openIn": "Aç (${seconds})"
+    },
+    "proxyInfo": {
+      "fullTag": "Tam etiket",
+      "type": "Tür",
+      "status": "Durum",
+      "testTime": "Test zamanı",
+      "testDelay": "Test gecikmesi",
+      "isSelected": "Seçili",
+      "isGroup": "Grup",
+      "isSecure": "Güvenli",
+      "port": "Port",
+      "host": "Sunucu",
+      "ip": "IP",
+      "countryCode": "Ülke kodu",
+      "region": "Bölge",
+      "city": "Şehir",
+      "asn": "ASN",
+      "organization": "Kuruluş",
+      "location": "Konum",
+      "postalCode": "Posta kodu",
+      "download": "İndirme",
+      "upload": "Yükleme",
+      "ping": "Ping",
+      "speed": "Hız",
+      "server": "Sunucu",
+      "country": "Ülke",
+      "tapToTest": "Test için dokunun"
+    },
+    "windowClosing": {
+      "askEachTime": "Her seferinde sor",
+      "alertMessage": "Uygulama gizlensin mi, kapatılsın mı?",
+      "remember": "Seçimimi hatırla"
+    },
+    "qrCode": {
+      "copyFullLink": "Tam bağlantıyı kopyala",
+      "copied": "Kopyalandı",
+      "lanLine": "SOCKS5 · yalnızca aynı ağ",
+      "noLocalNetwork": "Yerel ağ bulunamadı",
+      "ip": "IP",
+      "port": "Port",
+      "username": "Kullanıcı adı",
+      "password": "Şifre",
+      "showPassword": "Şifreyi göster",
+      "hidePassword": "Şifreyi gizle"
+    },
+    "qrScanner": {
+      "notFound": "Bu görselde QR kod bulunamadı"
+    },
+    "keepTop": {
+      "title": "Büyük bir abonelik",
+      "description": "Bu profilde $count proxy var. Hepsini çalıştırmak pil, veri ve bellek harcar. Proxy4You onları bir kez test edip en hızlı $keep tanesini çalışır bırakabilir, diğerlerini duraklatabilir.",
+      "hint": "İstediğiniz zaman proxy listesinin sonundan hepsini yeniden çalıştırabilirsiniz.",
+      "keeping": "En hızlı $keep çalışır, diğerleri durur",
+      "all": "$count tanesinin hepsi çalışır",
+      "keep": "En hızlı $keep taneyi tut",
+      "useAll": "$count tanesini de kullan",
+      "howMany": "Kaç tanesi çalışsın",
+      "pickByHand": "Proxy'leri kendiniz seçin"
+    },
+    "keepTags": {
+      "title": "Proxy seç",
+      "hint": "Her bağlandığınızda yalnızca bunlar çalışır.",
+      "search": "Ara",
+      "all": "Tümünü seç",
+      "none": "Temizle",
+      "run": "Bu $n proxy'yi kullan",
+      "sort": "Sırala",
+      "sortProfile": "Profil sırası",
+      "sortPing": "Ping",
+      "sortDownload": "İndirme",
+      "sortUpload": "Yükleme",
+      "selectFastest": "En hızlı $n",
+      "statusChosen": "Seçilen",
+      "statusAnswering": "Yanıt veren",
+      "statusPaused": "Duraklatılmış",
+      "paused": "$n proxy duraklatılmış: ping'leri yok ve test edilemezler.",
+      "wake": "Test için hepsini çalıştır",
+      "offline": "Ping'lerini görmek ve test etmek için bağlanın.",
+      "offlineTitle": "Bağlı değil",
+      "shown": "$n gösteriliyor",
+      "noMatch": "Eşleşen proxy yok",
+      "chosenHint": "Seçmek için yukarıdan bir proxy'ye dokunun",
+      "allShown": "Hepsi yukarıdaki listede",
+      "notShown": "Gösterilmeyen:",
+      "protocol": "Protokol",
+      "country": "Ülke",
+      "anyProtocol": "Herhangi bir protokol",
+      "anyCountry": "Herhangi bir ülke",
+      "otherCountries": "Diğerleri"
+    },
+    "localProxy": {
+      "steps": [
+        "Uygulamanın proxy ayarlarını açın",
+        "SOCKS5 veya HTTP seçin",
+        "Aşağıdaki değerleri girin · kopyalamak için dokunun",
+        "Proxy4You'ı bağlı tutun"
+      ],
+      "hint": "Proxy modu · nasıl kullanılır",
+      "setPassword": "Parola belirle",
+      "manual": "Manuel",
+      "dontShowAgain": "Bir daha gösterme",
+      "thisDevice": "Bu cihaz",
+      "otherDevices": "Diğer cihazlar",
+      "server": "Sunucu",
+      "noPassword": "Parola ayarlanmadı",
+      "turnOnSharing": "Paylaşımı aç",
+      "copyLink": "Bağlantıyı kopyala",
+      "telegramLink": "Telegram bağlantısı",
+      "fullLink": "Tam bağlantı",
+      "portRange": "1024 ile 65535 arasında bir port kullanın",
+      "passwordTooShort": "En az 4 karakter",
+      "edit": "Düzenle"
+    }
+  },
+  "connection": {
+    "tapToConnect": "Bağlanmak için dokunun",
+    "connect": "Bağlan",
+    "connecting": "Bağlanıyor…",
+    "waiting": "Özgürlük aranıyor…",
+    "noAvailableProxies": "Bağlantı başarısız",
+    "hotReloading": "Değişiklikler uygulanıyor…",
+    "connected": "Bağlı",
+    "disconnect": "Bağlantıyı kes",
+    "disconnecting": "Bağlantı kesiliyor…",
+    "failed": "Bağlanılamadı",
+    "slow": "Normalden uzun sürüyor…",
+    "tapToRetry": "Tekrar denemek için dokunun",
+    "errorDetails": "Hata ayrıntıları",
+    "reconnect": "Yeniden bağlan",
+    "reconnectMsg": "Değişiklikleri uygulamak için yeniden bağlanılıyor…",
+    "health": {
+      "title": "Bağlantı kontrolü",
+      "allGood": "Trafiğiniz geçiyor",
+      "pickDead": "Seçilen proxy yanıt vermiyor",
+      "hopPending": "${chain} bağlanıyor…",
+      "hopFailed": "${chain} bağlanamadı",
+      "coreTesting": "Sunucular test ediliyor…",
+      "coreNone": "Hiçbir sunucu yanıt vermiyor",
+      "fastest": "En hızlı sunucu",
+      "yourServer": "Seçili proxy",
+      "notResponding": "Yanıt vermiyor",
+      "testing": "Test ediliyor…",
+      "useFastest": "En hızlısına geç",
+      "hopReady": "Bağlandı",
+      "hopConnecting": "Bağlanıyor…",
+      "hopBroken": "Bağlanamadı",
+      "hopNoReply": "Bağlandı ama yanıt vermiyor",
+      "hopBlocked": "Seçili proxy’nin yanıt vermesini bekliyor",
+      "retry": "Yeniden test et",
+      "change": "Değiştir",
+      "turnOff": "Kapat"
+    }
+  },
+  "errors": {
+    "unexpected": "Beklenmeyen hata",
+    "connection": {
+      "unexpected": "Beklenmeyen bağlantı hatası",
+      "timeout": "Bağlantı zaman aşımına uğradı",
+      "badResponse": "Geçersiz sunucu yanıtı",
+      "connectionError": "Bağlantı hatası",
+      "badCertificate": "Geçersiz sertifika"
+    },
+    "profiles": {
+      "unexpected": "Beklenmeyen hata",
+      "notFound": "Profil bulunamadı",
+      "invalidConfig": "Geçersiz yapılandırma",
+      "invalidUrl": "Geçersiz URL",
+      "canceledByUser": "Kullanıcı tarafından iptal edildi"
+    },
+    "connectivity": {
+      "unexpected": "Beklenmeyen hata",
+      "missingVpnPermission": "VPN izni eksik",
+      "missingNotificationPermission": "Bildirim izni eksik",
+      "core": "Çekirdek hatası"
+    },
+    "singbox": {
+      "serviceNotRunning": "Servis çalışmıyor",
+      "missingPrivilege": "Eksik yetki",
+      "missingPrivilegeMsg": "VPN modu başlatılamıyor. Uygulamayı yönetici olarak yeniden başlatın veya servis modunu değiştirin.",
+      "tunAddressInUse": "Başka bir VPN etkin",
+      "tunAddressInUseMsg": "VPN modu başlatılamıyor. Diğer VPN'i kapatın veya servis modunu değiştirin.",
+      "invalidConfigOptions": "Geçersiz yapılandırma seçenekleri",
+      "invalidConfig": "Geçersiz yapılandırma"
+    },
+    "warp": {
+      "missingLicense": "WARP lisansı gerekli",
+      "missingLicenseMsg": "Bu profil WARP kullanıyor. Devam etmek için WARP lisansını kabul edin."
+    },
+    "psiphon": {
+      "missingLicense": "Psiphon lisansı gerekli",
+      "missingLicenseMsg": "Bu profil Psiphon kullanıyor. Devam etmek için Psiphon lisansını kabul edin."
+    }
+  }
+}

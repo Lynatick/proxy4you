@@ -1,0 +1,30 @@
+name: CI
+on:
+  # pull_request:
+  #   paths-ignore:
+  #     - '**.md'
+  #     - 'docs/**'
+  #     - 'test.configs/**'
+  #     - '.vscode/'
+  #     - 'appcast.xml'
+  # Run manually from the Actions tab (or `gh workflow run ci.yml --ref <branch>`).
+  workflow_dispatch:
+    inputs:
+      upload-artifact:
+        description: 'Sign the builds and upload them as artifacts'
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+    permissions: write-all
+    if: "${{!contains(github.event.head_commit.message, 'release: version')}}"
+    with:
+      upload-artifact: ${{ inputs.upload-artifact }}
+      

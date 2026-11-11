@@ -1,0 +1,152 @@
+package ray2sing
+
+import (
+	"net/url"
+	"regexp"
+	"strings"
+
+	T "github.com/sagernet/sing-box/option"
+)
+
+// HysteriaURLData holds the parsed data from a Hysteria URL.
+type UrlSchema struct {
+	Scheme   string
+	Username string
+	Password string
+	Hostname string
+	Port     uint16
+	Name     string
+	Params   map[string]string
+	// PortRanges holds "start:end" entries when the URL port is a list/range such as
+	// "443,20000-30000" (hysteria port hopping); Port is then the first port.
+	PortRanges []string
+}
+
+func (u UrlSchema) GetServerOption() T.ServerOptions {
+	return T.ServerOptions{
+		Server:     u.Hostname,
+		ServerPort: u.Port,
+	}
+}
+
+// func (u UrlSchema) GetRelayOptions() (*T.TurnRelayOptions, error) {
+// 	return ParseTurnURL(u.Params["relay"])
+// }
+
+// parseHysteria2 parses a given URL and returns a HysteriaURLData struct.
+func ParseUrl(inputURL string, defaultPort uint16) (*UrlSchema, error) {
+	inputURL, portRanges := extractPortRanges(inputURL)
+	parsedURL, err := url.Parse(inputURL)
+	if err != nil {
+		return nil, err
+	}
+	port := toUInt16(parsedURL.Port(), defaultPort)
+
+	name := parsedURL.Fragment
+	if i := strings.IndexAny(name, "\r\n"); i >= 0 {
+		name = name[:i]
+	}
+	data := &UrlSchema{
+		Scheme:     parsedURL.Scheme,
+		Username:   parsedURL.User.Username(),
+		Password:   getPassword(parsedURL),
+		Hostname:   parsedURL.Hostname(),
+		Port:       port,
+		Name:       name,
+		Params:     make(map[string]string),
+		PortRanges: portRanges,
+	}
+	if isBase64CharsOnly(data.Username) {
+		userInfo, err := decodeBase64IfNeeded(data.Username)
+
+		// fmt.Print(userInfo)
+		if err == nil && isValidChar(userInfo) {
+			// If decoding is successful, use the decoded string
+			userDetails := strings.SplitN(userInfo, ":", 2)
+			if len(userDetails) == 2 {
+				data.Username = userDetails[0]
+				data.Password = userDetails[1]
+			}
+		}
+	}
+
+	for key, values := range parsedURL.Query() {
+		data.Params[normalizeStr(key)] = strings.Join(values, ",")
+	}
+
+	return data, nil
+}
+
+// unescapeHTMLAmpersand turns "&amp;" back into "&" in a link. Some subscriptions publish their
+// links HTML-escaped; url.Parse then reads "&amp;pbk=" as a key "amp;pbk" and the parameter is lost.
+// Only "&amp;" is replaced: html.UnescapeString also decodes entities without ";" ("&notes" → "¬es").
+func unescapeHTMLAmpersand(link string) string {
+	if !strings.Contains(link, "://") {
+		return link
+	}
+	return strings.ReplaceAll(link, "&amp;", "&")
+}
+
+var portListRegex = regexp.MustCompile(`^[0-9]+([-,][0-9]+)*$`)
+
+// extractPortRanges rewrites a port list such as "host:443,20000-30000" to its first port
+// (url.Parse rejects lists) and returns the list in sing-box server_ports form ("443:443", "20000:30000").
+func extractPortRanges(inputURL string) (string, []string) {
+	schemeEnd := strings.Index(inputURL, "://")
+	if schemeEnd < 0 {
+		return inputURL, nil
+	}
+	authStart := schemeEnd + 3
+	authEnd := len(inputURL)
+	if i := strings.IndexAny(inputURL[authStart:], "/?#"); i >= 0 {
+		authEnd = authStart + i
+	}
+	authority := inputURL[authStart:authEnd]
+	hostStart := strings.LastIndex(authority, "@") + 1
+	colon := strings.LastIndex(authority, ":")
+	if colon < hostStart || strings.Contains(authority[colon:], "]") {
+		return inputURL, nil
+	}
+	portSpec := authority[colon+1:]
+	if !strings.ContainsAny(portSpec, ",-") || !portListRegex.MatchString(portSpec) {
+		return inputURL, nil
+	}
+	var ranges []string
+	for _, part := range strings.Split(portSpec, ",") {
+		bounds := strings.SplitN(part, "-", 2)
+		if len(bounds) == 1 {
+			bounds = append(bounds, bounds[0])
+		}
+		ranges = append(ranges, bounds[0]+":"+bounds[1])
+	}
+	firstPort := strings.SplitN(strings.SplitN(portSpec, ",", 2)[0], "-", 2)[0]
+	return inputURL[:authStart] + authority[:colon+1] + firstPort + inputURL[authEnd:], ranges
+}
+
+func normalizeStr(ss string) string {
+	s := strings.ToLower(strings.TrimSpace(ss))
+	for _, r := range []string{"_", "-"} {
+		s = strings.ReplaceAll(s, r, "")
+	}
+	return s
+}
+
+func getPassword(u *url.URL) string {
+	if password, ok := u.User.Password(); ok {
+		return password
+	}
+	return ""
+}
+
+var base64CharRegex = regexp.MustCompile(`^[A-Za-z0-9+/=]+$`)
+
+func isBase64CharsOnly(s string) bool {
+	return base64CharRegex.MatchString(s)
+}
+
+var validCharRegex = regexp.MustCompile(`^[A-Za-z0-9+/=_)(: !~@#$%^&*-]+$`)
+
+func isValidChar(s string) bool {
+
+	return validCharRegex.MatchString(s)
+}

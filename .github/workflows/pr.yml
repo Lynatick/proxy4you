@@ -1,0 +1,50 @@
+name: PR
+
+# The gate a pull request goes through: the code generation the app needs (generated files are not
+# committed), the analyzer and the tests. Unlike Build, this workflow uses no secret and uploads
+# nothing, so a pull request from a fork can run it.
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'test.configs/**'
+      - '.vscode/'
+      - 'appcast.xml'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'test.configs/**'
+      - '.vscode/'
+      - 'appcast.xml'
+
+concurrency:
+  group: pr-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2.21.0
+        with:
+          # Keep in sync with FLUTTER_VERSION in build.yml.
+          flutter-version: '3.38.5'
+          channel: 'stable'
+          cache: true
+      - name: Generate sources
+        run: |
+          flutter pub get
+          dart run build_runner build --delete-conflicting-outputs
+          dart run slang
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Test
+        run: flutter test

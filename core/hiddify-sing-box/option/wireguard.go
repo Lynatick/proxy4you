@@ -1,0 +1,111 @@
+package option
+
+import (
+	"net/netip"
+
+	C "github.com/sagernet/sing-box/constant"
+	"github.com/sagernet/sing/common/json/badoption"
+	hiddify "github.com/sagernet/wireguard-go/hiddify"
+)
+
+type WireGuardEndpointOptions struct {
+	System       bool                             `json:"system,omitempty"`
+	Name         string                           `json:"name,omitempty"`
+	MTU          uint32                           `json:"mtu,omitempty"`
+	Address      badoption.Listable[netip.Prefix] `json:"address"`
+	PrivateKey   string                           `json:"private_key"`
+	ListenPort   uint16                           `json:"listen_port,omitempty"`
+	Peers        []WireGuardPeer                  `json:"peers,omitempty"`
+	UDPTimeout   badoption.Duration               `json:"udp_timeout,omitempty"`
+	UDPMapping   UDPNATBehavior                   `json:"udp_mapping,omitempty"`
+	UDPFiltering UDPNATBehavior                   `json:"udp_filtering,omitempty"`
+	UDPNATMax    uint32                           `json:"udp_nat_max,omitempty"`
+	Workers      int                              `json:"workers,omitempty"`
+	OnDemand     bool                             `json:"on_demand,omitempty"`
+	DialerOptions
+
+	Noise hiddify.NoiseOptions `json:"noise,omitempty"` //H
+	AWG   *AwgOptions          `json:"awg,omitempty"`   //H
+	// MTUDiscovery lowers the MTU to what gets through the tunnel; on unless false. //H
+	MTUDiscovery *bool `json:"mtu_discovery,omitempty"` //H
+	// FallbackAddress are tried in turn, on the peer's port, when the only peer's address gets no //H
+	// handshake. //H
+	FallbackAddress badoption.Listable[netip.Addr] `json:"fallback_address,omitempty"` //H
+}
+
+type WireGuardPeer struct {
+	// H: connections from this peer are accounted to this user (metadata.User)
+	Username                    string                       `json:"name,omitempty"`
+	Address                     string                       `json:"address,omitempty"`
+	Port                        uint16                       `json:"port,omitempty"`
+	PublicKey                   string                       `json:"public_key,omitempty"`
+	PreSharedKey                string                       `json:"pre_shared_key,omitempty"`
+	AllowedIPs                  LegacyListable[netip.Prefix] `json:"allowed_ips,omitempty"`
+	PersistentKeepaliveInterval uint16                       `json:"persistent_keepalive_interval,omitempty"`
+	Reserved                    []uint8                      `json:"reserved,omitempty"`
+}
+
+type WARPEndpointOptions struct { //H
+	System     bool               `json:"system,omitempty"`
+	Name       string             `json:"name,omitempty"`
+	ListenPort uint16             `json:"listen_port,omitempty"`
+	UDPTimeout badoption.Duration `json:"udp_timeout,omitempty"`
+	Workers    int                `json:"workers,omitempty"`
+	Profile    WARPProfile        `json:"profile,omitempty"`
+	DialerOptions
+
+	UniqueIdentifier string `json:"unique_identifier,omitempty"`
+	ServerOptions
+	Noise hiddify.NoiseOptions `json:"noise,omitempty"`
+	AWG   *AwgOptions          `json:"awg,omitempty"`
+	// Mode is the tunnel: "wg", "awg", "masque", or "auto" (the fastest that answers). Empty
+	// follows the masque and awg blocks.
+	Mode string `json:"mode,omitempty"`
+	// MASQUE makes WARP use MASQUE (HTTP/3 or HTTP/2) instead of WireGuard; not with awg.
+	MASQUE *WARPMASQUEOptions `json:"masque,omitempty"`
+	*C.WARPConfig
+	MTU     uint32              `json:"mtu,omitempty"`
+	Scanner *WARPScannerOptions `json:"scanner,omitempty"`
+	// RotatePorts tries the profile's next port when the one in use gets no handshake (without the
+	// scanner and server_port); on unless false.
+	RotatePorts *bool `json:"rotate_ports,omitempty"`
+	// MTUDiscovery is the tunnel's mtu_discovery (WireGuard or AmneziaWG); on unless false.
+	MTUDiscovery *bool `json:"mtu_discovery,omitempty"`
+	// FallbackAddress is the tunnel's fallback_address (WireGuard or AmneziaWG): other WARP
+	// addresses, tried on the same port when the one in use gets no handshake.
+	FallbackAddress badoption.Listable[netip.Addr] `json:"fallback_address,omitempty"`
+}
+
+type WARPProfile struct { //H
+	ID         string `json:"id,omitempty"`
+	PrivateKey string `json:"private_key,omitempty"`
+	AuthToken  string `json:"auth_token,omitempty"`
+	Recreate   bool   `json:"recreate,omitempty"`
+	Detour     string `json:"detour,omitempty"`
+	License    string `json:"license,omitempty"`
+}
+
+type LegacyWireGuardOutboundOptions struct { //H
+	DialerOptions
+	SystemInterface bool                             `json:"system_interface,omitempty"`
+	GSO             bool                             `json:"gso,omitempty"`
+	InterfaceName   string                           `json:"interface_name,omitempty"`
+	LocalAddress    badoption.Listable[netip.Prefix] `json:"local_address"`
+	PrivateKey      string                           `json:"private_key"`
+	Peers           []LegacyWireGuardPeer            `json:"peers,omitempty"`
+	ServerOptions
+	PeerPublicKey string      `json:"peer_public_key"`
+	PreSharedKey  string      `json:"pre_shared_key,omitempty"`
+	Reserved      []uint8     `json:"reserved,omitempty"`
+	Workers       int         `json:"workers,omitempty"`
+	MTU           uint32      `json:"mtu,omitempty"`
+	Network       NetworkList `json:"network,omitempty"`
+}
+
+type LegacyWireGuardPeer struct { //H
+	ServerOptions
+	PublicKey    string                           `json:"public_key,omitempty"`
+	PreSharedKey string                           `json:"pre_shared_key,omitempty"`
+	AllowedIPs   badoption.Listable[netip.Prefix] `json:"allowed_ips,omitempty"`
+	Reserved     []uint8                          `json:"reserved,omitempty"`
+}

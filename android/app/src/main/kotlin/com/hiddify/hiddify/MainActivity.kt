@@ -1,0 +1,208 @@
+package com.hiddify.hiddify
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.VpnService
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
+import com.hiddify.hiddify.bg.ServiceConnection
+import com.hiddify.hiddify.bg.ServiceNotification
+import com.hiddify.hiddify.constant.Alert
+import com.hiddify.hiddify.constant.ServiceMode
+import com.hiddify.hiddify.constant.Status
+import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.engine.FlutterEngine
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.LinkedList
+
+
+class MainActivity : FlutterFragmentActivity(), ServiceConnection.Callback {
+    companion object {
+        private const val TAG = "ANDROID/MyActivity"
+        lateinit var instance: MainActivity
+
+        const val VPN_PERMISSION_REQUEST_CODE = 1001
+        const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1010
+    }
+
+    private val connection = ServiceConnection(this, this)
+
+    val logList = LinkedList<String>()
+    var logCallback: ((Boolean) -> Unit)? = null
+    val serviceStatus = MutableLiveData(Status.Stopped)
+    val serviceAlerts = MutableLiveData<ServiceEvent?>(null)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Application.initialize(this)
+        super.onCreate(savedInstanceState)
+        // Android 15 draws apps targeting SDK 35 edge-to-edge; this does the same on older
+        // versions, with transparent bars the Flutter UI draws behind. After super, which
+        // tints the status bar for its own fullscreen look.
+        enableEdgeToEdge()
+    }
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        instance = this
+        reconnect()
+        flutterEngine.plugins.add(MethodHandler(lifecycleScope))
+        flutterEngine.plugins.add(PlatformSettingsHandler())
+        flutterEngine.plugins.add(EventHandler())
+        flutterEngine.plugins.add(LogHandler())
+//        flutterEngine.plugins.add(GroupsChannel(lifecycleScope))
+//        flutterEngine.plugins.add(ActiveGroupsChannel(lifecycleScope))
+//        flutterEngine.plugins.add(StatsChannel(lifecycleScope))
+    }
+
+    fun reconnect() {
+        connection.reconnect()
+    }
+
+    // The start that is still waiting on a permission dialog. Every path that ends a start
+    // completes it exactly once: true once the service is asked to start, false once it
+    // cannot start (the reason goes out separately as a service alert). Main thread only.
+    private var pendingStart: CompletableDeferred<Boolean>? = null
+
+    /** Returns only after the permission dialogs are answered: true if the service was asked to start. */
+    @SuppressLint("NewApi")
+    suspend fun startService(): Boolean = withContext(Dispatchers.Main) {
+        // A second start while the dialogs are open waits for them instead of opening more.
+        pendingStart?.let { return@withContext it.await() }
+        val start = CompletableDeferred<Boolean>().also { pendingStart = it }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !ServiceNotification.checkPermission()) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            startService0()
+        }
+        start.await()
+    }
+
+    private fun finishStart(started: Boolean) {
+        pendingStart?.complete(started)
+        pendingStart = null
+    }
+
+    private fun startService0() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (Settings.rebuildServiceMode()) {
+                connection.reconnect()
+            }
+            if (Settings.serviceMode == ServiceMode.VPN) {
+                if (prepare()) {
+                    return@launch
+                }
+            }
+            val intent = Intent(Application.application, Settings.serviceClass())
+            withContext(Dispatchers.Main) {
+                val started = runCatching { ContextCompat.startForegroundService(this@MainActivity, intent) }
+                    .onFailure { onServiceAlert(Alert.StartService, it.message) }
+                    .isSuccess
+                if (started) Settings.startedByUser = true
+                finishStart(started)
+            }
+        }
+    }
+
+    /** True when the start cannot go on now: the VPN dialog is open, or preparing failed. */
+    private suspend fun prepare() = withContext(Dispatchers.Main) {
+        try {
+            val intent = VpnService.prepare(this@MainActivity)
+            if (intent != null) {
+                prepareLauncher.launch(intent)
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            onServiceAlert(Alert.RequestVPNPermission, e.message)
+            finishStart(false)
+            true
+        }
+    }
+    private val notificationPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            if (Settings.dynamicNotification && !isGranted) {
+                onServiceAlert(Alert.RequestNotificationPermission, null)
+                finishStart(false)
+            } else {
+                startService0()
+            }
+        }
+
+    private val prepareLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                startService0()
+            } else {
+                onServiceAlert(Alert.RequestVPNPermission, null)
+                finishStart(false)
+            }
+        }
+
+    override fun onServiceStatusChanged(status: Status) {
+        serviceStatus.postValue(status)
+    }
+
+    override fun onServiceAlert(type: Alert, message: String?) {
+        serviceAlerts.postValue(ServiceEvent(Status.Stopped, type, message))
+    }
+
+
+
+
+    override fun onDestroy() {
+        connection.disconnect()
+        super.onDestroy()
+    }
+
+    @SuppressLint("NewApi")
+    private fun grantNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                NOTIFICATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                lifecycleScope.launch { startService() }
+            } else onServiceAlert(Alert.RequestNotificationPermission, null)
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == VPN_PERMISSION_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) lifecycleScope.launch { startService() }
+            else onServiceAlert(Alert.RequestVPNPermission, null)
+        } else if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) lifecycleScope.launch { startService() }
+            else onServiceAlert(Alert.RequestNotificationPermission, null)
+        }
+    }
+}

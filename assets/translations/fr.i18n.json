@@ -1,0 +1,1094 @@
+{
+  "common": {
+    "appTitle": "Proxy4You",
+    "start": "Commencer",
+    "version": "Version",
+    "ok": "OK",
+    "cancel": "Annuler",
+    "kContinue": "Continuer",
+    "undo": "Annuler",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "filter": "Filtrer",
+    "all": "Tous",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "clear": "Effacer",
+    "close": "Fermer",
+    "auto": "Automatique",
+    "manually": "Manuellement",
+    "name": "Nom",
+    "url": "URL",
+    "add": "Ajouter",
+    "clipboard": "Presse-papiers",
+    "addToClipboard": "Copier dans le presse-papiers",
+    "qrCode": "Code QR",
+    "free": "Gratuit",
+    "warp": "WARP",
+    "fragment": "Fragment",
+    "help": "Aide",
+    "save": "Enregistrer",
+    "update": "Mettre à jour",
+    "pin": "Épingler",
+    "unpin": "Désépingler",
+    "share": "Partager",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "discard": "Ignorer",
+    "import": "Importer",
+    "export": "Exporter",
+    "later": "Plus tard",
+    "ignore": "Ignorer",
+    "quit": "Quitter",
+    "notSet": "Non défini",
+    "hide": "Masquer",
+    "exit": "Quitter",
+    "reset": "Réinitialiser",
+    "done": "Terminé",
+    "decline": "Refuser",
+    "agree": "Accepter",
+    "empty": "Vide",
+    "unknown": "Inconnu",
+    "hidden": "Caché",
+    "timeout": "Délai expiré",
+    "sort": "Trier",
+    "dashboard": "Tableau de bord",
+    "disable": "Désactiver",
+    "psiphon": "Psiphon",
+    "profile": "Profil",
+    "configuration": "Configuration",
+    "file": "Fichier",
+    "interval": {
+      "day": {
+        "zero": "",
+        "one": "$n jour",
+        "other": "$n jours"
+      },
+      "hour": {
+        "zero": "",
+        "one": "$n heure",
+        "other": "$n heures"
+      }
+    },
+    "msg": {
+      "permission": {
+        "denied": "Permission refusée"
+      },
+      "export": {
+        "clipboard": {
+          "success": "Copié dans le presse-papiers",
+          "failure": "Échec de la copie dans le presse-papiers",
+          "contentTooLarge": "Contenu trop volumineux. Exportez-le vers un fichier."
+        },
+        "file": {
+          "success": "Fichier JSON créé",
+          "failure": "Échec de la création du fichier"
+        }
+      },
+      "import": {
+        "confirm": "Confirmer l'importation",
+        "success": "Importé",
+        "failure": "Échec de l'importation"
+      },
+      "autoSave": {
+        "success": "Modifications enregistrées automatiquement"
+      }
+    }
+  },
+  "intro": {
+    "banner": "Tout ce dont vous avez besoin pour un internet sans restrictions",
+    "termsAndPolicyCaution(rich)": "En continuant, vous acceptez les ${tap(@:pages.about.termsAndConditions)}",
+    "info(rich)": "Fait avec ❤️ par Proxy4You. ${tap_source(Open source)} et ${tap_license(Licence)}"
+  },
+  "pages": {
+    "home": {
+      "title": "Accueil",
+      "quickSettings": "Réglages rapides"
+    },
+    "proxies": {
+      "title": "Proxys",
+      "sort": "Trier les proxys",
+      "testDelay": "Tester le délai",
+      "empty": "Aucun proxy disponible",
+      "connectToSeeProxies": "Connectez-vous pour voir les proxies",
+      "loadFailed": "Impossible de charger les proxies. Appuyez pour réessayer.",
+      "activeProxy": "Proxy actif",
+      "unknownIp": "IP inconnue",
+      "checkingIp": "Vérification de l’IP…",
+      "switchFailed": "Impossible de passer à ce proxy. Réessayez.",
+      "notResponding": "Ne répond pas",
+      "noneResponding": "Aucun proxy ne répond",
+      "sortOptions": {
+        "unsorted": "Par défaut",
+        "name": "Alphabétiquement",
+        "delay": "Par latence",
+        "usage": "Par utilisation",
+        "upload": "Par débit montant",
+        "download": "Par débit descendant"
+      },
+      "ipInfo": {
+        "address": "Adresse IP",
+        "country": "Pays",
+        "organization": "Organisation"
+      },
+      "delay": {
+        "result": "Latence : ${delay} ms",
+        "timeout": "Délai du test de latence expiré",
+        "unavailable": "Indisponible",
+        "testing": "Latence : test en cours…"
+      },
+      "status": {
+        "connecting": "Connexion",
+        "registering": "Inscription",
+        "failed": "Échec",
+        "ready": "Prêt",
+        "searching": "Recherche",
+        "reconnecting": "Reconnexion"
+      },
+      "signalStyle": "Style signal",
+      "keepTop": {
+        "picking": "Recherche des $keep plus rapides parmi $count…",
+        "pickingBody": "Tous les proxys sont testés une fois ; ensuite seuls les plus rapides restent actifs.",
+        "kept": "Les $n plus rapides sont actifs",
+        "keptBody": "$paused autres proxys sont en pause pour économiser batterie et données.",
+        "showAll": "Afficher les $count",
+        "big": "$count proxys sont actifs",
+        "bigBody": "Ne gardez actifs que les $keep plus rapides pour économiser batterie et données.",
+        "keep": "Garder les $keep plus rapides",
+        "change": "Changer le nombre",
+        "chosen": "Vos $n proxys choisis tournent",
+        "choose": "Choisir"
+      },
+      "upload": {
+        "test": "Tester le débit montant",
+        "failed": "Impossible de lancer le test de débit",
+        "hint": "Toucher : débit montant · Maintenir : débit descendant",
+        "hintBoth": "Toucher : les deux débits · Maintenir : débit descendant"
+      },
+      "speedTest": {
+        "title": "Test de débit",
+        "what": "Que tester",
+        "download": "Téléchargement",
+        "upload": "Envoi",
+        "amount": "Quantité par proxy",
+        "proxies": "Proxys à tester",
+        "proxiesHint": "Les plus rapides au ping",
+        "all": "Tous",
+        "fastest": "Les $n plus rapides",
+        "through": "$n Mo par chacun des $count plus rapides",
+        "throughAll": "$n Mo par chacun des $count proxys",
+        "throughEach": "$n Mo par proxy",
+        "start": "Lancer le test",
+        "save": "Enregistrer",
+        "testDownload": "Tester le débit descendant",
+        "both": "Les deux",
+        "bothWays": "en descente et en montée",
+        "amountHint": "plus, c'est plus précis",
+        "clear": "Effacer les résultats enregistrés",
+        "cleared": "Effacés",
+        "which": "Quels proxys",
+        "shown": "Affichés ($n)",
+        "chosen": "Choisis ($n)"
+      }
+    },
+    "profiles": {
+      "title": "Profils",
+      "add": "Ajouter un profil",
+      "fromPhone": {
+        "title": "Ajouter depuis le téléphone",
+        "scan": "Scannez ce code avec l'appareil photo du téléphone, collez un lien d'abonnement et envoyez-le.",
+        "sameNetwork": "Votre téléphone et ce téléviseur doivent être sur le même réseau Wi-Fi.",
+        "noNetwork": "Ce téléviseur n'est pas sur un réseau local. Connectez-le au Wi-Fi pour ajouter un lien depuis votre téléphone.",
+        "locked": "Trop de codes erronés ont été essayés, l'accès est donc verrouillé. Fermez puis rouvrez pour obtenir un nouveau code.",
+        "received": "Reçu depuis votre téléphone",
+        "from": "Depuis $address",
+        "page": {
+          "title": "Envoyer à Proxy4You sur votre téléviseur",
+          "intro": "Ajoutez un abonnement au téléviseur en quatre étapes, sans le saisir à la télécommande.",
+          "steps": {
+            "network": {
+              "title": "Rejoignez le même Wi-Fi",
+              "body": "Le téléphone et le téléviseur doivent être sur le même réseau Wi-Fi, sinon cette page ne peut pas joindre le téléviseur."
+            },
+            "copy": {
+              "title": "Copiez votre lien",
+              "body": "Copiez le lien d'abonnement de votre fournisseur, ou tout lien de proxy ou configuration."
+            },
+            "paste": {
+              "title": "Collez-le ici",
+              "body": "Touchez la zone ci-dessous, collez le lien, puis touchez « Envoyer au téléviseur »."
+            },
+            "confirm": {
+              "title": "Confirmez sur le téléviseur",
+              "body": "Le lien s'affiche sur le téléviseur. Appuyez sur Importer avec la télécommande. Rien n'est ajouté avant."
+            }
+          },
+          "label": "Lien d'abonnement",
+          "hint": "Collez un lien d'abonnement ou une configuration",
+          "send": "Envoyer au téléviseur",
+          "sentTitle": "Envoyé au téléviseur",
+          "sent": "Appuyez maintenant sur Importer sur le téléviseur pour l'ajouter. Vous pouvez envoyer un autre lien ci-dessous.",
+          "empty": "Collez d'abord un lien.",
+          "footer": "Cette page ne fonctionne que lorsque « Ajouter un profil » est ouvert sur le téléviseur, et seulement sur votre réseau local."
+        }
+      },
+      "update": "Mettre à jour le profil",
+      "viewAllProfiles": "Voir tous les profils",
+      "activeProfileName": "Nom du profil actif : « ${name} »",
+      "nonActiveProfileName": "Sélectionner « ${name} » comme profil actif",
+      "freeSubNotFound": "Aucun abonnement gratuit trouvé",
+      "freeSubNotFoundForRegion": "Aucun abonnement gratuit trouvé pour la région « ${region} »",
+      "failedToLoad": "Échec du chargement",
+      "updateSubscriptions": "Mettre à jour les abonnements",
+      "share": {
+        "urlToClipboard": "Copier l'URL",
+        "showUrlQr": "Afficher le QR code",
+        "jsonToClipboard": "Copier le JSON"
+      },
+      "msg": {
+        "save": {
+          "success": "Profil enregistré"
+        },
+        "invalidUrl": "URL invalide",
+        "add": {
+          "failure": "Échec de l'ajout du profil"
+        },
+        "update": {
+          "success": "Profil mis à jour",
+          "failure": "Échec de la mise à jour du profil",
+          "failureNamed": "Échec de la mise à jour de « ${name} »",
+          "bulkSuccess(plural, param=count)": {
+            "one": "$count profil mis à jour",
+            "other": "$count profils mis à jour"
+          },
+          "bulkPartial": "${success} mis à jour\n${failed} échoués : ${names}"
+        },
+        "delete": {
+          "success": "Profil supprimé"
+        }
+      }
+    },
+    "profileDetails": {
+      "title": "Profil",
+      "lastUpdate": "Dernière mise à jour",
+      "form": {
+        "nameHint": "Nom du profil",
+        "emptyName": "Le nom est requis",
+        "invalidUrl": "URL invalide",
+        "urlHint": "URL complète de la configuration",
+        "disableAutoUpdate": "Désactiver la mise à jour automatique",
+        "autoUpdateInterval": "Intervalle de mise à jour automatique",
+        "loading": "Ajout du profil…",
+        "adminPreference": "Autorisation administrateur",
+        "adminPreferenceAskEachTime": "Demander à chaque fois",
+        "adminPreferencePreferAdmin": "Toujours utiliser l’autorisation administrateur",
+        "adminPreferencePreferNoAdmin": "Toujours continuer sans autorisation administrateur",
+        "adminPreferenceReset": "Demander à chaque fois l’autorisation administrateur"
+      }
+    },
+    "logs": {
+      "title": "Journaux",
+      "category": "Catégorie",
+      "level": "Niveau",
+      "recentLogs": "Journaux récents",
+      "recentLogsMsg": "Ce que vous voyez sur cette page",
+      "errorLog": "Journal de l'application et du noyau",
+      "errorLogMsg": "Erreurs des deux, sur toutes les exécutions",
+      "coreLog": "Journal du noyau",
+      "coreLogMsg": "Tout ce que le noyau a enregistré",
+      "coreCrash": "Plantage du noyau",
+      "coreCrashMsg": "Ce que faisait le noyau lors de son dernier plantage",
+      "exportToFile": "Exporter dans un fichier",
+      "linesMatch": "$count lignes correspondent",
+      "fileSaved": "Fichier enregistré",
+      "fileSaveFailed": "Impossible d'enregistrer le fichier",
+      "coreLogLevel": "Niveau du noyau",
+      "coreLogLevelMsg": "Prend effet après la reconnexion",
+      "buffer": "Tampon"
+    },
+    "about": {
+      "title": "À propos",
+      "notAvailableMsg": "Vous utilisez la dernière version",
+      "checkForUpdate": "Vérifier les mises à jour",
+      "openWorkingDir": "Ouvrir le répertoire de travail",
+      "sourceCode": "Code source",
+      "telegramChannel": "Canal Telegram",
+      "termsAndConditions": "Conditions d'utilisation",
+      "privacyPolicy": "Politique de confidentialité"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "resetTunnel": "Réinitialiser le profil VPN",
+      "options": {
+        "import": {
+          "clipboard": "Importer les options depuis le presse-papiers",
+          "file": "Importer les options depuis un fichier"
+        },
+        "export": {
+          "anonymousToClipboard": "Copier les options anonymes dans le presse-papiers",
+          "anonymousToFile": "Exporter les options anonymes vers un fichier",
+          "allToClipboard": "Copier toutes les options dans le presse-papiers",
+          "allToFile": "Exporter toutes les options vers un fichier"
+        },
+        "reset": "Réinitialiser les options"
+      },
+      "general": {
+        "title": "Général",
+        "locale": "Langue",
+        "themeMode": "Thème",
+        "themeModes": {
+          "system": "Thème du système par défaut",
+          "dark": "Mode sombre",
+          "light": "Mode clair",
+          "black": "Mode noir"
+        },
+        "enableAnalytics": "Activer les statistiques",
+        "enableAnalyticsMsg": "Envoyez des statistiques et des rapports d'erreurs depuis votre appareil pour aider à améliorer l'application",
+        "autoIpCheck": "Vérifier automatiquement l'IP de connexion",
+        "reduceAnimations": "Réduire les animations",
+        "reduceAnimationsMsg": "Garde le bouton de connexion immobile et arrête les effets en boucle pour économiser la batterie",
+        "dynamicNotification": "Afficher la vitesse dans la notification",
+        "hapticFeedback": "Retour haptique",
+        "alwaysOnVpn": "VPN toujours activé",
+        "actionAtClosing": "À la fermeture de la fenêtre",
+        "autoStart": "Lancer au démarrage",
+        "silentStart": "Démarrer réduit",
+        "ignoreBatteryOptimizations": "Désactiver l'optimisation de la batterie",
+        "ignoreBatteryOptimizationsMsg": "Supprimer les restrictions pour une performance VPN optimale",
+        "memoryLimit": "Limite de mémoire",
+        "memoryLimitMsg": "Activer si vous rencontrez des erreurs de mémoire insuffisante ou des plantages fréquents de l'application",
+        "connectionTestUrl": "URL de test de connexion",
+        "urlTestInterval": "Intervalle de test de l'URL",
+        "clashApiPort": "Port de l'API Clash",
+        "useSystemTlsEngine": "Utiliser le TLS du système si disponible",
+        "useSystemTlsEngineMsg": "Les connexions sans empreinte TLS utilisent le TLS de macOS, iOS ou Windows une fois qu’il a réussi une vérification sur cet appareil ; sinon, elles ressemblent à Chrome.",
+        "uploadTestSize": "Taille du test d'envoi",
+        "megabytes": "$n Mo",
+        "speedTest": "Test de débit"
+      },
+      "routing": {
+        "title": "Routage",
+        "routeRule": {
+          "add": "Ajouter une règle",
+          "delete": "Supprimer la règle",
+          "options": {
+            "import": {
+              "clipboard": "Importer des règles depuis le presse-papiers",
+              "file": "Importer des règles depuis un fichier"
+            },
+            "export": {
+              "clipboard": "Copier les règles dans le presse-papiers",
+              "file": "Enregistrer les règles dans un fichier"
+            },
+            "reset": "Rétablir les règles par défaut"
+          },
+          "rule": {
+            "title": "Règle",
+            "onlyTunMode": "Disponible uniquement en mode TUN",
+            "notAvailableInThisPlatform": "Non disponible sur cette plateforme",
+            "canNotBeEmpty": "Ne peut pas être vide",
+            "validUrlEx": "https://example.com",
+            "validUrl": "« URL » valide comme\n@:pages.settings.routing.routeRule.rule.validUrlEx",
+            "validProcessNameEx": "Chrome.exe ou google chrome ou chrome",
+            "validProcessName": "« Nom de processus » valide comme\n@:pages.settings.routing.routeRule.rule.validProcessNameEx",
+            "validProcessPathEx": "C:\\Pro...\\chrome.exe\n/App.../Google Chrome\n/usr/lib.../chrome",
+            "validProcessPath": "« Chemin de processus » valide comme\n@:pages.settings.routing.routeRule.rule.validProcessPathEx",
+            "validPortRangeEx": "80 ou 1:65000",
+            "validPortRange": "« Port » ou « Plage de ports » valide comme\n@:pages.settings.routing.routeRule.rule.validPortRangeEx",
+            "validIpCidrEx": "8.8.8.8, 10.0.0.0/24 ou fd00::/8",
+            "validIpCidr": "IP CIDR valide comme\n@:pages.settings.routing.routeRule.rule.validIpCidrEx",
+            "validDomainEx": "Google.com ou dl.google.com",
+            "validDomain": "« Domaine » valide comme\n@:pages.settings.routing.routeRule.rule.validDomainEx",
+            "validDomainSuffixEx": ".com ou .ir",
+            "validDomainSuffix": "« Suffixe de domaine » valide comme\n@:pages.settings.routing.routeRule.rule.validDomainSuffixEx",
+            "tileTitle(map)": {
+              "name": "Nom",
+              "outbound": "Sortie si correspondance",
+              "rule_set": "URL de l'ensemble de règles",
+              "package_name": "Noms de paquets",
+              "process_name": "Noms de processus",
+              "process_path": "Chemins de processus",
+              "network": "Réseaux",
+              "port_range": "Ports de destination",
+              "source_port_range": "Ports source",
+              "protocol": "Protocole",
+              "ip_cidr": "IP CIDR de destination",
+              "source_ip_cidr": "IP CIDR source",
+              "domain": "Domaine",
+              "domain_suffixe": "Suffixe de domaine",
+              "domain_keyword": "Mot-clé de domaine",
+              "domain_regex": "Expression régulière de domaine"
+            },
+            "outbound(map)": {
+              "proxy": "Proxy",
+              "direct": "Direct",
+              "direct_with_fragment": "Direct avec fragment",
+              "block": "Bloquer"
+            },
+            "network(map)": {
+              "all": "Tous",
+              "tcp": "TCP",
+              "udp": "UDP"
+            },
+            "protocol(map)": {
+              "": "Tous",
+              "tls": "TLS",
+              "http": "HTTP",
+              "quic": "QUIC",
+              "stun": "STUN",
+              "dns": "DNS",
+              "bittorrent": "BitTorrent"
+            }
+          },
+          "genericList": {
+            "addNew": "Ajouter une nouvelle valeur",
+            "update": "Mettre à jour la valeur",
+            "clearList": "Vider la liste",
+            "clearListMsg": "Tous les éléments seront supprimés"
+          }
+        },
+        "builtinRules": {
+          "tag": "Intégrée",
+          "bypassLan": "Contourner le LAN",
+          "blockAds": "Bloquer pubs et malwares",
+          "bypassRegion": "Contourner les sites de la région $region"
+        },
+        "appBasedRouting": {
+          "title": "Routage par application",
+          "hideSysApps": "Masquer les applications système",
+          "listTitle": {
+            "bypass": "Applications contournées",
+            "proxy": "Applications via le proxy"
+          },
+          "chooseApps": "Choisir des applications",
+          "apps": {
+            "one": "application",
+            "other": "applications"
+          },
+          "moreApps": {
+            "one": "+$n application",
+            "other": "+$n applications"
+          },
+          "autoTag": "Auto",
+          "outsideVpn": "Hors du VPN",
+          "ruleWontApply": "Hors du VPN · la règle ne s’appliquera pas",
+          "notInstalled": "Non installée",
+          "share": {
+            "invite": "Aidez à améliorer la sélection automatique",
+            "removed": {
+              "one": "$n supprimée",
+              "other": "$n supprimées"
+            },
+            "added": {
+              "one": "$n ajoutée",
+              "other": "$n ajoutées"
+            },
+            "title": "Partagez vos modifications",
+            "where": "Ouvre un ticket public sur GitHub, déjà rempli avec les noms de ces applications. Pour les partager, soumettez-le. Un compte GitHub est nécessaire.",
+            "action": "Continuer sur GitHub"
+          },
+          "options": {
+            "import": {
+              "clipboard": "Importer la sélection depuis le presse-papiers",
+              "file": "Importer la sélection depuis un fichier",
+              "msg": "L'importation remplace vos sélections actuelles. Continuer ?"
+            },
+            "export": {
+              "clipboard": "Copier la sélection dans le presse-papiers",
+              "file": "Exporter la sélection vers un fichier"
+            },
+            "clearAllSelections": "Effacer toutes les sélections"
+          },
+          "modes": {
+            "proxy": "Proxy uniquement",
+            "bypass": "Contourner"
+          },
+          "autoSelection": {
+            "title": "Sélection automatique basée sur la région $region",
+            "performNow": "Mettre à jour",
+            "updated": {
+              "zero": "Mise à jour aujourd’hui",
+              "one": "Mise à jour il y a $n jour",
+              "other": "Mise à jour il y a $n jours"
+            },
+            "noList": "Aucune liste pour cette région",
+            "loadFailed": "Impossible de charger la liste",
+            "restore": {
+              "one": "Restaurer $n sélection automatique",
+              "other": "Restaurer $n sélections automatiques"
+            },
+            "restored": {
+              "one": "$n sélection automatique restaurée",
+              "other": "$n sélections automatiques restaurées"
+            }
+          }
+        },
+        "region": "Région",
+        "regions": {
+          "ir": "Iran (ir)",
+          "cn": "Chine (cn)",
+          "ru": "Russie (ru)",
+          "af": "Afghanistan (af)",
+          "id": "Indonésie (id)",
+          "tr": "Turquie (tr)",
+          "br": "Brésil (br)",
+          "other": "Autre"
+        },
+        "balancerStrategy": {
+          "title": "Stratégie de Balancer",
+          "roundRobin": "Round robin",
+          "consistentHash": "Consistent hash",
+          "stickySession": "Sticky session",
+          "roundRobinDescription": "Chaque connexion utilise le serveur suivant, les sites peuvent donc voir votre IP changer",
+          "consistentHashDescription": "Chaque site utilise toujours le même serveur",
+          "stickySessionDescription": "Chaque site garde un serveur aléatoire jusqu'à ce que vous vous reconnectiez"
+        },
+        "resolveDestination": "Résoudre la destination",
+        "ipv6Route": "IPv6",
+        "ipv6Modes": {
+          "preferIpv4": "IPv4 d’abord",
+          "preferIpv6": "IPv6 d’abord"
+        }
+      },
+      "dns": {
+        "title": "DNS",
+        "remoteDns": "DNS distant",
+        "remoteDnsDomainStrategy": "Stratégie de domaine DNS distant",
+        "directDns": "Résolveur de serveur sortant (direct)",
+        "directDnsDomainStrategy": "Stratégie de domaine sortant",
+        "enableFakeDns": "Activer le faux DNS",
+        "domainStrategy": {
+          "auto": "Auto",
+          "preferIpv6": "Préférer IPv6",
+          "preferIpv4": "Préférer IPv4",
+          "ipv4Only": "IPv4 uniquement",
+          "ipv6Only": "IPv6 uniquement"
+        }
+      },
+      "inbound": {
+        "title": "Entrant",
+        "serviceMode": "Mode de service",
+        "serviceModes": {
+          "proxy": "Service proxy uniquement",
+          "systemProxy": "Définir le proxy système",
+          "tun": "VPN"
+        },
+        "shortServiceModes": {
+          "proxy": "Proxy",
+          "systemProxy": "Proxy système",
+          "tun": "VPN",
+          "router": "Routeur"
+        },
+        "strictRoute": "Routage strict",
+        "tunImplementation": "Implémentation TUN",
+        "tunImplementations": {
+          "mixed": "Mixte",
+          "system": "Système",
+          "gvisor": "gVisor"
+        },
+        "mixedPort": "Port du proxy (SOCKS5/4, HTTP)",
+        "tproxyPort": "Port de proxy transparent",
+        "directPort": "Port direct local",
+        "redirectPort": "Port de redirection",
+        "lanSharing": "Partage VPN sécurisé",
+        "connectionSharing": "Partage de connexion",
+        "qrCode": "Code QR",
+        "closedInVpn": "fermé en mode VPN, sauf en partage",
+        "proxySecret": "Secret du proxy",
+        "noSecret": "Sans secret : toute app ou tout appareil qui atteint le port peut l'utiliser",
+        "generateSecret": "En générer un nouveau",
+        "removeSecret": "Supprimer le secret ?",
+        "removeSecretMsg": "Sans secret, toute app de cet appareil, et tout appareil du réseau en partage, peut utiliser le proxy sans utilisateur ni mot de passe. À vos risques.",
+        "localProxy": "Proxy local",
+        "localProxyInVpn": "Garder ouvert en mode VPN",
+        "localProxyInVpnHint": "Les apps passent déjà par le VPN ; seulement pour les apps réglées sur le proxy",
+        "localProxyAuth": "Exiger un mot de passe",
+        "localProxyAuthHint": "Certaines apps, comme les navigateurs, ne peuvent pas envoyer de mot de passe SOCKS",
+        "notAsSystemProxy": "Non demandé comme proxy système, qui ne peut pas l'envoyer",
+        "lanGroup": "Partage sur le réseau local",
+        "lanSharingPort": "Port de partage",
+        "otherPorts": "Autres ports",
+        "closedInVpnLocal": "fermé en mode VPN"
+      },
+      "tlsTricks": {
+        "title": "Astuces TLS",
+        "enable": "Activer le fragment",
+        "packets": "Paquets de fragmentation",
+        "packetsTlsHello": "TLS Hello",
+        "packets1_1": "1-1",
+        "packets1_2": "1-2",
+        "packets1_3": "1-3",
+        "packets1_4": "1-4",
+        "packets1_5": "1-5",
+        "size": "Taille du fragment",
+        "sleep": "Délai du fragment",
+        "mixedSniCase": {
+          "enable": "Activer la casse mixte pour SNI"
+        },
+        "padding": {
+          "enable": "Activer le padding",
+          "size": "Taille du padding"
+        }
+      },
+      "chain": {
+        "quick": {
+          "off": "Désactivé",
+          "extraSecurity": {
+            "title": "Sécurité supplémentaire",
+            "subtitle": "Quand vous ne faites pas confiance au proxy",
+            "ipBy": "Votre IP est définie par $mode",
+            "notTracked": "Votre fournisseur VPN ne peut pas voir votre trafic",
+            "forPublic": "Idéal pour les proxys publics et anonymes",
+            "slower": "Peut réduire la vitesse"
+          },
+          "unblocker": {
+            "title": "Débloqueur de proxy",
+            "subtitle": "Fait passer le proxy à travers le filtrage",
+            "mayConnect": "Un proxy filtré pourrait se connecter",
+            "personalOnly": "Utile uniquement pour un proxy personnel",
+            "notForPublic": "Ne convient pas aux proxys publics",
+            "slower": "Le proxy devient un peu plus lent"
+          }
+        },
+        "title": "Chaîne",
+        "subtitle": "Sécurité supplémentaire & débloqueur",
+        "finalIp": "IP finale",
+        "levels": {
+          "app": {
+            "title": "App",
+            "msg": "Point de départ : le trafic de votre application entre dans la chaîne ici et passe par les couches suivantes pour se préparer au bypass final"
+          },
+          "extraSecurity": {
+            "title": "Sécurité supplémentaire",
+            "msg": "Ajoute un bouclier supplémentaire pour garder vos données privées, même si votre profil principal n'est pas fiable"
+          },
+          "mainProfile": {
+            "title": "Profil principal"
+          },
+          "unblocker": {
+            "title": "Débloqueur",
+            "msg": "Aide à contourner les restrictions réseau. Si l’assistant se connecte, votre profil principal peut toujours fonctionner même s’il est actuellement bloqué."
+          },
+          "filtering": {
+            "title": "Filtrage",
+            "msg": "Sortie finale : votre trafic traverse les couches actives, à savoir Sécurité supplémentaire, Profil principal ou Débloqueur. Une fois leurs effets appliqués, il est acheminé pour contourner le filtrage du réseau local."
+          }
+        },
+        "warp": {
+          "missingConfig": "Configuration WARP manquante",
+          "licenseKey": "Clé de licence",
+          "tunnel": "Tunnel",
+          "cleanIp": "IP propre",
+          "port": "Port",
+          "noise": {
+            "count": "Nombre de bruits",
+            "mode": "Mode bruit",
+            "size": "Taille du bruit",
+            "delay": "Délai du bruit",
+            "modes": {
+              "standard": "Standard",
+              "random": "Aléatoire",
+              "quic": "QUIC (HTTPS)",
+              "quicMimic": "Handshake QUIC",
+              "dns": "DNS (google.com)",
+              "dnsCloudflare": "DNS (cloudflare.com)",
+              "sip": "SIP (appel VoIP)",
+              "stun": "STUN (appel vidéo)"
+            },
+            "title": "Bruit WireGuard"
+          },
+          "endpoint": "Point de terminaison",
+          "endpointSources": {
+            "profile": "Attribué par Cloudflare",
+            "scan": "Scan",
+            "custom": "Personnalisé"
+          },
+          "customServer": "Adresse",
+          "mtu": "MTU",
+          "customized": "Personnalisé",
+          "scanner": {
+            "title": "Scanner"
+          },
+          "masque": {
+            "title": "MASQUE"
+          },
+          "awg": {
+            "title": "AmneziaWG"
+          }
+        },
+        "psiphon": {
+          "selectServerRegion": "Sélectionner la région du serveur",
+          "regions": {
+            "auto": "@:common.auto",
+            "at": "Autriche (at)",
+            "au": "Australie (au)",
+            "be": "Belgique (be)",
+            "bg": "Bulgarie (bg)",
+            "ca": "Canada (ca)",
+            "ch": "Suisse (ch)",
+            "cz": "République tchèque (cz)",
+            "de": "Allemagne (de)",
+            "dk": "Danemark (dk)",
+            "ee": "Estonie (ee)",
+            "es": "Espagne (es)",
+            "fi": "Finlande (fi)",
+            "fr": "France (fr)",
+            "gb": "Royaume-Uni (gb)",
+            "hr": "Croatie (hr)",
+            "hu": "Hongrie (hu)",
+            "ie": "Irlande (ie)",
+            "in": "Inde (in)",
+            "it": "Italie (it)",
+            "jp": "Japon (jp)",
+            "lv": "Lettonie (lv)",
+            "nl": "Pays-Bas (nl)",
+            "no": "Norvège (no)",
+            "pl": "Pologne (pl)",
+            "pt": "Portugal (pt)",
+            "ro": "Roumanie (ro)",
+            "rs": "Serbie (rs)",
+            "se": "Suède (se)",
+            "sg": "Singapour (sg)",
+            "sk": "Slovaquie (sk)",
+            "us": "États-Unis (us)"
+          }
+        },
+        "profile": {
+          "selectProfile": "Sélectionner le profil",
+          "conduitPairingId": "ID d'appariement Conduit"
+        }
+      }
+    }
+  },
+  "components": {
+    "stats": {
+      "connection": "Connexion",
+      "traffic": "Trafic",
+      "trafficLive": "Trafic en direct",
+      "trafficTotal": "Trafic total",
+      "uplink": "Envoi",
+      "downlink": "Réception",
+      "speed": "Vitesse",
+      "totalTransferred": "Total transféré"
+    },
+    "subscriptionInfo": {
+      "upload": "Envoi",
+      "download": "Téléchargement",
+      "total": "Trafic total",
+      "expireDate": "Date d'expiration",
+      "expired": "Expiré",
+      "noTraffic": "Quota épuisé",
+      "remainingDuration(plural, param=days)": {
+        "one": "$days jour restant",
+        "other": "$days jours restants"
+      },
+      "remainingUnlimited": "Illimité",
+      "remainingTrafficSemanticLabel": "${consumed} sur ${total} de trafic consommé",
+      "remainingTraffic": "Trafic restant",
+      "openWebPage": "Ouvrir la page web",
+      "support": "Assistance",
+      "openLinkTitle": "Ouvrir ce lien ?",
+      "openLinkAction": "Ouvrir"
+    }
+  },
+  "dialogs": {
+    "sortProfiles": {
+      "title": "Trier par",
+      "sort": {
+        "name": "Alphabétiquement",
+        "lastUpdate": "Dernière mise à jour"
+      },
+      "direction": {
+        "newestFirst": "Plus récents d'abord",
+        "oldestFirst": "Plus anciens d'abord"
+      }
+    },
+    "warpLicense": {
+      "title": "Consentement Cloudflare WARP",
+      "description(rich)": "Cloudflare WARP est un fournisseur VPN WireGuard gratuit. En activant cette option, vous acceptez les ${tos(Conditions d'utilisation)} et la ${privacy(Politique de confidentialité)} de Cloudflare WARP."
+    },
+    "psiphonLicense": {
+      "title": "Contrat de licence Psiphon",
+      "description(rich)": "En utilisant Psiphon, vous acceptez les ${tos(Conditions d’utilisation)} et reconnaissez la ${privacy(Politique de confidentialité)}. Lisez-les attentivement avant de continuer."
+    },
+    "newVersion": {
+      "title": "Mise à jour disponible",
+      "msg": "Une nouvelle version de @:common.appTitle est disponible. Mettre à jour maintenant ?",
+      "currentVersion": "Version actuelle",
+      "newVersion": "Nouvelle version",
+      "updateNow": "Mettre à jour",
+      "downloading": "Téléchargement…",
+      "installing": "Lancement de l'installateur…",
+      "allowInstall": "Autorisez Proxy4You à installer des applications dans les réglages ouverts, puis réessayez.",
+      "failed": "La mise à jour n'a pas pu être installée.",
+      "openPage": "Ouvrir la page de la version",
+      "tryAgain": "Réessayer"
+    },
+    "confirmation": {
+      "settings": {
+        "import": {
+          "msg": "Cette action écrase toutes les options de configuration avec les valeurs importées. Continuer ?"
+        }
+      },
+      "profile": {
+        "delete": {
+          "title": "Supprimer le profil",
+          "msg": "Supprimer ce profil ? Cette action est irréversible."
+        }
+      },
+      "appList": {
+        "import": {
+          "msg": "Cette action remplace vos applications « Contourner » et « Proxy uniquement ». Continuer ?"
+        }
+      },
+      "routeRule": {
+        "delete": {
+          "title": "Supprimer la règle",
+          "msg": "Supprimer la règle « $rulename » ? Cette action est irréversible."
+        }
+      },
+      "addProfileByDeepLinkWarning": {
+        "title": "Ajouter un profil ?",
+        "message": "Un lien externe de « ${host} » veut ajouter un nouveau profil. L'importer ?"
+      },
+      "importRouteRuleByDeepLinkWarning": {
+        "title": "Importer une règle de routage ?",
+        "message": "Les règles de routage déterminent où va votre trafic.\nNe les importez que depuis une source de confiance."
+      }
+    },
+    "adminBgService": {
+      "vpnNeedsAdmin": {
+        "title": "Autorisation administrateur requise",
+        "msg": "Le mode VPN a besoin d’une autorisation administrateur unique pour installer le service d’arrière-plan de Proxy4You. Ensuite, vous pourrez vous connecter sans autre demande.",
+        "connectWithAdmin": "Se connecter avec l’autorisation administrateur",
+        "waitingTitle": "En attente de l’autorisation administrateur",
+        "waitingMsg": "Acceptez la demande administrateur pour continuer. Vous pouvez arrêter et réessayer plus tard.",
+        "stop": "Arrêter"
+      },
+      "proxyNeedsAdmin": {
+        "title": "Autorisation administrateur recommandée",
+        "msg": "Certains paramètres de ce profil fonctionnent mieux avec l’autorisation administrateur. Vous pouvez lancer avec l’autorisation administrateur, ou continuer sans et désactiver ces paramètres pour cette connexion.",
+        "seeConfigs": "Afficher les configurations",
+        "hideConfigs": "Masquer les configurations",
+        "neverAskAgain": "Ne plus demander pour ce profil",
+        "runAsAdmin": "Exécuter en tant qu’administrateur",
+        "continueWithoutAdmin": "Continuer sans autorisation administrateur",
+        "elevationFailedTitle": "Impossible d’obtenir l’autorisation administrateur",
+        "elevationFailedMsg": "La demande administrateur a été refusée ou a échoué. Réessayez, ou continuez sans autorisation administrateur pour cette connexion.",
+        "tryAgain": "Réessayer"
+      }
+    },
+    "experimentalNotice": {
+      "title": "Fonctionnalités expérimentales en cours d'utilisation",
+      "msg": "Vous avez activé des fonctionnalités expérimentales qui pourraient affecter la qualité de la connexion et causer des erreurs inattendues. Vous pouvez toujours modifier ou réinitialiser ces options dans les Paramètres.",
+      "disable": "Ne plus afficher"
+    },
+    "noActiveProfile": {
+      "title": "Choisissez un profil",
+      "msg": "Commençons. Ajoutez un profil de connexion avec les détails de votre serveur VPN.\n\nPas encore de serveur ? Pas de problème. Le guide ci-dessous vous montre comment en créer un gratuitement.",
+      "helpBtn": {
+        "label": "Montrez-moi comment",
+        "url": "https://hiddify.com/manager/"
+      }
+    },
+    "unknownDomainsWarning": {
+      "title": "Vérifiez d'abord ce lien",
+      "cannotVerify": "Ce lien n’est pas vérifié",
+      "avoidIfUnsure": "Si vous n'êtes pas totalement sûr, ne payez pas et ne partagez pas d'informations sensibles",
+      "ownResponsibility": "Vous continuez à vos propres risques",
+      "open": "Ouvrir",
+      "openIn": "Ouvrir (${seconds})"
+    },
+    "proxyInfo": {
+      "fullTag": "Tag complet ",
+      "type": "Type ",
+      "status": "État",
+      "testTime": "Heure du test ",
+      "testDelay": "Délai du test ",
+      "isSelected": "Sélectionné ",
+      "isGroup": "Groupe ",
+      "isSecure": "Sécurisé ",
+      "port": "Port ",
+      "host": "Hôte ",
+      "ip": "IP ",
+      "countryCode": "Code pays ",
+      "region": "Région ",
+      "city": "Ville ",
+      "asn": "ASN ",
+      "organization": "Organisation ",
+      "location": "Emplacement ",
+      "postalCode": "Code postal ",
+      "download": "Téléchargement ",
+      "upload": "Envoi ",
+      "ping": "Ping",
+      "speed": "Débit",
+      "server": "Serveur",
+      "country": "Pays",
+      "tapToTest": "Touchez pour tester"
+    },
+    "windowClosing": {
+      "askEachTime": "Demander à chaque fois",
+      "alertMessage": "Masquer ou quitter l'app ?",
+      "remember": "Mémoriser mon choix"
+    },
+    "qrCode": {
+      "copyFullLink": "Copier le lien complet",
+      "copied": "Copié",
+      "lanLine": "SOCKS5 · même réseau uniquement",
+      "noLocalNetwork": "Aucun réseau local trouvé",
+      "ip": "IP",
+      "port": "Port",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe"
+    },
+    "qrScanner": {
+      "notFound": "Aucun code QR trouvé dans cette image"
+    },
+    "keepTop": {
+      "title": "Un gros abonnement",
+      "description": "Ce profil contient $count proxys. Les garder tous actifs consomme batterie, données et mémoire. Proxy4You peut les tester une fois, garder les $keep plus rapides et mettre les autres en pause.",
+      "hint": "Vous pouvez tous les réactiver à tout moment, en bas de la liste des proxys.",
+      "keeping": "Les $keep plus rapides tournent, les autres en pause",
+      "all": "Les $count tournent",
+      "keep": "Garder les $keep plus rapides",
+      "useAll": "Utiliser les $count",
+      "howMany": "Combien garder actifs",
+      "pickByHand": "Choisir les proxys vous-même"
+    },
+    "keepTags": {
+      "title": "Choisir les proxys",
+      "hint": "Seuls ceux-ci tournent, à chaque connexion.",
+      "search": "Rechercher",
+      "all": "Tout sélectionner",
+      "none": "Effacer",
+      "run": "Utiliser ces $n",
+      "sort": "Trier",
+      "sortProfile": "Ordre du profil",
+      "sortPing": "Ping",
+      "sortDownload": "Téléchargement",
+      "sortUpload": "Envoi",
+      "selectFastest": "Les $n plus rapides",
+      "statusChosen": "Choisis",
+      "statusAnswering": "Répondent",
+      "statusPaused": "En pause",
+      "paused": "$n proxys sont en pause : ils n'ont pas de ping et ne peuvent pas être testés.",
+      "wake": "Tout lancer pour tester",
+      "offline": "Connectez-vous pour voir leur ping et les tester.",
+      "offlineTitle": "Non connecté",
+      "shown": "$n affichés",
+      "noMatch": "Aucun proxy ne correspond",
+      "chosenHint": "Touchez un proxy ci-dessus pour le choisir",
+      "allShown": "Tous sont dans la liste ci-dessus",
+      "notShown": "Non affichés :",
+      "protocol": "Protocole",
+      "country": "Pays",
+      "anyProtocol": "Tout protocole",
+      "anyCountry": "Tout pays",
+      "otherCountries": "Autres"
+    },
+    "localProxy": {
+      "steps": [
+        "Ouvrez les réglages proxy de l'app",
+        "Choisissez SOCKS5 ou HTTP",
+        "Saisissez les valeurs ci-dessous · touchez pour copier",
+        "Gardez Proxy4You connecté"
+      ],
+      "hint": "Mode proxy · mode d'emploi",
+      "setPassword": "Définir un mot de passe",
+      "manual": "Manuel",
+      "dontShowAgain": "Ne plus afficher",
+      "thisDevice": "Cet appareil",
+      "otherDevices": "Autres appareils",
+      "server": "Serveur",
+      "noPassword": "Aucun mot de passe",
+      "turnOnSharing": "Activer le partage",
+      "copyLink": "Copier le lien",
+      "telegramLink": "Lien Telegram",
+      "fullLink": "Lien complet",
+      "portRange": "Utilisez un port entre 1024 et 65535",
+      "passwordTooShort": "Au moins 4 caractères",
+      "edit": "Modifier"
+    }
+  },
+  "connection": {
+    "tapToConnect": "Appuyez pour vous connecter",
+    "connect": "Connecter",
+    "connecting": "Connexion en cours…",
+    "waiting": "À la recherche de la liberté…",
+    "noAvailableProxies": "Échec de la connexion",
+    "hotReloading": "Application des modifications…",
+    "connected": "Connecté",
+    "disconnect": "Déconnecter",
+    "disconnecting": "Déconnexion en cours…",
+    "failed": "Connexion impossible",
+    "slow": "Cela prend plus de temps que d’habitude…",
+    "tapToRetry": "Appuyez pour réessayer",
+    "errorDetails": "Détails de l’erreur",
+    "reconnect": "Reconnecter",
+    "reconnectMsg": "Reconnexion pour appliquer les modifications…",
+    "health": {
+      "title": "Vérification de la connexion",
+      "allGood": "Votre trafic passe",
+      "pickDead": "Le proxy sélectionné ne répond pas",
+      "hopPending": "${chain} est en cours de connexion…",
+      "hopFailed": "${chain} n’a pas pu se connecter",
+      "coreTesting": "Test des serveurs…",
+      "coreNone": "Aucun serveur ne répond",
+      "fastest": "Serveur le plus rapide",
+      "yourServer": "Proxy sélectionné",
+      "notResponding": "Ne répond pas",
+      "testing": "Test en cours…",
+      "useFastest": "Passer au plus rapide",
+      "hopReady": "Connecté",
+      "hopConnecting": "Connexion…",
+      "hopBroken": "Connexion impossible",
+      "hopNoReply": "Connecté, mais ne répond pas",
+      "hopBlocked": "Attend la réponse du proxy sélectionné",
+      "retry": "Tester à nouveau",
+      "change": "Modifier",
+      "turnOff": "Désactiver"
+    }
+  },
+  "errors": {
+    "unexpected": "Erreur inattendue",
+    "connection": {
+      "unexpected": "Erreur de connexion inattendue",
+      "timeout": "Délai de connexion expiré",
+      "badResponse": "Réponse du serveur invalide",
+      "connectionError": "Erreur de connexion",
+      "badCertificate": "Certificat invalide"
+    },
+    "profiles": {
+      "unexpected": "Erreur inattendue",
+      "notFound": "Profil non trouvé",
+      "invalidConfig": "Configuration invalide",
+      "invalidUrl": "URL invalide",
+      "canceledByUser": "Annulé par l'utilisateur"
+    },
+    "connectivity": {
+      "unexpected": "Échec inattendu",
+      "missingVpnPermission": "Autorisation VPN manquante",
+      "missingNotificationPermission": "Autorisation de notification manquante",
+      "core": "Erreur du noyau"
+    },
+    "singbox": {
+      "serviceNotRunning": "Le service n'est pas en cours d'exécution",
+      "missingPrivilege": "Autorisation manquante",
+      "missingPrivilegeMsg": "Le mode VPN ne peut pas démarrer. Relancez l'application en tant qu'administrateur ou changez le mode de service.",
+      "tunAddressInUse": "Un autre VPN est actif",
+      "tunAddressInUseMsg": "Le mode VPN ne peut pas démarrer. Désactivez l'autre VPN ou changez le mode de service.",
+      "invalidConfigOptions": "Options de configuration invalides",
+      "invalidConfig": "Configuration invalide"
+    },
+    "warp": {
+      "missingLicense": "Licence WARP manquante",
+      "missingLicenseMsg": "Ce profil utilise WARP. Acceptez la licence WARP pour continuer."
+    },
+    "psiphon": {
+      "missingLicense": "Licence Psiphon requise",
+      "missingLicenseMsg": "Ce profil utilise Psiphon. Acceptez la licence Psiphon pour continuer."
+    }
+  }
+}

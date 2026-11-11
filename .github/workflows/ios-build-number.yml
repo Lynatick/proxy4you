@@ -1,0 +1,42 @@
+# Shows the build number the next TestFlight upload of the iOS app gets, from the
+# ios-build/<version>/<build> tags the TestFlight upload records, without building anything.
+name: iOS next build number
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to check (empty = pubspec's, without a pre-release suffix)
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  next-build-number:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Read version from pubspec
+        id: pubspec
+        run: |
+          set -euo pipefail
+          name="$(sed -n 's/^version: *\([^+ ]*\)+[0-9][0-9]* *$/\1/p' pubspec.yaml)"
+          base="$(sed -n 's/^version: *[^+]*+\([0-9][0-9]*\) *$/\1/p' pubspec.yaml)"
+          echo "version=${INPUT_VERSION:-${name%%[-.][a-z]*}}" >> "$GITHUB_OUTPUT"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+
+      - name: Find the next build number
+        id: next
+        uses: ./.github/actions/ios-next-build-number
+        with:
+          version: ${{ steps.pubspec.outputs.version }}
+          base: ${{ steps.pubspec.outputs.base }}
+
+      - name: Summary
+        run: |
+          echo "### iOS ${{ steps.pubspec.outputs.version }}: next build number ${{ steps.next.outputs.build }}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,45 @@
+syntax = "proto3";
+import "v2/hcommon/common.proto";
+package hcore;
+
+option go_package = "github.com/hiddify/hiddify-core/v2/hcore";
+option java_package = "com.hiddify.core.api.v2.hcore";
+import "v2/hcore/hcore.proto";
+
+service Core {
+  rpc Start (StartRequest) returns (CoreInfoResponse);
+  rpc CoreInfoListener (hcommon.Empty) returns (stream CoreInfoResponse);
+  rpc OutboundsInfo (hcommon.Empty) returns (stream OutboundGroupList);
+  rpc MainOutboundsInfo (hcommon.Empty) returns (stream OutboundGroupList);
+  rpc GetSystemInfo (hcommon.Empty) returns (SystemInfo);
+  rpc GetSystemInfoStream (hcommon.Empty) returns (stream SystemInfo);
+  rpc Setup (SetupRequest) returns (hcommon.Response);
+  rpc Parse (ParseRequest) returns (ParseResponse);
+  rpc ChangeHiddifySettings (ChangeHiddifySettingsRequest) returns (CoreInfoResponse);
+  //rpc GenerateConfig (GenerateConfigRequest) returns (GenerateConfigResponse);
+  rpc StartService (StartRequest) returns (CoreInfoResponse);
+  rpc Stop (hcommon.Empty) returns (CoreInfoResponse);
+  rpc Restart (StartRequest) returns (CoreInfoResponse);
+  // Apply the config to the running core without restarting it: outbounds, endpoints, inbounds
+  // (not TUN), DNS servers/rules/final and route rules/rule sets/final may change. Anything else,
+  // or a changed TUN inbound, returns HOT_RELOAD_FAILED and leaves the core running unchanged.
+  // When the core is stopped, it is started like Start.
+  rpc HotReload (StartRequest) returns (CoreInfoResponse);
+  rpc SelectOutbound (SelectOutboundRequest) returns (hcommon.Response);
+  rpc UrlTest (UrlTestRequest) returns (hcommon.Response);
+  rpc UrlTestActive (hcommon.Empty) returns (hcommon.Response);
+  rpc GenerateWarpConfig (GenerateWarpConfigRequest) returns (WarpGenerationResponse);
+  rpc GetSystemProxyStatus (hcommon.Empty) returns (SystemProxyStatus);
+  rpc SetSystemProxyEnabled (SetSystemProxyEnabledRequest) returns (hcommon.Response);
+  rpc LogListener (LogRequest) returns (stream LogMessage); 
+  rpc Close (CloseRequest) returns (hcommon.Empty);
+  rpc GetLANIP (hcommon.Empty) returns (LANIPResponse);
+  // Whether this core process already has administrator/root rights (same token as the app).
+  rpc IsAdmin (hcommon.Empty) returns (IsAdminResponse);
+  // Windows/Linux: whether elevated admin_bgservice is required for this connect.
+  rpc NeedAdminBgService (NeedAdminBgServiceRequest) returns (NeedAdminBgServiceResponse);
+  // Windows/Linux: install/start admin_bgservice if needed and start the bg core until STARTED.
+  rpc EnsureAdminBgService (EnsureAdminBgServiceRequest) returns (stream EnsureAdminBgServiceEvent);
+}
+
+
