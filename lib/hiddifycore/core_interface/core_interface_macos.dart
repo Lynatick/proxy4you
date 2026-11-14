@@ -238,7 +238,7 @@ class CoreInterfaceMacOS extends CoreInterfaceDesktop {
   Future<void> startManaged(String path, String name, bool disableMemoryLimit) async {
     final options = _options;
     if (options == null) throw StateError('Apply connection options before starting the core.');
-    final proxyOnly = !options.enableTun && options.setSystemProxy && _proxyThroughTunnel;
+    final proxyOnly = !options.enableTun && options.setSystemProxy && (_proxyThroughTunnel || _tunnelServiceAvailable);
     final useTunnel = options.enableTun || proxyOnly;
     if (useTunnel && !_vpnAvailable) {
       throw StateError('VPN is unavailable in this build. Proxy modes are available.');

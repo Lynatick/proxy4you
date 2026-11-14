@@ -239,7 +239,7 @@ class ConnectionRepositoryImpl with ExceptionHandler, InfraLogger implements Con
     // the App Store build never asks for root, whatever the native side reports
     if (Release.read() == Release.appStore) return;
     // Network Extension builds do not use the admin password install path.
-    if (!core.tunnelServiceAvailable || !options.enableTun) return;
+    if (!core.tunnelServiceAvailable || !(options.enableTun || options.setSystemProxy)) return;
 
     final dialogs = ref.read(dialogNotifierProvider.notifier);
     final pref = profile.userOverride?.adminPreference ?? UserAdminPreference.unset;

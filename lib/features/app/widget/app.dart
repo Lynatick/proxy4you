@@ -31,6 +31,7 @@ import 'package:hiddify/features/profile/notifier/subscription_list_failover.dar
 import 'package:hiddify/features/shortcut/shortcut_wrapper.dart';
 import 'package:hiddify/features/system_tray/notifier/system_tray_notifier.dart';
 import 'package:hiddify/features/window/widget/window_wrapper.dart';
+import 'package:hiddify/hiddifycore/core_interface/core_interface_macos.dart';
 import 'package:hiddify/hiddifycore/hiddify_core_service_provider.dart';
 import 'package:hiddify/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -71,6 +72,22 @@ class App extends HookConsumerWidget with WidgetsBindingObserver, PresLogger {
     final theme = AppTheme(themeMode, locale.preferredFontFamily);
     final upgrader = ref.watch(upgraderProvider);
     final activeBreakpoint = Breakpoint(context).activeBreakpoint;
+
+    // The administrator is asked for once, at startup: the root service is installed then, and the
+    // system proxy is set and removed by it without another prompt.
+    useEffect(() {
+      if (!PlatformUtils.isMacOS) return null;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final core = ref.read(hiddifyCoreServiceProvider).core;
+        if (core is! CoreInterfaceMacOS || !core.tunnelServiceAvailable || core.tunnelServiceReady) return;
+        try {
+          await core.installAdminBgService();
+        } catch (error) {
+          loggy.warning('administrator permission for the VPN service was not given', error);
+        }
+      });
+      return null;
+    }, const []);
 
     ref.listen(foregroundProfilesUpdateNotifierProvider, (_, _) {});
     // Keeps the list's one-pass failover listening for as long as the app runs.
@@ -143,10 +160,7 @@ class App extends HookConsumerWidget with WidgetsBindingObserver, PresLogger {
     };
     // a low battery, or battery saver, stops it too
     final lowBattery = useLowBattery();
-    final decorate =
-        animate &&
-        !lowBattery &&
-        !(lifecycle == AppLifecycleState.inactive && PlatformUtils.isDesktop);
+    final decorate = animate && !lowBattery && !(lifecycle == AppLifecycleState.inactive && PlatformUtils.isDesktop);
     useEffect(() {
       allowAmbientMotion(decorate);
       return null;

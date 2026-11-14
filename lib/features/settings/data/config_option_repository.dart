@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hiddify/core/model/environment.dart';
 import 'package:hiddify/core/model/optional_range.dart';
 import 'package:hiddify/core/model/region.dart';
 import 'package:hiddify/core/utils/exception_handler.dart';
@@ -635,9 +634,7 @@ abstract class ConfigOptions {
       enableTun: mode == ServiceMode.tun || mode == ServiceMode.router,
       routerMode: mode == ServiceMode.router,
       // enableTunService: mode == false, //ServiceMode.tunService,
-      // macOS non-App-Store: the core runs as the user and networksetup needs root, so the app
-      // sets the proxy itself once connected (MacosSystemProxy). The App Store build's tunnel sets it.
-      setSystemProxy: mode == ServiceMode.systemProxy && (!PlatformUtils.isMacOS || Release.read() == Release.appStore),
+      setSystemProxy: mode == ServiceMode.systemProxy,
       // bypassLan: ref.watch(bypassLan),
       allowConnectionFromLan: ref.watch(allowConnectionFromLan),
       lanSharingPassword: ref.watch(lanSharingPassword),

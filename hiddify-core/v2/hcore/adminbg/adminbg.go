@@ -196,7 +196,9 @@ func applySettings(options *Options) error {
 	settings["enable-tun-service"] = false
 	if hcore.SystemProxyDelegationSupported() {
 		settings["delegate-system-proxy"] = true
-	} else {
+	} else if !options.ProxyOnly {
+		// A VPN engine never sets a system proxy on macOS. The proxy-only engine does: it runs as
+		// root, so networksetup works and the app needs no second administrator prompt.
 		settings["set-system-proxy"] = false
 	}
 	settings["allow-connection-from-lan"] = false
