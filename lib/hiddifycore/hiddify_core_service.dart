@@ -8,6 +8,7 @@ import 'package:grpc/grpc.dart';
 import 'package:hiddify/core/directories/directories_provider.dart';
 import 'package:hiddify/core/logger/core_logger.dart';
 import 'package:hiddify/core/notification/in_app_notification_controller.dart';
+import 'package:hiddify/core/utils/macos_system_proxy.dart';
 import 'package:hiddify/features/connection/model/connection_failure.dart';
 import 'package:hiddify/features/log/model/log_level.dart' as config_log_level;
 import 'package:hiddify/features/settings/data/config_option_repository.dart';
@@ -20,6 +21,7 @@ import 'package:hiddify/hiddifycore/grpc_errors.dart';
 import 'package:hiddify/hiddifycore/grpc_stream_cancel.dart';
 import 'package:hiddify/hiddifycore/init_signal.dart';
 import 'package:hiddify/singbox/model/core_status.dart';
+import 'package:hiddify/singbox/model/singbox_config_enum.dart';
 import 'package:hiddify/singbox/model/singbox_config_option.dart';
 import 'package:hiddify/utils/custom_loggers.dart';
 import 'package:hiddify/utils/platform_utils.dart';
@@ -171,6 +173,7 @@ class HiddifyCoreService with InfraLogger {
           await core.startManaged(path, name, disableMemoryLimit);
           await startListeningLogs('bg', core.bgClient);
           ref.read(coreRestartSignalProvider.notifier).restart();
+          unawaited(_applyMacosSystemProxy());
           return right(unit);
         } catch (error, stackTrace) {
           final failure = ConnectionFailure.fromError(error, stackTrace);
@@ -208,6 +211,7 @@ class HiddifyCoreService with InfraLogger {
         );
         ref.read(coreRestartSignalProvider.notifier).restart();
         if (outcome case CoreStopped(alert: _?)) return left(_startFailure(outcome));
+        unawaited(_applyMacosSystemProxy());
       } on GrpcError catch (e) {
         loggy.error("failed to start bg core: $e");
         ref.read(coreRestartSignalProvider.notifier).restart();
@@ -283,8 +287,18 @@ class HiddifyCoreService with InfraLogger {
         ConnectionFailure.unexpected("failed to start core: $message");
   }
 
+  Future<void> _applyMacosSystemProxy() async {
+    if (!PlatformUtils.isMacOS) return;
+    if (ref.read(ConfigOptions.serviceMode) != ServiceMode.systemProxy) return;
+    final port = ref.read(ConfigOptions.mixedPort);
+    final applied = await MacosSystemProxy.apply(port);
+    if (!applied) loggy.warning('connected without the system proxy: administrator permission was not given');
+  }
+
   TaskEither<String, Unit> stop() {
     return TaskEither(() async {
+      // a stale system proxy pointing at a stopped core leaves the Mac without a network
+      await MacosSystemProxy.clear();
       loggy.debug("stopping");
       // a start still waiting gives up, whoever manages the core
       _stopRequests.add(_stopRequests.value + 1);
