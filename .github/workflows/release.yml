@@ -3,10 +3,9 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+.*'
+  # Manual: this fork has no Apple, Microsoft Store or Play signing secrets, so an automatic
+  # release run would fail at the iOS build. The release itself is published from the local build.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
