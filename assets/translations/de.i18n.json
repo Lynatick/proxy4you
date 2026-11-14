@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Start",
     "version": "Version",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Alles für ein Internet ohne Einschränkungen",
     "termsAndPolicyCaution(rich)": "Mit dem Fortfahren stimmen Sie den ${tap(@:pages.about.termsAndConditions)} zu",
-    "info(rich)": "Mit ❤️ von Hiddify gemacht. ${tap_source(Open Source)} und ${tap_license(Lizenz)}"
+    "info(rich)": "Mit ❤️ von Proxy4You gemacht. ${tap_source(Open Source)} und ${tap_license(Lizenz)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Teilen",
         "edit": "Bearbeiten",
         "shareTitle": "Proxy teilen",
-        "configHint": "Nur dieser Proxy und jeder Proxy, über den er verbindet. Hiddify importiert ihn wie jede andere Konfiguration.",
+        "configHint": "Nur dieser Proxy und jeder Proxy, über den er verbindet. Proxy4You importiert ihn wie jede andere Konfiguration.",
         "editTitle": "Als neues Profil bearbeiten",
         "editMsg": "„${name}“ wird in ein neues Profil kopiert, das Sie bearbeiten können. Das Original bleibt unverändert, da ein Abo seine Proxys bei jeder Aktualisierung ersetzt.",
         "editConfirm": "Kopieren und bearbeiten",
@@ -221,7 +221,7 @@
         "received": "Vom Smartphone empfangen",
         "from": "Von $address",
         "page": {
-          "title": "An Hiddify auf Ihrem Fernseher senden",
+          "title": "An Proxy4You auf Ihrem Fernseher senden",
           "intro": "Fügen Sie Ihrem Fernseher in vier kurzen Schritten ein Abo hinzu, ohne es mit der Fernbedienung einzutippen.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Abos aktualisieren",
       "share": {
         "title": "Profil teilen",
-        "scanHint": "Scannen Sie den Code mit Hiddify auf einem anderen Gerät, um dieses Profil hinzuzufügen",
+        "scanHint": "Scannen Sie den Code mit Proxy4You auf einem anderen Gerät, um dieses Profil hinzuzufügen",
         "link": "Abo-Link",
         "config": "Konfiguration",
         "configHint": "Das vollständige JSON, mit dem dieses Profil läuft, einschließlich Ihrer Einstellungen",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Zu groß für die Zwischenablage: Teilen Sie es oder speichern Sie es als Datei",
         "toTv": {
           "button": "An Fernseher senden",
-          "scanHint": "Öffnen Sie am Fernseher Hiddify und tippen Sie auf +, um ein Profil hinzuzufügen. Scannen Sie dann den angezeigten Code. Beide Geräte müssen im selben WLAN sein.",
+          "scanHint": "Öffnen Sie am Fernseher Proxy4You und tippen Sie auf +, um ein Profil hinzuzufügen. Scannen Sie dann den angezeigten Code. Beide Geräte müssen im selben WLAN sein.",
           "sent": "Gesendet. Drücken Sie am Fernseher auf „Importieren“, um es hinzuzufügen.",
-          "notTvCode": "Das ist kein Hiddify-Fernsehcode. Tippen Sie am Fernseher auf +, um ein Profil hinzuzufügen und den Code anzuzeigen.",
+          "notTvCode": "Das ist kein Proxy4You-Fernsehcode. Tippen Sie am Fernseher auf +, um ein Profil hinzuzufügen und den Code anzuzeigen.",
           "expired": "Der Fernseher nimmt mit diesem Code keine Links mehr an. Öffnen Sie den Bildschirm „Profil hinzufügen“ am Fernseher erneut und scannen Sie den neuen Code.",
           "busy": "Auf dem Fernseher warten zu viele Links. Importieren oder verwerfen Sie sie am Fernseher und versuchen Sie es dann erneut.",
           "unreachable": "Der Fernseher ist nicht erreichbar. Stellen Sie sicher, dass Smartphone und Fernseher im selben WLAN sind."
@@ -930,7 +930,7 @@
       "updateNow": "Jetzt aktualisieren",
       "downloading": "Wird heruntergeladen …",
       "installing": "Installationsprogramm wird gestartet …",
-      "allowInstall": "Erlauben Sie Hiddify in den geöffneten Einstellungen, Apps zu installieren, und versuchen Sie es dann erneut.",
+      "allowInstall": "Erlauben Sie Proxy4You in den geöffneten Einstellungen, Apps zu installieren, und versuchen Sie es dann erneut.",
       "failed": "Das Update konnte nicht installiert werden.",
       "openPage": "Seite der Version öffnen",
       "tryAgain": "Erneut versuchen"
@@ -977,7 +977,7 @@
         "someApps": "Browser und die meisten Apps",
         "switched": "Zum System-Proxy-Modus gewechselt. Sie können das in den Einstellungen ändern.",
         "waitingTitle": "Warten auf Administratorberechtigung",
-        "waitingMsg": "Hiddify wartet darauf, dass Sie den VPN-Modus erlauben.",
+        "waitingMsg": "Proxy4You wartet darauf, dass Sie den VPN-Modus erlauben.",
         "waitingWhere": "Im geöffneten Fenster:",
         "waitingWindows": "Klicken Sie auf „Ja“.",
         "waitingMac": "Geben Sie Ihr Mac-Passwort ein und bestätigen Sie.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Vorteile",
         "helpConsTitle": "Zu beachten",
         "helpVpn": {
-          "what": "Hiddify richtet auf Ihrem Computer ein virtuelles Netzwerk ein, und der Internetverkehr jeder App läuft von selbst darüber: Browser, Telegram, Spiele, Updates und alles andere. In den einzelnen Apps muss nichts eingerichtet werden.",
+          "what": "Proxy4You richtet auf Ihrem Computer ein virtuelles Netzwerk ein, und der Internetverkehr jeder App läuft von selbst darüber: Browser, Telegram, Spiele, Updates und alles andere. In den einzelnen Apps muss nichts eingerichtet werden.",
           "pros": [
-            "Jede App läuft über Hiddify, ohne Einstellungen in den einzelnen Apps.",
+            "Jede App läuft über Proxy4You, ohne Einstellungen in den einzelnen Apps.",
             "Auch Apps, die Proxy-Einstellungen ignorieren, wie Telegram und Spiele, funktionieren.",
-            "Auch Namensabfragen (DNS) laufen über Hiddify, sodass auch auf diese Weise gesperrte Websites sich öffnen."
+            "Auch Namensabfragen (DNS) laufen über Proxy4You, sodass auch auf diese Weise gesperrte Websites sich öffnen."
           ],
           "cons": [
-            "Beim ersten Mal fragt Ihr Computer nach der Administratorberechtigung, um den Hintergrunddienst von Hiddify zu installieren. Danach verbindet er sich ohne Nachfrage.",
+            "Beim ersten Mal fragt Ihr Computer nach der Administratorberechtigung, um den Hintergrunddienst von Proxy4You zu installieren. Danach verbindet er sich ohne Nachfrage.",
             "Schalten Sie andere VPN-Apps aus, solange Sie es nutzen: Zwei gleichzeitig stören sich gegenseitig."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify ändert die Proxy-Einstellung Ihres Computers. Apps, die dieser Einstellung folgen, etwa Webbrowser, senden ihren Datenverkehr über Hiddify. Alle anderen verbinden sich direkt, als wäre Hiddify aus.",
+          "what": "Proxy4You ändert die Proxy-Einstellung Ihres Computers. Apps, die dieser Einstellung folgen, etwa Webbrowser, senden ihren Datenverkehr über Proxy4You. Alle anderen verbinden sich direkt, als wäre Proxy4You aus.",
           "pros": [
             "Keine Administratorberechtigung nötig.",
-            "Schnell ein- und auszuschalten, und Hiddify setzt die Einstellung beim Trennen zurück.",
+            "Schnell ein- und auszuschalten, und Proxy4You setzt die Einstellung beim Trennen zurück.",
             "Funktioniert neben anderen Netzwerkwerkzeugen auf Ihrem Computer."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "In diesem Bild wurde kein QR-Code gefunden"
     },
     "crashReport": {
-      "title": "Hiddify ist beim letzten Mal abgestürzt",
+      "title": "Proxy4You ist beim letzten Mal abgestürzt",
       "msg": "Einen Bericht an die Entwickler senden, damit das behoben wird? Er enthält die Absturzdetails, die Protokolle und Ihre Konfiguration ohne Server, Schlüssel und Passwörter, als eine ZIP-Datei, die Sie vor dem Senden ansehen können.",
       "send": "Bericht senden"
     },
@@ -1164,7 +1164,7 @@
         "Öffnen Sie die Proxy-Einstellungen der App",
         "Wählen Sie SOCKS5 oder HTTP",
         "Geben Sie die Werte unten ein · zum Kopieren tippen",
-        "Lassen Sie Hiddify verbunden"
+        "Lassen Sie Proxy4You verbunden"
       ],
       "hint": "Proxy-Modus · so geht's",
       "setPassword": "Passwort festlegen",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "Gespeicherte Daten stammen aus einer neueren Version",
-      "msg": "Ihre Profile und Einstellungen wurden von einer neueren Version von Hiddify gespeichert, und diese ältere Version kann sie nicht lesen. Installieren Sie die neueste Version, um sie zu behalten, oder löschen Sie sie, um diese Version zu verwenden.",
+      "msg": "Ihre Profile und Einstellungen wurden von einer neueren Version von Proxy4You gespeichert, und diese ältere Version kann sie nicht lesen. Installieren Sie die neueste Version, um sie zu behalten, oder löschen Sie sie, um diese Version zu verwenden.",
       "deleteData": "Daten löschen",
       "deleteConfirm": "Die gespeicherten Daten werden gelöscht. Ihre Abos und lokalen Profile werden, soweit möglich, wieder hinzugefügt. Alles andere, was die neuere Version gespeichert hat, geht verloren.",
       "downloadLatest": "Neueste Version herunterladen"
     },
     "dbBroken": {
       "title": "Gespeicherte Daten können nicht geöffnet werden",
-      "msg": "Hiddify konnte seine gespeicherten Profile nicht öffnen. Löschen Sie die gespeicherten Daten, um neu zu beginnen: Ihre Abos und lokalen Profile werden, soweit möglich, wieder hinzugefügt, und Ihre Einstellungen bleiben erhalten.",
+      "msg": "Proxy4You konnte seine gespeicherten Profile nicht öffnen. Löschen Sie die gespeicherten Daten, um neu zu beginnen: Ihre Abos und lokalen Profile werden, soweit möglich, wieder hinzugefügt, und Ihre Einstellungen bleiben erhalten.",
       "wipeData": "Daten löschen",
-      "wipeConfirm": "Die gespeicherten Daten werden gelöscht und Hiddify startet neu. Profile, die sich noch lesen lassen, werden wieder hinzugefügt. Der Rest kann nicht wiederhergestellt werden.",
+      "wipeConfirm": "Die gespeicherten Daten werden gelöscht und Proxy4You startet neu. Profile, die sich noch lesen lassen, werden wieder hinzugefügt. Der Rest kann nicht wiederhergestellt werden.",
       "copyError": "Fehler kopieren"
     }
   },

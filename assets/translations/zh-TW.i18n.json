@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "開始",
     "version": "版本",
     "ok": "確定",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "暢享無限制網路的所需一切",
     "termsAndPolicyCaution(rich)": "繼續即表示您同意 ${tap(@:pages.about.termsAndConditions)}",
-    "info(rich)": "由 Hiddify 以 ❤️ 製作。${tap_source(開源)} 和 ${tap_license(授權)}"
+    "info(rich)": "由 Proxy4You 以 ❤️ 製作。${tap_source(開源)} 和 ${tap_license(授權)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "分享",
         "edit": "編輯",
         "shareTitle": "分享代理",
-        "configHint": "僅包含這個代理，以及它所連線經過的代理。Hiddify 可像匯入其他設定一樣匯入它。",
+        "configHint": "僅包含這個代理，以及它所連線經過的代理。Proxy4You 可像匯入其他設定一樣匯入它。",
         "editTitle": "以新設定檔編輯",
         "editMsg": "「${name}」會複製到一個可編輯的新設定檔。原本的內容保持不變，因為訂閱每次更新都會取代其中的代理。",
         "editConfirm": "複製並編輯",
@@ -221,7 +221,7 @@
         "received": "已收到來自手機的內容",
         "from": "來自 $address",
         "page": {
-          "title": "傳送到電視上的 Hiddify",
+          "title": "傳送到電視上的 Proxy4You",
           "intro": "只要四個步驟就能把訂閱加入電視，不必用遙控器輸入。",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "更新訂閱",
       "share": {
         "title": "分享設定檔",
-        "scanHint": "在另一台裝置上用 Hiddify 掃描，即可新增此設定檔",
+        "scanHint": "在另一台裝置上用 Proxy4You 掃描，即可新增此設定檔",
         "link": "訂閱連結",
         "config": "設定",
         "configHint": "此設定檔執行時使用的完整 JSON，包含您的設定",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "內容過大，無法放入剪貼簿：請以檔案分享或儲存",
         "toTv": {
           "button": "傳送到電視",
-          "scanHint": "在電視上開啟 Hiddify，點一下 + 新增設定檔，然後掃描顯示的代碼。兩台裝置必須連線到同一個 Wi-Fi。",
+          "scanHint": "在電視上開啟 Proxy4You，點一下 + 新增設定檔，然後掃描顯示的代碼。兩台裝置必須連線到同一個 Wi-Fi。",
           "sent": "已傳送。請在電視上按「匯入」來新增。",
-          "notTvCode": "這不是 Hiddify 電視代碼。請在電視上點一下 + 新增設定檔，即可顯示代碼。",
+          "notTvCode": "這不是 Proxy4You 電視代碼。請在電視上點一下 + 新增設定檔，即可顯示代碼。",
           "expired": "電視已不再接受此代碼的連結。請在電視上重新開啟新增設定檔畫面，並掃描新的代碼。",
           "busy": "電視上等待中的連結太多。請先在電視上匯入或捨棄，然後再試一次。",
           "unreachable": "無法連到電視。請確認手機和電視連線到同一個 Wi-Fi 網路。"
@@ -930,7 +930,7 @@
       "updateNow": "立即更新",
       "downloading": "正在下載…",
       "installing": "正在啟動安裝程式…",
-      "allowInstall": "請在開啟的設定中允許 Hiddify 安裝應用程式,然後重試。",
+      "allowInstall": "請在開啟的設定中允許 Proxy4You 安裝應用程式,然後重試。",
       "failed": "無法安裝更新。",
       "openPage": "開啟發布頁面",
       "tryAgain": "重試"
@@ -977,7 +977,7 @@
         "someApps": "瀏覽器和大多數應用程式",
         "switched": "已切換為系統代理模式。您可以在設定中變更。",
         "waitingTitle": "正在等待管理員權限",
-        "waitingMsg": "Hiddify 正在等待你允許 VPN 模式。",
+        "waitingMsg": "Proxy4You 正在等待你允許 VPN 模式。",
         "waitingWhere": "在開啟的視窗中：",
         "waitingWindows": "點一下「是」。",
         "waitingMac": "輸入您的 Mac 密碼並確認。",
@@ -994,22 +994,22 @@
         "helpProsTitle": "優點",
         "helpConsTitle": "注意事項",
         "helpVpn": {
-          "what": "Hiddify 會在您的電腦上新增一個虛擬網路，所有應用程式的網路流量都會自動經過它：瀏覽器、Telegram、遊戲、更新等等。不需要在每個應用程式中另外設定。",
+          "what": "Proxy4You 會在您的電腦上新增一個虛擬網路，所有應用程式的網路流量都會自動經過它：瀏覽器、Telegram、遊戲、更新等等。不需要在每個應用程式中另外設定。",
           "pros": [
-            "所有應用程式都經過 Hiddify，不必在每個應用程式中設定。",
+            "所有應用程式都經過 Proxy4You，不必在每個應用程式中設定。",
             "會忽略代理設定的應用程式，例如 Telegram 和遊戲，也能正常運作。",
-            "網域名稱查詢 (DNS) 也經過 Hiddify，因此以此方式封鎖的網站也能開啟。"
+            "網域名稱查詢 (DNS) 也經過 Proxy4You，因此以此方式封鎖的網站也能開啟。"
           ],
           "cons": [
-            "第一次使用時，電腦會要求管理員權限，以安裝 Hiddify 的背景服務。之後連線就不會再詢問。",
+            "第一次使用時，電腦會要求管理員權限，以安裝 Proxy4You 的背景服務。之後連線就不會再詢問。",
             "使用時請關閉其他 VPN 應用程式：兩個同時執行會互相干擾。"
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify 會變更電腦的代理設定。遵循該設定的應用程式（例如網頁瀏覽器）會透過 Hiddify 傳送流量；其餘應用程式則直接連線，就像 Hiddify 沒有開啟一樣。",
+          "what": "Proxy4You 會變更電腦的代理設定。遵循該設定的應用程式（例如網頁瀏覽器）會透過 Proxy4You 傳送流量；其餘應用程式則直接連線，就像 Proxy4You 沒有開啟一樣。",
           "pros": [
             "不需要管理員權限。",
-            "開關都很快，中斷連線時 Hiddify 會還原該設定。",
+            "開關都很快，中斷連線時 Proxy4You 會還原該設定。",
             "可與電腦上的其他網路工具並存。"
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "此圖片中找不到 QR Code"
     },
     "crashReport": {
-      "title": "Hiddify 上次當機了",
+      "title": "Proxy4You 上次當機了",
       "msg": "要傳送報告給開發人員以便修正嗎？報告包含當機詳細資料、日誌，以及已移除伺服器、金鑰和密碼的設定，打包為一個 zip 檔案，傳送前您可以先查看。",
       "send": "傳送報告"
     },
@@ -1164,7 +1164,7 @@
         "開啟應用程式的代理設定",
         "選擇 SOCKS5 或 HTTP",
         "填入下方的值 · 點按即可複製",
-        "保持 Hiddify 連線"
+        "保持 Proxy4You 連線"
       ],
       "hint": "代理模式 · 使用說明",
       "setPassword": "設定密碼",
@@ -1184,21 +1184,21 @@
     },
     "dbNewerThanApp": {
       "title": "儲存的資料來自較新版本",
-      "msg": "您的設定檔和設定是由較新版本的 Hiddify 儲存的，這個較舊的版本無法讀取。請安裝最新版本以保留它們，或刪除它們以使用此版本。",
+      "msg": "您的設定檔和設定是由較新版本的 Proxy4You 儲存的，這個較舊的版本無法讀取。請安裝最新版本以保留它們，或刪除它們以使用此版本。",
       "deleteData": "清除資料",
       "deleteConfirm": "儲存的資料將被清除。您的訂閱和本機設定檔會盡可能重新加入；較新版本儲存的其他內容將會遺失。",
       "downloadLatest": "下載最新版本"
     },
     "dbBroken": {
       "title": "無法開啟儲存的資料",
-      "msg": "Hiddify 無法開啟已儲存的設定檔。請清除儲存的資料並重新開始：您的訂閱和本機設定檔會盡可能重新加入，您的設定則會保留。",
+      "msg": "Proxy4You 無法開啟已儲存的設定檔。請清除儲存的資料並重新開始：您的訂閱和本機設定檔會盡可能重新加入，您的設定則會保留。",
       "wipeData": "清除資料",
-      "wipeConfirm": "儲存的資料將被清除，Hiddify 會重新開始。仍可讀取的設定檔會重新加入；其餘的無法復原。",
+      "wipeConfirm": "儲存的資料將被清除，Proxy4You 會重新開始。仍可讀取的設定檔會重新加入；其餘的無法復原。",
       "copyError": "複製錯誤"
     },
     "telegramChannel": {
-      "title": "加入 Hiddify Telegram 頻道",
-      "msg": "關注 Hiddify 官方頻道，取得新聞、新版本和保持連線的技巧。",
+      "title": "加入 Proxy4You Telegram 頻道",
+      "msg": "關注 Proxy4You 官方頻道，取得新聞、新版本和保持連線的技巧。",
       "join": "加入頻道"
     }
   },

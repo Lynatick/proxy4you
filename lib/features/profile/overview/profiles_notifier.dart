@@ -80,6 +80,12 @@ class ProfilesNotifier extends _$ProfilesNotifier with AppLogger {
   ProfileRepository get _profilesRepo => ref.read(profileRepositoryProvider).requireValue;
 
   Future<Unit> selectActiveProfile(String id) async {
+    if (ref.read(Preferences.activeSubscriptionList).isNotEmpty) {
+      ref
+          .read(inAppNotificationControllerProvider)
+          .showInfoToast('A subscription list is selected; choose "No subscription list" first');
+      return unit;
+    }
     loggy.debug('changing active profile to: [$id]');
     await ref.read(hapticServiceProvider.notifier).lightImpact();
     return _profilesRepo.setAsActive(id).getOrElse((err) {

@@ -6,7 +6,9 @@ import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/router/bottom_sheets/bottom_sheets_notifier.dart';
 import 'package:hiddify/features/home/widget/connection_button.dart';
 import 'package:hiddify/features/home/widget/local_proxy_hint.dart';
+import 'package:hiddify/features/home/widget/subscription_list_selector.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
+import 'package:hiddify/features/profile/notifier/subscription_list_notifier.dart';
 import 'package:hiddify/features/profile/widget/profile_tile.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_card.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
@@ -139,11 +141,18 @@ class HomePage extends HookConsumerWidget {
                         MultiSliver(
                           children: [
                             // const Gap(100),
+                            const SubscriptionListSelector(),
                             switch (activeProfile) {
-                              AsyncData(value: final profile?) => ProfileTile(
-                                profile: profile,
-                                isMain: true,
-                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              AsyncData(value: final profile?) => Opacity(
+                                opacity: ref.watch(activeSubscriptionListProvider) == null ? 1 : 0.45,
+                                child: IgnorePointer(
+                                  ignoring: ref.watch(activeSubscriptionListProvider) != null,
+                                  child: ProfileTile(
+                                    profile: profile,
+                                    isMain: true,
+                                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                ),
                               ),
                               _ => const Text(""),
                             },

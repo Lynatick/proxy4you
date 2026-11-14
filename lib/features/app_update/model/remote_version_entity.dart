@@ -22,6 +22,11 @@ class RemoteVersionEntity with _$RemoteVersionEntity {
 
   /// The asset named [name], if the release has it.
   ReleaseAsset? asset(String name) => assets.where((e) => e.name == name).firstOrNull;
+
+  /// The first asset whose name ends with [suffix]; the release files carry the version in the
+  /// name (Proxy4You-5.5.6-universal.apk), so the caller does not spell it out.
+  ReleaseAsset? assetEndingWith(String suffix) =>
+      assets.where((e) => e.name.toLowerCase().endsWith(suffix.toLowerCase())).firstOrNull;
 }
 
 /// A file of a release: an installer or a package.

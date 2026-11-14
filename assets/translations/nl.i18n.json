@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Starten",
     "version": "Versie",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Alles wat je nodig hebt voor een onbeperkt internet",
     "termsAndPolicyCaution(rich)": "Door door te gaan ga je akkoord met ${tap(@:pages.about.termsAndConditions)}",
-    "info(rich)": "Gemaakt met ❤️ door Hiddify. ${tap_source(Open source)} en ${tap_license(Licentie)}"
+    "info(rich)": "Gemaakt met ❤️ door Proxy4You. ${tap_source(Open source)} en ${tap_license(Licentie)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Delen",
         "edit": "Bewerken",
         "shareTitle": "Proxy delen",
-        "configHint": "Alleen deze proxy, en elke proxy waarlangs hij verbindt. Hiddify importeert hem zoals elke configuratie.",
+        "configHint": "Alleen deze proxy, en elke proxy waarlangs hij verbindt. Proxy4You importeert hem zoals elke configuratie.",
         "editTitle": "Bewerken als nieuw profiel",
         "editMsg": "“${name}” wordt gekopieerd naar een nieuw profiel dat je kunt bewerken. Het origineel blijft ongewijzigd, omdat een abonnement bij elke update zijn proxy’s vervangt.",
         "editConfirm": "Kopiëren en bewerken",
@@ -221,7 +221,7 @@
         "received": "Ontvangen van je telefoon",
         "from": "Van $address",
         "page": {
-          "title": "Naar Hiddify op je tv sturen",
+          "title": "Naar Proxy4You op je tv sturen",
           "intro": "Voeg in vier snelle stappen een abonnement toe aan je tv, zonder het met de afstandsbediening te typen.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Abonnementen bijwerken",
       "share": {
         "title": "Profiel delen",
-        "scanHint": "Scan dit met Hiddify op een ander apparaat om dit profiel toe te voegen",
+        "scanHint": "Scan dit met Proxy4You op een ander apparaat om dit profiel toe te voegen",
         "link": "Abonnementslink",
         "config": "Configuratie",
         "configHint": "De volledige JSON waarmee dit profiel draait, inclusief je instellingen",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Te groot voor het klembord: deel of bewaar het als bestand",
         "toTv": {
           "button": "Naar tv sturen",
-          "scanHint": "Open Hiddify op de tv en tik op + om een profiel toe te voegen. Scan dan de code die verschijnt. Beide apparaten moeten op hetzelfde wifi zitten.",
+          "scanHint": "Open Proxy4You op de tv en tik op + om een profiel toe te voegen. Scan dan de code die verschijnt. Beide apparaten moeten op hetzelfde wifi zitten.",
           "sent": "Verstuurd. Druk op de tv op Importeren om het toe te voegen.",
-          "notTvCode": "Dat is geen Hiddify tv-code. Tik op de tv op + om een profiel toe te voegen en de code te tonen.",
+          "notTvCode": "Dat is geen Proxy4You tv-code. Tik op de tv op + om een profiel toe te voegen en de code te tonen.",
           "expired": "De tv accepteert geen links meer met deze code. Open het scherm voor het toevoegen van een profiel op de tv opnieuw en scan de nieuwe code.",
           "busy": "Er staan te veel links te wachten op de tv. Importeer of verwerp ze op de tv en probeer het opnieuw.",
           "unreachable": "De tv kon niet worden bereikt. Controleer of de telefoon en de tv op hetzelfde wifi-netwerk zitten."
@@ -930,7 +930,7 @@
       "updateNow": "Nu bijwerken",
       "downloading": "Downloaden…",
       "installing": "Installatieprogramma starten…",
-      "allowInstall": "Sta Hiddify toe om apps te installeren in de instellingen die zijn geopend en probeer het opnieuw.",
+      "allowInstall": "Sta Proxy4You toe om apps te installeren in de instellingen die zijn geopend en probeer het opnieuw.",
       "failed": "De update kon niet worden geïnstalleerd.",
       "openPage": "De releasepagina openen",
       "tryAgain": "Opnieuw proberen"
@@ -977,7 +977,7 @@
         "someApps": "Browsers en de meeste apps",
         "switched": "Overgeschakeld naar systeemproxymodus. Je kunt dit wijzigen in Instellingen.",
         "waitingTitle": "Wachten op beheerdersrechten",
-        "waitingMsg": "Hiddify wacht tot je de VPN-modus toestaat.",
+        "waitingMsg": "Proxy4You wacht tot je de VPN-modus toestaat.",
         "waitingWhere": "In het venster dat is geopend:",
         "waitingWindows": "Klik op “Ja”.",
         "waitingMac": "Voer je Mac-wachtwoord in en bevestig.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Voordelen",
         "helpConsTitle": "Let op",
         "helpVpn": {
-          "what": "Hiddify voegt een virtueel netwerk toe aan je computer, en het internetverkeer van elke app loopt er vanzelf doorheen: browsers, Telegram, games, updates en de rest. In elke app hoeft niets te worden ingesteld.",
+          "what": "Proxy4You voegt een virtueel netwerk toe aan je computer, en het internetverkeer van elke app loopt er vanzelf doorheen: browsers, Telegram, games, updates en de rest. In elke app hoeft niets te worden ingesteld.",
           "pros": [
-            "Elke app loopt via Hiddify, zonder instellingen in elke app.",
+            "Elke app loopt via Proxy4You, zonder instellingen in elke app.",
             "Apps die proxy-instellingen negeren, zoals Telegram en games, werken ook.",
-            "Het opzoeken van namen (DNS) loopt ook via Hiddify, dus sites die op die manier geblokkeerd zijn, gaan ook open."
+            "Het opzoeken van namen (DNS) loopt ook via Proxy4You, dus sites die op die manier geblokkeerd zijn, gaan ook open."
           ],
           "cons": [
-            "De eerste keer vraagt je computer om beheerdersrechten, om de achtergrondservice van Hiddify te installeren. Daarna verbindt hij zonder te vragen.",
+            "De eerste keer vraagt je computer om beheerdersrechten, om de achtergrondservice van Proxy4You te installeren. Daarna verbindt hij zonder te vragen.",
             "Schakel andere VPN-apps uit terwijl je dit gebruikt: twee tegelijk zitten elkaar in de weg."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify wijzigt de proxy-instelling van je computer. Apps die die instelling volgen, zoals webbrowsers, sturen hun verkeer via Hiddify. De rest verbindt direct, alsof Hiddify uit staat.",
+          "what": "Proxy4You wijzigt de proxy-instelling van je computer. Apps die die instelling volgen, zoals webbrowsers, sturen hun verkeer via Proxy4You. De rest verbindt direct, alsof Proxy4You uit staat.",
           "pros": [
             "Geen beheerdersrechten nodig.",
-            "Snel in en uit te schakelen, en Hiddify zet de instelling terug als je de verbinding verbreekt.",
+            "Snel in en uit te schakelen, en Proxy4You zet de instelling terug als je de verbinding verbreekt.",
             "Werkt naast andere netwerktools op je computer."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "Geen QR-code gevonden in deze afbeelding"
     },
     "crashReport": {
-      "title": "Hiddify is de vorige keer gecrasht",
+      "title": "Proxy4You is de vorige keer gecrasht",
       "msg": "Een rapport naar de ontwikkelaars sturen zodat dit wordt opgelost? Het bevat de crashgegevens, de logboeken en je configuratie zonder servers, sleutels en wachtwoorden, als één zipbestand dat je kunt bekijken voordat je het verstuurt.",
       "send": "Rapport versturen"
     },
@@ -1164,7 +1164,7 @@
         "Open de proxy-instellingen van de app",
         "Kies SOCKS5 of HTTP",
         "Vul de onderstaande waarden in · tik om te kopiëren",
-        "Houd Hiddify verbonden"
+        "Houd Proxy4You verbonden"
       ],
       "hint": "Proxymodus · zo gebruik je hem",
       "setPassword": "Wachtwoord instellen",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "Opgeslagen gegevens zijn van een nieuwere versie",
-      "msg": "Je profielen en instellingen zijn opgeslagen door een nieuwere versie van Hiddify, en deze oudere versie kan ze niet lezen. Installeer de nieuwste versie om ze te behouden, of verwijder ze om deze versie te gebruiken.",
+      "msg": "Je profielen en instellingen zijn opgeslagen door een nieuwere versie van Proxy4You, en deze oudere versie kan ze niet lezen. Installeer de nieuwste versie om ze te behouden, of verwijder ze om deze versie te gebruiken.",
       "deleteData": "Gegevens wissen",
       "deleteConfirm": "De opgeslagen gegevens worden gewist. Je abonnementen en lokale profielen worden waar mogelijk opnieuw toegevoegd. Al het andere dat de nieuwere versie heeft opgeslagen, gaat verloren.",
       "downloadLatest": "Nieuwste versie downloaden"
     },
     "dbBroken": {
       "title": "Opgeslagen gegevens kunnen niet worden geopend",
-      "msg": "Hiddify kon de opgeslagen profielen niet openen. Wis de opgeslagen gegevens om opnieuw te beginnen: je abonnementen en lokale profielen worden waar mogelijk opnieuw toegevoegd, en je instellingen blijven behouden.",
+      "msg": "Proxy4You kon de opgeslagen profielen niet openen. Wis de opgeslagen gegevens om opnieuw te beginnen: je abonnementen en lokale profielen worden waar mogelijk opnieuw toegevoegd, en je instellingen blijven behouden.",
       "wipeData": "Gegevens wissen",
-      "wipeConfirm": "De opgeslagen gegevens worden gewist en Hiddify begint opnieuw. Profielen die nog gelezen kunnen worden, worden opnieuw toegevoegd. De rest kan niet worden hersteld.",
+      "wipeConfirm": "De opgeslagen gegevens worden gewist en Proxy4You begint opnieuw. Profielen die nog gelezen kunnen worden, worden opnieuw toegevoegd. De rest kan niet worden hersteld.",
       "copyError": "Fout kopiëren"
     }
   },

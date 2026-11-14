@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Başla",
     "version": "Versiya",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Məhdudiyyətsiz internet üçün lazım olan hər şey",
     "termsAndPolicyCaution(rich)": "Davam etməklə siz ${tap(@:pages.about.termsAndConditions)} ilə razılaşırsınız",
-    "info(rich)": "Hiddify tərəfindən ❤️ ilə hazırlanıb. ${tap_source(Açıq mənbə)} və ${tap_license(Lisenziya)}"
+    "info(rich)": "Proxy4You tərəfindən ❤️ ilə hazırlanıb. ${tap_source(Açıq mənbə)} və ${tap_license(Lisenziya)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Paylaş",
         "edit": "Redaktə et",
         "shareTitle": "Proksini paylaş",
-        "configHint": "Yalnız bu proksi və onun vasitəsilə qoşulduğu proksilər. Hiddify bunu hər hansı konfiqurasiya kimi idxal edir.",
+        "configHint": "Yalnız bu proksi və onun vasitəsilə qoşulduğu proksilər. Proxy4You bunu hər hansı konfiqurasiya kimi idxal edir.",
         "editTitle": "Yeni profil kimi redaktə et",
         "editMsg": "“${name}” redaktə edə biləcəyiniz yeni profilə köçürülür. Abunəlik hər yenilənmədə proksilərini əvəz etdiyi üçün orijinal olduğu kimi qalır.",
         "editConfirm": "Köçür və redaktə et",
@@ -221,7 +221,7 @@
         "received": "Telefonunuzdan alındı",
         "from": "Göndərən: $address",
         "page": {
-          "title": "Televizorunuzdakı Hiddify-a göndərin",
+          "title": "Televizorunuzdakı Proxy4You-a göndərin",
           "intro": "Pultla yazmadan, dörd sürətli addımda televizorunuza abunəlik əlavə edin.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Abunəlikləri yenilə",
       "share": {
         "title": "Profili paylaş",
-        "scanHint": "Bu profili əlavə etmək üçün başqa cihazda Hiddify ilə skan edin",
+        "scanHint": "Bu profili əlavə etmək üçün başqa cihazda Proxy4You ilə skan edin",
         "link": "Abunəlik keçidi",
         "config": "Konfiqurasiya",
         "configHint": "Bu profilin işlədiyi tam JSON, parametrləriniz daxil olmaqla",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Buferə sığmayacaq qədər böyükdür: fayl kimi paylaşın və ya yadda saxlayın",
         "toTv": {
           "button": "Televizora göndər",
-          "scanHint": "Televizorda Hiddify-ı açın, profil əlavə etmək üçün + düyməsinə toxunun, sonra göstərilən kodu skan edin. Hər iki cihaz eyni Wi-Fi şəbəkəsində olmalıdır.",
+          "scanHint": "Televizorda Proxy4You-ı açın, profil əlavə etmək üçün + düyməsinə toxunun, sonra göstərilən kodu skan edin. Hər iki cihaz eyni Wi-Fi şəbəkəsində olmalıdır.",
           "sent": "Göndərildi. Əlavə etmək üçün televizorda İdxal et düyməsini basın.",
-          "notTvCode": "Bu Hiddify televizor kodu deyil. Kodu göstərmək üçün televizorda profil əlavə etmək üçün + düyməsinə toxunun.",
+          "notTvCode": "Bu Proxy4You televizor kodu deyil. Kodu göstərmək üçün televizorda profil əlavə etmək üçün + düyməsinə toxunun.",
           "expired": "Televizor bu kod ilə artıq keçid qəbul etmir. Televizorda profil əlavə etmə ekranını yenidən açın və yeni kodu skan edin.",
           "busy": "Televizorda çox keçid gözləyir. Onları televizorda idxal edin və ya atın, sonra yenidən cəhd edin.",
           "unreachable": "Televizora çatmaq alınmadı. Telefonun və televizorun eyni Wi-Fi şəbəkəsində olduğuna əmin olun."
@@ -930,7 +930,7 @@
       "updateNow": "İndi yenilə",
       "downloading": "Endirilir…",
       "installing": "Quraşdırıcı başladılır…",
-      "allowInstall": "Açılan parametrlərdə Hiddify-a tətbiq quraşdırmağa icazə verin, sonra yenidən cəhd edin.",
+      "allowInstall": "Açılan parametrlərdə Proxy4You-a tətbiq quraşdırmağa icazə verin, sonra yenidən cəhd edin.",
       "failed": "Yenilənməni quraşdırmaq alınmadı.",
       "openPage": "Buraxılış səhifəsini aç",
       "tryAgain": "Yenidən cəhd et"
@@ -977,7 +977,7 @@
         "someApps": "Brauzerlər və əksər tətbiqlər",
         "switched": "Sistem proksisi rejiminə keçildi. Bunu Parametrlərdə dəyişə bilərsiniz.",
         "waitingTitle": "Administrator icazəsi gözlənilir",
-        "waitingMsg": "Hiddify VPN rejiminə icazə verməyinizi gözləyir.",
+        "waitingMsg": "Proxy4You VPN rejiminə icazə verməyinizi gözləyir.",
         "waitingWhere": "Açılan pəncərədə:",
         "waitingWindows": "“Bəli” düyməsinə klikləyin.",
         "waitingMac": "Mac parolunuzu daxil edin və təsdiq edin.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Üstünlüklər",
         "helpConsTitle": "Nəzərə alın",
         "helpVpn": {
-          "what": "Hiddify kompüterinizə virtual şəbəkə əlavə edir və hər tətbiqin internet trafiki özü-özünə onun üzərindən keçir: brauzerlər, Telegram, oyunlar, yenilənmələr və digərləri. Hər tətbiqdə nəsə ayarlamaq lazım deyil.",
+          "what": "Proxy4You kompüterinizə virtual şəbəkə əlavə edir və hər tətbiqin internet trafiki özü-özünə onun üzərindən keçir: brauzerlər, Telegram, oyunlar, yenilənmələr və digərləri. Hər tətbiqdə nəsə ayarlamaq lazım deyil.",
           "pros": [
-            "Hər tətbiq Hiddify vasitəsilə işləyir, hər tətbiqdə parametr tələb olunmur.",
+            "Hər tətbiq Proxy4You vasitəsilə işləyir, hər tətbiqdə parametr tələb olunmur.",
             "Proksi parametrlərini nəzərə almayan Telegram və oyunlar kimi tətbiqlər də işləyir.",
-            "Ad sorğuları (DNS) da Hiddify vasitəsilə gedir, ona görə bu yolla bloklanan saytlar da açılır."
+            "Ad sorğuları (DNS) da Proxy4You vasitəsilə gedir, ona görə bu yolla bloklanan saytlar da açılır."
           ],
           "cons": [
-            "İlk dəfə kompüteriniz Hiddify-ın fon xidmətini quraşdırmaq üçün administrator icazəsi soruşur. Bundan sonra soruşmadan qoşulur.",
+            "İlk dəfə kompüteriniz Proxy4You-ın fon xidmətini quraşdırmaq üçün administrator icazəsi soruşur. Bundan sonra soruşmadan qoşulur.",
             "İstifadə edərkən digər VPN tətbiqlərini söndürün: ikisi eyni vaxtda bir-birinə mane olur."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify kompüterinizin proksi parametrini dəyişir. Veb brauzerlər kimi bu parametrə əməl edən tətbiqlər trafikini Hiddify vasitəsilə göndərir; qalanları Hiddify söndürülmüş kimi birbaşa qoşulur.",
+          "what": "Proxy4You kompüterinizin proksi parametrini dəyişir. Veb brauzerlər kimi bu parametrə əməl edən tətbiqlər trafikini Proxy4You vasitəsilə göndərir; qalanları Proxy4You söndürülmüş kimi birbaşa qoşulur.",
           "pros": [
             "Administrator icazəsi lazım deyil.",
-            "Tez aktiv və deaktiv olunur, bağlantını kəsdiyiniz zaman Hiddify parametri əvvəlki vəziyyətinə qaytarır.",
+            "Tez aktiv və deaktiv olunur, bağlantını kəsdiyiniz zaman Proxy4You parametri əvvəlki vəziyyətinə qaytarır.",
             "Kompüterinizdəki digər şəbəkə alətləri ilə yanaşı işləyir."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "Bu şəkildə QR kod tapılmadı"
     },
     "crashReport": {
-      "title": "Hiddify son dəfə çökdü",
+      "title": "Proxy4You son dəfə çökdü",
       "msg": "Bunun düzəldilməsi üçün tərtibatçılara hesabat göndərilsin? Hesabatda çökmə təfərrüatları, jurnallar və serverlər, açarlar və parollar silinmiş konfiqurasiyanız var; göndərməzdən əvvəl baxa biləcəyiniz bir zip faylıdır.",
       "send": "Hesabatı göndər"
     },
@@ -1164,7 +1164,7 @@
         "Tətbiqin proksi parametrlərini açın",
         "SOCKS5 və ya HTTP seçin",
         "Aşağıdakı dəyərləri daxil edin · köçürmək üçün toxunun",
-        "Hiddify-ı qoşulu saxlayın"
+        "Proxy4You-ı qoşulu saxlayın"
       ],
       "hint": "Proksi rejimi · necə istifadə etməli",
       "setPassword": "Parol təyin et",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "Saxlanılmış məlumatlar daha yeni versiyadandır",
-      "msg": "Profilləriniz və parametrləriniz Hiddify-ın daha yeni versiyası tərəfindən saxlanılıb və bu köhnə versiya onları oxuya bilmir. Onları saxlamaq üçün ən son versiyanı quraşdırın və ya bu versiyadan istifadə etmək üçün onları silin.",
+      "msg": "Profilləriniz və parametrləriniz Proxy4You-ın daha yeni versiyası tərəfindən saxlanılıb və bu köhnə versiya onları oxuya bilmir. Onları saxlamaq üçün ən son versiyanı quraşdırın və ya bu versiyadan istifadə etmək üçün onları silin.",
       "deleteData": "Məlumatları sil",
       "deleteConfirm": "Saxlanılmış məlumatlar silinir. Abunəlikləriniz və yerli profilləriniz mümkün olduqda geri əlavə olunur; daha yeni versiyanın saxladığı qalan hər şey itirilir.",
       "downloadLatest": "Ən son versiyanı endir"
     },
     "dbBroken": {
       "title": "Saxlanılmış məlumatları açmaq olmur",
-      "msg": "Hiddify saxlanılmış profillərini aça bilmədi. Yenidən başlamaq üçün saxlanılmış məlumatları silin: abunəlikləriniz və yerli profilləriniz mümkün olduqda geri əlavə olunur, parametrləriniz saxlanılır.",
+      "msg": "Proxy4You saxlanılmış profillərini aça bilmədi. Yenidən başlamaq üçün saxlanılmış məlumatları silin: abunəlikləriniz və yerli profilləriniz mümkün olduqda geri əlavə olunur, parametrləriniz saxlanılır.",
       "wipeData": "Məlumatları sil",
-      "wipeConfirm": "Saxlanılmış məlumatlar silinir və Hiddify yenidən başlayır. Hələ də oxuna bilən profillər geri əlavə olunur; qalanlarını bərpa etmək mümkün deyil.",
+      "wipeConfirm": "Saxlanılmış məlumatlar silinir və Proxy4You yenidən başlayır. Hələ də oxuna bilən profillər geri əlavə olunur; qalanlarını bərpa etmək mümkün deyil.",
       "copyError": "Xətanı köçür"
     }
   },

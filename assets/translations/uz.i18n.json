@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Boshlash",
     "version": "Versiya",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Cheklovsiz internet uchun kerak bo‘lgan hamma narsa",
     "termsAndPolicyCaution(rich)": "Davom etish orqali siz ${tap(@:pages.about.termsAndConditions)} bilan rozi bo‘lasiz",
-    "info(rich)": "Hiddify tomonidan ❤️ bilan yaratilgan. ${tap_source(Ochiq manba)} va ${tap_license(Litsenziya)}"
+    "info(rich)": "Proxy4You tomonidan ❤️ bilan yaratilgan. ${tap_source(Ochiq manba)} va ${tap_license(Litsenziya)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Ulashish",
         "edit": "Tahrirlash",
         "shareTitle": "Proksini ulashish",
-        "configHint": "Faqat shu proksi va u ulanadigan boshqa proksilar. Hiddify uni oddiy konfiguratsiya kabi import qiladi.",
+        "configHint": "Faqat shu proksi va u ulanadigan boshqa proksilar. Proxy4You uni oddiy konfiguratsiya kabi import qiladi.",
         "editTitle": "Yangi profil sifatida tahrirlash",
         "editMsg": "“${name}” tahrirlash mumkin bo‘lgan yangi profilga nusxalanadi. Asl profil o‘zgarmaydi, chunki obuna har safar yangilanganda proksilarini almashtiradi.",
         "editConfirm": "Nusxalash va tahrirlash",
@@ -221,7 +221,7 @@
         "received": "Telefoningizdan qabul qilindi",
         "from": "$address manzilidan",
         "page": {
-          "title": "Televizoringizdagi Hiddify’ga yuborish",
+          "title": "Televizoringizdagi Proxy4You’ga yuborish",
           "intro": "Obunani pult bilan yozib o‘tirmasdan, televizoringizga to‘rt oddiy qadamda qo‘shing.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Obunalarni yangilash",
       "share": {
         "title": "Profilni ulashish",
-        "scanHint": "Bu profilni qo‘shish uchun uni boshqa qurilmadagi Hiddify bilan skanerlang",
+        "scanHint": "Bu profilni qo‘shish uchun uni boshqa qurilmadagi Proxy4You bilan skanerlang",
         "link": "Obuna havolasi",
         "config": "Konfiguratsiya",
         "configHint": "Bu profil ishlaydigan to‘liq JSON, sozlamalaringiz bilan birga",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Vaqtinchalik xotira uchun juda katta: uni fayl sifatida ulashing yoki saqlang",
         "toTv": {
           "button": "Televizorga yuborish",
-          "scanHint": "Televizorda Hiddify’ni oching va profil qo‘shish uchun + tugmasini bosing, so‘ng ko‘rsatilgan kodni skanerlang. Ikkala qurilma bir xil Wi-Fi’da bo‘lishi kerak.",
+          "scanHint": "Televizorda Proxy4You’ni oching va profil qo‘shish uchun + tugmasini bosing, so‘ng ko‘rsatilgan kodni skanerlang. Ikkala qurilma bir xil Wi-Fi’da bo‘lishi kerak.",
           "sent": "Yuborildi. Qo‘shish uchun televizorda “Import qilish” tugmasini bosing.",
-          "notTvCode": "Bu Hiddify televizor kodi emas. Uni ko‘rsatish uchun televizorda profil qo‘shish uchun + tugmasini bosing.",
+          "notTvCode": "Bu Proxy4You televizor kodi emas. Uni ko‘rsatish uchun televizorda profil qo‘shish uchun + tugmasini bosing.",
           "expired": "Televizor bu kod bilan endi havola qabul qilmaydi. Televizorda profil qo‘shish oynasini qayta oching va yangi kodni skanerlang.",
           "busy": "Televizorda juda ko‘p havola kutmoqda. Ularni televizorda import qiling yoki bekor qiling, so‘ng qayta urinib ko‘ring.",
           "unreachable": "Televizorga yetib bo‘lmadi. Telefon va televizor bir xil Wi-Fi tarmog‘ida ekanini tekshiring."
@@ -930,7 +930,7 @@
       "updateNow": "Hozir yangilash",
       "downloading": "Yuklab olinmoqda…",
       "installing": "O‘rnatuvchi ishga tushmoqda…",
-      "allowInstall": "Ochilgan sozlamalarda Hiddify’ga ilovalarni o‘rnatishga ruxsat bering, so‘ng qayta urinib ko‘ring.",
+      "allowInstall": "Ochilgan sozlamalarda Proxy4You’ga ilovalarni o‘rnatishga ruxsat bering, so‘ng qayta urinib ko‘ring.",
       "failed": "Yangilanishni o‘rnatib bo‘lmadi.",
       "openPage": "Reliz sahifasini ochish",
       "tryAgain": "Qayta urinib ko‘rish"
@@ -977,7 +977,7 @@
         "someApps": "Brauzerlar va ko‘pchilik ilovalar",
         "switched": "Tizim proksisi rejimiga o‘tildi. Buni Sozlamalarda o‘zgartirishingiz mumkin.",
         "waitingTitle": "Administrator ruxsati kutilmoqda",
-        "waitingMsg": "Hiddify VPN rejimiga ruxsat berishingizni kutmoqda.",
+        "waitingMsg": "Proxy4You VPN rejimiga ruxsat berishingizni kutmoqda.",
         "waitingWhere": "Ochilgan oynada:",
         "waitingWindows": "“Yes” tugmasini bosing.",
         "waitingMac": "Mac parolingizni kiriting va tasdiqlang.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Yaxshi tomonlari",
         "helpConsTitle": "Esda tuting",
         "helpVpn": {
-          "what": "Hiddify kompyuteringizga virtual tarmoq qo‘shadi va har bir ilovaning internet trafigi o‘z-o‘zidan u orqali o‘tadi: brauzerlar, Telegram, o‘yinlar, yangilanishlar va boshqalar. Har bir ilovada hech narsa sozlash shart emas.",
+          "what": "Proxy4You kompyuteringizga virtual tarmoq qo‘shadi va har bir ilovaning internet trafigi o‘z-o‘zidan u orqali o‘tadi: brauzerlar, Telegram, o‘yinlar, yangilanishlar va boshqalar. Har bir ilovada hech narsa sozlash shart emas.",
           "pros": [
-            "Har bir ilova Hiddify orqali o‘tadi, har bir ilovada sozlash shart emas.",
+            "Har bir ilova Proxy4You orqali o‘tadi, har bir ilovada sozlash shart emas.",
             "Proksi sozlamalariga e’tibor bermaydigan ilovalar, masalan Telegram va o‘yinlar ham ishlaydi.",
-            "Nomlarni aniqlash (DNS) ham Hiddify orqali o‘tadi, shuning uchun shu yo‘l bilan bloklangan saytlar ham ochiladi."
+            "Nomlarni aniqlash (DNS) ham Proxy4You orqali o‘tadi, shuning uchun shu yo‘l bilan bloklangan saytlar ham ochiladi."
           ],
           "cons": [
-            "Birinchi marta kompyuteringiz Hiddify’ning fon xizmatini o‘rnatish uchun administrator ruxsatini so‘raydi. Shundan keyin so‘ramasdan ulanadi.",
+            "Birinchi marta kompyuteringiz Proxy4You’ning fon xizmatini o‘rnatish uchun administrator ruxsatini so‘raydi. Shundan keyin so‘ramasdan ulanadi.",
             "Undan foydalanayotganda boshqa VPN ilovalarini o‘chiring: ikkitasi birga bir-biriga xalaqit beradi."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify kompyuteringizdagi proksi sozlamasini o‘zgartiradi. Shu sozlamaga amal qiladigan ilovalar, masalan veb-brauzerlar, trafigini Hiddify orqali yuboradi; qolganlari Hiddify o‘chiqdagidek to‘g‘ridan-to‘g‘ri ulanadi.",
+          "what": "Proxy4You kompyuteringizdagi proksi sozlamasini o‘zgartiradi. Shu sozlamaga amal qiladigan ilovalar, masalan veb-brauzerlar, trafigini Proxy4You orqali yuboradi; qolganlari Proxy4You o‘chiqdagidek to‘g‘ridan-to‘g‘ri ulanadi.",
           "pros": [
             "Administrator ruxsati kerak emas.",
-            "Tez yoqiladi va o‘chadi, ulanishni uzganingizda Hiddify sozlamani joyiga qaytaradi.",
+            "Tez yoqiladi va o‘chadi, ulanishni uzganingizda Proxy4You sozlamani joyiga qaytaradi.",
             "Kompyuteringizdagi boshqa tarmoq vositalari bilan birga ishlaydi."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "Bu rasmda QR kod topilmadi"
     },
     "crashReport": {
-      "title": "Hiddify oxirgi safar ishdan chiqdi",
+      "title": "Proxy4You oxirgi safar ishdan chiqdi",
       "msg": "Buni tuzatish uchun dasturchilarga hisobot yuborilsinmi? Unda ishdan chiqish tafsilotlari, jurnallar va serverlar, kalitlar hamda parollari olib tashlangan konfiguratsiyangiz bor. U bitta zip fayl bo‘lib, yuborishdan oldin ko‘rib chiqishingiz mumkin.",
       "send": "Hisobotni yuborish"
     },
@@ -1164,7 +1164,7 @@
         "Ilovaning proksi sozlamalarini oching",
         "SOCKS5 yoki HTTP’ni tanlang",
         "Quyidagi qiymatlarni kiriting · nusxalash uchun bosing",
-        "Hiddify’ni ulangan holda qoldiring"
+        "Proxy4You’ni ulangan holda qoldiring"
       ],
       "hint": "Proksi rejimi · qanday foydalanish",
       "setPassword": "Parol o‘rnatish",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "Saqlangan ma’lumotlar yangiroq versiyadan",
-      "msg": "Profillaringiz va sozlamalaringiz Hiddify’ning yangiroq versiyasi tomonidan saqlangan, bu eski versiya ularni o‘qiy olmaydi. Ularni saqlab qolish uchun eng so‘nggi versiyani o‘rnating yoki bu versiyadan foydalanish uchun ularni o‘chirib tashlang.",
+      "msg": "Profillaringiz va sozlamalaringiz Proxy4You’ning yangiroq versiyasi tomonidan saqlangan, bu eski versiya ularni o‘qiy olmaydi. Ularni saqlab qolish uchun eng so‘nggi versiyani o‘rnating yoki bu versiyadan foydalanish uchun ularni o‘chirib tashlang.",
       "deleteData": "Ma’lumotlarni tozalash",
       "deleteConfirm": "Saqlangan ma’lumotlar tozalanadi. Obunalaringiz va mahalliy profillaringiz imkon qadar qayta qo‘shiladi; yangiroq versiya saqlagan boshqa hamma narsa yo‘qoladi.",
       "downloadLatest": "Eng so‘nggi versiyani yuklab olish"
     },
     "dbBroken": {
       "title": "Saqlangan ma’lumotlarni ochib bo‘lmadi",
-      "msg": "Hiddify saqlangan profillarini ocha olmadi. Qaytadan boshlash uchun saqlangan ma’lumotlarni tozalang: obunalaringiz va mahalliy profillaringiz imkon qadar qayta qo‘shiladi, sozlamalaringiz saqlanadi.",
+      "msg": "Proxy4You saqlangan profillarini ocha olmadi. Qaytadan boshlash uchun saqlangan ma’lumotlarni tozalang: obunalaringiz va mahalliy profillaringiz imkon qadar qayta qo‘shiladi, sozlamalaringiz saqlanadi.",
       "wipeData": "Ma’lumotlarni tozalash",
-      "wipeConfirm": "Saqlangan ma’lumotlar tozalanadi va Hiddify qaytadan boshlanadi. O‘qib bo‘ladigan profillar qayta qo‘shiladi; qolganini tiklab bo‘lmaydi.",
+      "wipeConfirm": "Saqlangan ma’lumotlar tozalanadi va Proxy4You qaytadan boshlanadi. O‘qib bo‘ladigan profillar qayta qo‘shiladi; qolganini tiklab bo‘lmaydi.",
       "copyError": "Xatoni nusxalash"
     }
   },

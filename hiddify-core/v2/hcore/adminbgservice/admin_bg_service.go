@@ -1,0 +1,423 @@
+package adminbgservice
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net"
+	"net/netip"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"runtime"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/hiddify/hiddify-core/v2/hcore/hprocess"
+
+	C "github.com/sagernet/sing-box/constant"
+	"github.com/sagernet/sing-box/daemon"
+	"github.com/sagernet/sing-box/experimental/libbox"
+	"github.com/sagernet/sing-box/option"
+
+	"github.com/hiddify/hiddify-core/v2/config"
+	hcommon "github.com/hiddify/hiddify-core/v2/hcommon"
+	"github.com/hiddify/hiddify-core/v2/hcore"
+	"github.com/hiddify/hiddify-core/v2/hcore/adminbg"
+)
+
+type hiddifyAdminBG struct {
+	UnimplementedHiddifyAdminBGServer
+	mutex sync.Mutex
+	box   *daemon.StartedService
+	// closed when the box or full core stops, to end its watchdog
+	watching chan struct{}
+	fullCore bool
+}
+
+func (s *hiddifyAdminBG) Start(ctx context.Context, in *AdminBgStartRequest) (response *AdminBgResponse, err error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			err = fmt.Errorf("start tunnel: %v", recovered)
+			response = &AdminBgResponse{Message: err.Error()}
+		}
+	}()
+	if in.GetConfigContent() != "" {
+		if err := s.startFullCore(in); err != nil {
+			return &AdminBgResponse{Message: err.Error()}, err
+		}
+		return &AdminBgResponse{Message: "OK"}, nil
+	}
+	return s.startBridge(in)
+}
+
+func (s *hiddifyAdminBG) startBridge(in *AdminBgStartRequest) (*AdminBgResponse, error) {
+	s.closeRunning()
+	if in.ServerPort == 0 {
+		in.ServerPort = 12334
+	}
+	option := makeTunnelConfig(in)
+	box, err := hcore.NewService(libbox.BaseContext(nil), option, nil)
+	if err != nil && config.AutoRedirectFailed(&option, err) {
+		// the system lacks nftables, iptables or the nfqueue module: the TUN works without
+		// auto_redirect, as it did before
+		log.Printf("admin_bgservice: auto-redirect is not available here, starting the TUN without it: %v", err)
+		option = makeTunnelConfig(in)
+		box, err = hcore.NewService(libbox.BaseContext(nil), option, nil)
+	}
+	if err != nil {
+		return &AdminBgResponse{Message: err.Error()}, err
+	}
+	s.box = box
+	s.fullCore = false
+	s.watching = make(chan struct{})
+	go s.watchPort(in.ServerPort, s.watching)
+	return &AdminBgResponse{Message: "OK"}, nil
+}
+
+// fullCoreOptions writes the request's resources and returns the engine options for it: the same
+// for a start and a reload, which differ only in how the engine applies them.
+// fullCoreDirectories are the base and working dirs of the engine the service runs.
+func fullCoreDirectories() (base string, work string) {
+	base = filepath.Join(serviceDataDirectory(), "core")
+	return base, filepath.Join(base, "work")
+}
+
+func fullCoreOptions(in *AdminBgStartRequest) (*adminbg.Options, error) {
+	base, work := fullCoreDirectories()
+	temp := filepath.Join(base, "temp")
+	for _, directory := range []string{base, work, temp, filepath.Join(work, "data")} {
+		if err := os.MkdirAll(directory, 0o700); err != nil {
+			return nil, err
+		}
+	}
+	if err := writeResources(filepath.Join(work, "resources"), in.GetResources()); err != nil {
+		return nil, err
+	}
+	secret, err := LoadControlSecret()
+	if err != nil {
+		return nil, err
+	}
+	settings := in.GetSettingsJson()
+	if settings == "" {
+		settings = "{}"
+	}
+	return &adminbg.Options{
+		BasePath:           base,
+		WorkingPath:        work,
+		TempPath:           temp,
+		ConfigContent:      in.GetConfigContent(),
+		ConfigName:         in.GetConfigName(),
+		SettingsJSON:       settings,
+		Secret:             secret,
+		DisableMemoryLimit: in.GetDisableMemoryLimit(),
+		ProxyOnly:          in.GetProxyOnly(),
+		NativeTun:          true,
+	}, nil
+}
+
+func (s *hiddifyAdminBG) startFullCore(in *AdminBgStartRequest) error {
+	s.closeRunning()
+	options, err := fullCoreOptions(in)
+	if err != nil {
+		return err
+	}
+	if err := adminbg.Apply(options, nil); err != nil {
+		return err
+	}
+	s.fullCore = true
+	s.watching = make(chan struct{})
+	go s.watchOwner(in.GetOwnerPid(), s.watching)
+	return nil
+}
+
+// Restart stops the running engine and starts it again with the request, in one call: a change a
+// reload cannot apply (the TUN changed, for one). The app keeps its connection to the service, and
+// the engine stops again once the app is gone, as after a start.
+func (s *hiddifyAdminBG) Restart(ctx context.Context, in *AdminBgStartRequest) (response *AdminBgResponse, err error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			err = fmt.Errorf("restart tunnel: %v", recovered)
+			response = &AdminBgResponse{Message: err.Error()}
+		}
+	}()
+	if in.GetConfigContent() == "" {
+		err := fmt.Errorf("missing tunnel configuration")
+		return &AdminBgResponse{Message: err.Error()}, err
+	}
+	// startFullCore stops what runs first
+	if err := s.startFullCore(in); err != nil {
+		return &AdminBgResponse{Message: err.Error()}, err
+	}
+	return &AdminBgResponse{Message: "OK"}, nil
+}
+
+// Reload applies a changed configuration (a profile update, a changed option) to the running
+// engine, keeping the TUN and the connections: the same request as Start. When the change cannot
+// be hot reloaded the engine keeps running unchanged and the app starts it again.
+func (s *hiddifyAdminBG) Reload(ctx context.Context, in *AdminBgStartRequest) (response *AdminBgResponse, err error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			err = fmt.Errorf("reload tunnel: %v", recovered)
+			response = &AdminBgResponse{Message: err.Error()}
+		}
+	}()
+	if !s.fullCore || in.GetConfigContent() == "" {
+		err := fmt.Errorf("no running engine to reload")
+		return &AdminBgResponse{Message: err.Error()}, err
+	}
+	options, err := fullCoreOptions(in)
+	if err == nil {
+		err = adminbg.Reload(options, nil)
+	}
+	if err != nil {
+		return &AdminBgResponse{Message: err.Error()}, err
+	}
+	return &AdminBgResponse{Message: "OK"}, nil
+}
+
+var resourceNamePattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*$`)
+
+func writeResources(directory string, resources map[string][]byte) error {
+	if err := os.RemoveAll(directory); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(directory, 0o700); err != nil {
+		return err
+	}
+	var total int
+	for name, bytes := range resources {
+		if !resourceNamePattern.MatchString(name) {
+			return fmt.Errorf("invalid saved VPN resource name")
+		}
+		total += len(bytes)
+		if total > 32*1024*1024 {
+			return fmt.Errorf("saved VPN resources exceed the 32 MB limit")
+		}
+		path := filepath.Join(directory, name)
+		if err := os.WriteFile(path, bytes, 0o600); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// watchPort stops the TUN bridge once the app's proxy stops answering.
+func (s *hiddifyAdminBG) watchPort(port int32, done <-chan struct{}) {
+	address := net.JoinHostPort("127.0.0.1", strconv.Itoa(int(port)))
+	failures := 0
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-done:
+			return
+		case <-ticker.C:
+		}
+		conn, err := net.DialTimeout("tcp", address, time.Second)
+		if err != nil {
+			if failures++; failures < 3 {
+				continue
+			}
+			s.mutex.Lock()
+			select {
+			case <-done:
+			default:
+				s.closeRunning()
+			}
+			s.mutex.Unlock()
+			return
+		}
+		conn.Close()
+		failures = 0
+	}
+}
+
+// watchOwner stops the VPN engine once the connecting app is gone, but leaves the service
+// process listening. Exiting the process would require another administrator prompt to start
+// it again; an idle authenticated listener is enough to avoid a background VPN.
+func (s *hiddifyAdminBG) watchOwner(pid int32, done <-chan struct{}) {
+	if !hprocess.WaitOwnerGone(pid, done) {
+		return
+	}
+	s.mutex.Lock()
+	select {
+	case <-done:
+	default:
+		s.closeRunning()
+	}
+	s.mutex.Unlock()
+}
+
+func (s *hiddifyAdminBG) closeRunning() error {
+	if s.watching != nil {
+		close(s.watching)
+		s.watching = nil
+	}
+	if s.fullCore {
+		// Clear fullCore only after StopEngine finishes. Clearing first made Status
+		// report "stopped" while the TUN was still tearing down, so a reconnect could
+		// race and leave a dead interface (Connected UI, IP unchanged).
+		started := time.Now()
+		err := adminbg.StopEngine()
+		log.Printf("admin_bgservice: StopEngine took %s (err=%v)", time.Since(started), err)
+		s.fullCore = false
+		return err
+	}
+	if s.box == nil {
+		return nil
+	}
+	err := s.box.CloseService()
+	s.box.Close()
+	s.box = nil
+	return err
+}
+
+func makeTunnelConfig(in *AdminBgStartRequest) option.Options {
+	ips := []netip.Prefix{netip.MustParsePrefix("172.20.0.1/30")}
+	if in.Ipv6 {
+		ips = append(ips, netip.MustParsePrefix("fdfe:dcba:9876::1/126"))
+	}
+	return option.Options{
+		Log: &option.LogOptions{Level: "warn"},
+		Inbounds: []option.Inbound{
+			{
+				Type: C.TypeTun,
+				Tag:  "tun-in",
+				Options: &option.TunInboundOptions{
+					StrictRoute:   in.StrictRoute,
+					AutoRoute:     true,
+					Address:       ips,
+					InterfaceName: tunInterfaceName(),
+					Stack:         config.TunStack(in.Stack),
+					// the service runs as root on Linux: nftables routing with nfqueue pre-matching,
+					// unless this system cannot (see config.AutoRedirectAvailable)
+					AutoRedirect: config.AutoRedirectAvailable(),
+				},
+			},
+		},
+		Outbounds: []option.Outbound{
+			{
+				Type: C.TypeSOCKS,
+				Tag:  "socks-out",
+				Options: &option.SOCKSOutboundOptions{
+					ServerOptions: option.ServerOptions{
+						Server:     "127.0.0.1",
+						ServerPort: uint16(in.ServerPort),
+					},
+					Username: in.ServerUsername,
+					Password: in.ServerPassword,
+					Version:  "5",
+				},
+			},
+			{
+				Type:    C.TypeDirect,
+				Tag:     "direct-out",
+				Options: &option.DirectOutboundOptions{},
+			},
+		},
+		Route: &option.RouteOptions{
+			AutoDetectInterface: true,
+			DefaultInterface:    routedVPNInterface(),
+			Final:               "socks-out",
+			Rules: []option.Rule{
+				{
+					Type: C.RuleTypeDefault,
+					DefaultOptions: option.DefaultRule{
+						RawDefaultRule: option.RawDefaultRule{
+							ProcessName: []string{
+								"Hiddify.exe",
+								"Hiddify",
+								"HiddifyCli",
+								"HiddifyCli.exe",
+							},
+						},
+						RuleAction: option.RuleAction{
+							Action: C.RuleActionTypeRoute,
+							RouteOptions: option.RouteActionOptions{
+								Outbound: "direct-out",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func (s *hiddifyAdminBG) Stop(ctx context.Context, _ *hcommon.Empty) (*AdminBgResponse, error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if s.box == nil && !s.fullCore {
+		return &AdminBgResponse{Message: "Not Started"}, nil
+	}
+	if err := s.closeRunning(); err != nil {
+		return &AdminBgResponse{Message: err.Error()}, err
+	}
+	return &AdminBgResponse{Message: "OK"}, nil
+}
+
+func (s *hiddifyAdminBG) Status(ctx context.Context, _ *hcommon.Empty) (*AdminBgResponse, error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if s.fullCore || s.box != nil {
+		response := &AdminBgResponse{Message: "started"}
+		// the app's own core points the user's system proxy at the engine (see hcore.DelegatedSystemProxy)
+		if target := hcore.DelegatedSystemProxy(); target != nil {
+			response.SystemProxy = target.Address
+			response.SystemProxySocks = target.SupportSOCKS
+		}
+		return response, nil
+	}
+	return &AdminBgResponse{Message: "stopped"}, nil
+}
+
+func (s *hiddifyAdminBG) Exit(ctx context.Context, _ *hcommon.Empty) (*AdminBgResponse, error) {
+	s.mutex.Lock()
+	s.closeRunning()
+	s.mutex.Unlock()
+	go func() {
+		<-time.After(time.Second * 1)
+		os.Exit(0)
+	}()
+	return &AdminBgResponse{Message: "OK"}, nil
+}
+
+func routedVPNInterface() string {
+	if runtime.GOOS != "darwin" {
+		return ""
+	}
+	output, err := exec.Command("/sbin/route", "-n", "get", "-inet", "1.1.1.1").Output()
+	if err != nil {
+		return ""
+	}
+	return vpnInterface(string(output))
+}
+
+func vpnInterface(routeOutput string) string {
+	for _, line := range strings.Split(routeOutput, "\n") {
+		if name, found := strings.CutPrefix(strings.TrimSpace(line), "interface:"); found {
+			if name = strings.TrimSpace(name); strings.HasPrefix(name, "utun") {
+				return name
+			}
+			return ""
+		}
+	}
+	return ""
+}
+
+func tunInterfaceName() string {
+	if runtime.GOOS == "darwin" {
+		return ""
+	}
+	return "HiddifyAdminBg"
+}

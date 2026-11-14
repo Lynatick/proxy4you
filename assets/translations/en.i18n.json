@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Start",
     "version": "Version",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "All you need for an unrestricted internet",
     "termsAndPolicyCaution(rich)": "By continuing you agree to ${tap(@:pages.about.termsAndConditions)}",
-    "info(rich)": "Made with ❤️ by Hiddify. ${tap_source(Open source)} and ${tap_license(License)}"
+    "info(rich)": "Made with ❤️ by Proxy4You. ${tap_source(Open source)} and ${tap_license(License)}"
   },
   "pages": {
     "home": {
@@ -215,7 +215,7 @@
         "share": "Share",
         "edit": "Edit",
         "shareTitle": "Share proxy",
-        "configHint": "This proxy alone, and any proxy it connects through. Hiddify imports it like any config.",
+        "configHint": "This proxy alone, and any proxy it connects through. Proxy4You imports it like any config.",
         "editTitle": "Edit as a new profile",
         "editMsg": "“${name}” is copied to a new profile that you can edit. The original stays as it is, since a subscription replaces its proxies on every update.",
         "editConfirm": "Copy and edit",
@@ -235,7 +235,7 @@
         "received": "Received from your phone",
         "from": "From $address",
         "page": {
-          "title": "Send to Hiddify on your TV",
+          "title": "Send to Proxy4You on your TV",
           "intro": "Add a subscription to your TV in four quick steps, without typing it with the remote.",
           "steps": {
             "network": {
@@ -274,7 +274,7 @@
       "updateSubscriptions": "Update subscriptions",
       "share": {
         "title": "Share profile",
-        "scanHint": "Scan it with Hiddify on another device to add this profile",
+        "scanHint": "Scan it with Proxy4You on another device to add this profile",
         "link": "Subscription link",
         "config": "Configuration",
         "configHint": "The full JSON this profile runs with, your settings included",
@@ -285,9 +285,9 @@
         "tooLargeToCopy": "Too large for the clipboard: share or save it as a file",
         "toTv": {
           "button": "Send to TV",
-          "scanHint": "On the TV, open Hiddify and tap + to add a profile, then scan the code it shows. Both devices must be on the same Wi-Fi.",
+          "scanHint": "On the TV, open Proxy4You and tap + to add a profile, then scan the code it shows. Both devices must be on the same Wi-Fi.",
           "sent": "Sent. Press Import on the TV to add it.",
-          "notTvCode": "That is not a Hiddify TV code. On the TV, tap + to add a profile to show it.",
+          "notTvCode": "That is not a Proxy4You TV code. On the TV, tap + to add a profile to show it.",
           "expired": "The TV no longer takes links at this code. Open the add profile screen on the TV again and scan the new code.",
           "busy": "The TV has too many links waiting. Import or discard them on the TV, then try again.",
           "unreachable": "Couldn't reach the TV. Make sure the phone and TV are on the same Wi-Fi network."
@@ -947,7 +947,7 @@
       "updateNow": "Update now",
       "downloading": "Downloading…",
       "installing": "Starting the installer…",
-      "allowInstall": "Allow Hiddify to install apps in the settings that opened, then try again.",
+      "allowInstall": "Allow Proxy4You to install apps in the settings that opened, then try again.",
       "failed": "The update could not be installed.",
       "openPage": "Open the release page",
       "tryAgain": "Try again"
@@ -994,7 +994,7 @@
         "someApps": "Browsers and most apps",
         "switched": "Switched to system proxy mode. You can change it in Settings.",
         "waitingTitle": "Waiting for administrator permission",
-        "waitingMsg": "Hiddify is waiting for you to allow VPN mode.",
+        "waitingMsg": "Proxy4You is waiting for you to allow VPN mode.",
         "waitingWhere": "In the window that opened:",
         "waitingWindows": "Click “Yes”.",
         "waitingMac": "Enter your Mac password and confirm.",
@@ -1011,22 +1011,22 @@
         "helpProsTitle": "Good points",
         "helpConsTitle": "Keep in mind",
         "helpVpn": {
-          "what": "Hiddify adds a virtual network to your computer, and every app's internet traffic goes through it on its own: browsers, Telegram, games, updates and the rest. Nothing has to be set up in each app.",
+          "what": "Proxy4You adds a virtual network to your computer, and every app's internet traffic goes through it on its own: browsers, Telegram, games, updates and the rest. Nothing has to be set up in each app.",
           "pros": [
-            "Every app goes through Hiddify, with no settings in each app.",
+            "Every app goes through Proxy4You, with no settings in each app.",
             "Apps that ignore proxy settings, such as Telegram and games, work too.",
-            "Name lookups (DNS) go through Hiddify as well, so sites blocked that way open too."
+            "Name lookups (DNS) go through Proxy4You as well, so sites blocked that way open too."
           ],
           "cons": [
-            "The first time, your computer asks for administrator permission, to install Hiddify's background service. After that it connects without asking.",
+            "The first time, your computer asks for administrator permission, to install Proxy4You's background service. After that it connects without asking.",
             "Turn off other VPN apps while you use it: two at once get in each other's way."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify changes your computer's proxy setting. Apps that follow that setting, such as web browsers, send their traffic through Hiddify; the rest connect directly, as if Hiddify were off.",
+          "what": "Proxy4You changes your computer's proxy setting. Apps that follow that setting, such as web browsers, send their traffic through Proxy4You; the rest connect directly, as if Proxy4You were off.",
           "pros": [
             "No administrator permission needed.",
-            "Quick to turn on and off, and Hiddify puts the setting back when you disconnect.",
+            "Quick to turn on and off, and Proxy4You puts the setting back when you disconnect.",
             "Works next to other network tools on your computer."
           ],
           "cons": [
@@ -1120,23 +1120,23 @@
       "notFound": "No QR code found in this image"
     },
     "crashReport": {
-      "title": "Hiddify crashed last time",
+      "title": "Proxy4You crashed last time",
       "msg": "Send a report to the developers so this gets fixed? It holds the crash details, the logs and your configuration with servers, keys and passwords removed, as one zip file you can look at before sending.",
-      "sendHiddify": "Send to Hiddify",
+      "sendHiddify": "Send to Proxy4You",
       "sendHiddifyMsg": "The app uploads the report itself",
       "sendHiddifyEncryptedMsg": "The app encrypts and uploads it itself",
       "sendEmail": "Send by email",
       "sendTelegram": "Send on Telegram",
       "sent": "Report sent. Thank you!",
       "sendFailed": "Could not send the report. Try email or Telegram instead.",
-      "subject": "Hiddify crash report",
+      "subject": "Proxy4You crash report",
       "problemTitle": "Report a problem",
       "problemMsg": "Tell the developers what went wrong. The report holds the logs, the app and connection state and your settings with servers, keys and passwords removed, as one zip file you can look at before sending.",
       "description": "What happened? (optional)",
       "descriptionHint": "What you did, what you expected, what you saw instead",
       "saveFile": "Save the file",
       "saveFileMsg": "Look at it, or send it yourself",
-      "problemSubject": "Hiddify problem report",
+      "problemSubject": "Proxy4You problem report",
       "back": "Back",
       "chooseHow": "How do you want to send it?",
       "sendGithub": "Open a GitHub issue",
@@ -1145,7 +1145,7 @@
         "prepare": "Prepare the report",
         "preparing": "Collecting logs and settings…",
         "prepareFailed": "Could not prepare the report. Go back and try again.",
-        "upload": "Upload it to Hiddify",
+        "upload": "Upload it to Proxy4You",
         "uploading": "Uploading…",
         "save": "Save the report",
         "saveDesktopMsg": "Choose where to keep it",
@@ -1161,12 +1161,12 @@
         "openGithubMsg": "Sign in to GitHub. Your description, platform, version and system are filled in.",
         "openGithubButton": "Open GitHub",
         "dropInIssue": "Attach the report and press Create",
-        "telegramPrivate": "Private: only the Hiddify support team sees the report.",
-        "emailPrivate": "Private: only the Hiddify team reads the report.",
+        "telegramPrivate": "Private: only the Proxy4You support team sees the report.",
+        "emailPrivate": "Private: only the Proxy4You team reads the report.",
         "attachInChat": "Attach the report in the bot chat and send it",
         "attachHow": "Drag the file in, or use the paperclip",
         "dropInIssueHow": "Drag the file into Additional Context, or tap the bar under that box",
-        "hiddifyEncrypted": "Encrypted on this device: only the Hiddify team can open it."
+        "hiddifyEncrypted": "Encrypted on this device: only the Proxy4You team can open it."
       }
     },
     "keepTop": {
@@ -1228,7 +1228,7 @@
         "Open the app's proxy settings",
         "Choose SOCKS5 or HTTP",
         "Enter the values below · tap to copy",
-        "Keep Hiddify connected"
+        "Keep Proxy4You connected"
       ],
       "hint": "Proxy mode · how to use",
       "setPassword": "Set password",
@@ -1248,21 +1248,21 @@
     },
     "dbNewerThanApp": {
       "title": "Saved data is from a newer version",
-      "msg": "Your profiles and settings were saved by a newer version of Hiddify, and this older version cannot read them. Install the latest version to keep them, or delete them to use this version.",
+      "msg": "Your profiles and settings were saved by a newer version of Proxy4You, and this older version cannot read them. Install the latest version to keep them, or delete them to use this version.",
       "deleteData": "Wipe data",
       "deleteConfirm": "The saved data is wiped. Your subscriptions and local profiles are added back where possible; anything else saved by the newer version is lost.",
       "downloadLatest": "Download latest version"
     },
     "dbBroken": {
       "title": "Saved data can't be opened",
-      "msg": "Hiddify couldn't open its saved profiles. Wipe the saved data to start again: your subscriptions and local profiles are added back where possible, and your settings are kept.",
+      "msg": "Proxy4You couldn't open its saved profiles. Wipe the saved data to start again: your subscriptions and local profiles are added back where possible, and your settings are kept.",
       "wipeData": "Wipe data",
-      "wipeConfirm": "The saved data is wiped and Hiddify starts again. Profiles that can still be read are added back; the rest can't be recovered.",
+      "wipeConfirm": "The saved data is wiped and Proxy4You starts again. Profiles that can still be read are added back; the rest can't be recovered.",
       "copyError": "Copy error"
     },
     "telegramChannel": {
-      "title": "Join Hiddify on Telegram",
-      "msg": "Follow the official Hiddify channel for news, new releases and tips to stay connected.",
+      "title": "Join Proxy4You on Telegram",
+      "msg": "Follow the official Proxy4You channel for news, new releases and tips to stay connected.",
       "join": "Join channel"
     }
   },

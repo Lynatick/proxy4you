@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -131,6 +132,31 @@ class DioHttpClient with InfraLogger {
     );
   }
 
+  /// The body as text, at most [maxBytes]: a server that streams more is cut off instead of
+  /// filling the memory of the device. Used where the response is a subscription the app did not
+  /// ask for itself.
+  Future<String> getText(String url, {CancelToken? cancelToken, String? userAgent, int maxBytes = 4 << 20}) async {
+    final portOpen = await isPortOpen("127.0.0.1", port);
+    final mode = portOpen ? "both" : "direct";
+    final dio = _dio[mode]!;
+    final response = await dio.get<ResponseBody>(
+      url,
+      cancelToken: cancelToken,
+      options: _options(url, userAgent: userAgent, responseType: ResponseType.stream),
+    );
+    final body = response.data;
+    if (body == null) return '';
+    final builder = BytesBuilder(copy: false);
+    await for (final chunk in body.stream) {
+      builder.add(chunk);
+      if (builder.length > maxBytes) {
+        cancelToken?.cancel("the response is larger than $maxBytes bytes");
+        throw ResponseTooLargeException(maxBytes);
+      }
+    }
+    return utf8.decode(builder.takeBytes(), allowMalformed: true);
+  }
+
   Future<Response> download(
     String url,
     String path, {
@@ -185,4 +211,14 @@ class DioHttpClient with InfraLogger {
       },
     );
   }
+}
+
+/// A response larger than the caller allows. Thrown before the body is kept.
+class ResponseTooLargeException implements Exception {
+  const ResponseTooLargeException(this.maxBytes);
+
+  final int maxBytes;
+
+  @override
+  String toString() => 'the response is larger than $maxBytes bytes';
 }

@@ -57,17 +57,27 @@ enum InstallKind {
   ReleaseAsset? assetIn(RemoteVersionEntity release, {List<String> abis = const [], bool arm64 = false}) =>
       switch (this) {
         androidApk =>
-          release.asset(switch (abis.firstOrNull) {
+          release.assetEndingWith(switch (abis.firstOrNull) {
+                'arm64-v8a' => '-arm64-v8a.apk',
+                'armeabi-v7a' => '-armeabi-v7a.apk',
+                'x86_64' => '-x86_64.apk',
+                _ => '-universal.apk',
+              }) ??
+              release.asset(switch (abis.firstOrNull) {
                 'arm64-v8a' => 'Hiddify-Android-arm64.apk',
                 'armeabi-v7a' => 'Hiddify-Android-arm7.apk',
                 'x86_64' => 'Hiddify-Android-x86_64.apk',
                 _ => 'Hiddify-Android-universal.apk',
               }) ??
+              release.assetEndingWith('-universal.apk') ??
               release.asset('Hiddify-Android-universal.apk'),
-        windowsSetup => release.asset('Hiddify-Windows-Setup-x64.exe'),
-        linuxAppImage => release.asset('Hiddify-Linux-${arm64 ? 'arm64' : 'x64'}.AppImage'),
-        linuxDeb => release.asset('Hiddify-Debian-${arm64 ? 'arm64' : 'x64'}.deb'),
-        macOS => release.asset('Hiddify-MacOS.dmg'),
+        windowsSetup => release.assetEndingWith('-Setup-x64.exe'),
+        linuxAppImage =>
+          release.assetEndingWith(arm64 ? '-arm64-AppImage.AppImage' : '-x64-AppImage.AppImage') ??
+              release.asset('Hiddify-Linux-${arm64 ? 'arm64' : 'x64'}-AppImage.AppImage') ??
+              release.asset('Hiddify-Linux-${arm64 ? 'arm64' : 'x64'}.AppImage'),
+        linuxDeb => release.assetEndingWith(arm64 ? '-arm64.deb' : '-x64.deb'),
+        macOS => release.assetEndingWith('-macos27-arm64.dmg') ?? release.assetEndingWith('.dmg'),
         store || windowsPortable || linuxOther => null,
       };
 }

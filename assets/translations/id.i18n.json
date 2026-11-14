@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Mulai",
     "version": "Versi",
     "ok": "Oke",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Semua yang Anda butuhkan untuk internet tanpa batasan",
     "termsAndPolicyCaution(rich)": "Dengan melanjutkan, Anda menyetujui ${tap(@:pages.about.termsAndConditions)}",
-    "info(rich)": "Dibuat dengan ❤️ oleh Hiddify. ${tap_source(Sumber terbuka)} dan ${tap_license(Lisensi)}"
+    "info(rich)": "Dibuat dengan ❤️ oleh Proxy4You. ${tap_source(Sumber terbuka)} dan ${tap_license(Lisensi)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Bagikan",
         "edit": "Edit",
         "shareTitle": "Bagikan proxy",
-        "configHint": "Hanya proxy ini, beserta proxy lain yang dilewatinya. Hiddify mengimpornya seperti konfigurasi lainnya.",
+        "configHint": "Hanya proxy ini, beserta proxy lain yang dilewatinya. Proxy4You mengimpornya seperti konfigurasi lainnya.",
         "editTitle": "Edit sebagai profil baru",
         "editMsg": "“${name}” disalin ke profil baru yang bisa Anda edit. Aslinya tidak berubah, karena langganan mengganti proxy-nya setiap kali diperbarui.",
         "editConfirm": "Salin dan edit",
@@ -221,7 +221,7 @@
         "received": "Diterima dari ponsel",
         "from": "Dari $address",
         "page": {
-          "title": "Kirim ke Hiddify di TV",
+          "title": "Kirim ke Proxy4You di TV",
           "intro": "Tambahkan langganan ke TV dalam empat langkah cepat, tanpa mengetik dengan remote.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Perbarui langganan",
       "share": {
         "title": "Bagikan profil",
-        "scanHint": "Pindai dengan Hiddify di perangkat lain untuk menambahkan profil ini",
+        "scanHint": "Pindai dengan Proxy4You di perangkat lain untuk menambahkan profil ini",
         "link": "Tautan langganan",
         "config": "Konfigurasi",
         "configHint": "JSON lengkap yang dijalankan profil ini, termasuk pengaturan Anda",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Terlalu besar untuk papan klip: bagikan atau simpan sebagai berkas",
         "toTv": {
           "button": "Kirim ke TV",
-          "scanHint": "Di TV, buka Hiddify dan ketuk + untuk menambah profil, lalu pindai kode yang muncul. Kedua perangkat harus terhubung ke Wi-Fi yang sama.",
+          "scanHint": "Di TV, buka Proxy4You dan ketuk + untuk menambah profil, lalu pindai kode yang muncul. Kedua perangkat harus terhubung ke Wi-Fi yang sama.",
           "sent": "Terkirim. Tekan Impor di TV untuk menambahkannya.",
-          "notTvCode": "Itu bukan kode TV Hiddify. Di TV, ketuk + untuk menambah profil agar kodenya muncul.",
+          "notTvCode": "Itu bukan kode TV Proxy4You. Di TV, ketuk + untuk menambah profil agar kodenya muncul.",
           "expired": "TV tidak lagi menerima tautan dengan kode ini. Buka lagi layar tambah profil di TV dan pindai kode yang baru.",
           "busy": "Terlalu banyak tautan yang menunggu di TV. Impor atau buang tautan itu di TV, lalu coba lagi.",
           "unreachable": "Tidak dapat menjangkau TV. Pastikan ponsel dan TV berada di jaringan Wi-Fi yang sama."
@@ -930,7 +930,7 @@
       "updateNow": "Perbarui sekarang",
       "downloading": "Mengunduh…",
       "installing": "Memulai pemasang…",
-      "allowInstall": "Izinkan Hiddify memasang aplikasi di pengaturan yang terbuka, lalu coba lagi.",
+      "allowInstall": "Izinkan Proxy4You memasang aplikasi di pengaturan yang terbuka, lalu coba lagi.",
       "failed": "Pembaruan tidak dapat dipasang.",
       "openPage": "Buka halaman rilis",
       "tryAgain": "Coba lagi"
@@ -977,7 +977,7 @@
         "someApps": "Peramban dan sebagian besar aplikasi",
         "switched": "Beralih ke mode proxy sistem. Anda dapat mengubahnya di Pengaturan.",
         "waitingTitle": "Menunggu izin administrator",
-        "waitingMsg": "Hiddify menunggu Anda mengizinkan mode VPN.",
+        "waitingMsg": "Proxy4You menunggu Anda mengizinkan mode VPN.",
         "waitingWhere": "Di jendela yang terbuka:",
         "waitingWindows": "Klik “Yes”.",
         "waitingMac": "Masukkan kata sandi Mac Anda dan konfirmasi.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Kelebihan",
         "helpConsTitle": "Perlu diingat",
         "helpVpn": {
-          "what": "Hiddify menambahkan jaringan virtual ke komputer Anda, dan lalu lintas internet setiap aplikasi lewat di sana dengan sendirinya: peramban, Telegram, game, pembaruan, dan lainnya. Tidak ada yang perlu diatur di setiap aplikasi.",
+          "what": "Proxy4You menambahkan jaringan virtual ke komputer Anda, dan lalu lintas internet setiap aplikasi lewat di sana dengan sendirinya: peramban, Telegram, game, pembaruan, dan lainnya. Tidak ada yang perlu diatur di setiap aplikasi.",
           "pros": [
-            "Setiap aplikasi lewat Hiddify, tanpa pengaturan di tiap aplikasi.",
+            "Setiap aplikasi lewat Proxy4You, tanpa pengaturan di tiap aplikasi.",
             "Aplikasi yang mengabaikan pengaturan proxy, seperti Telegram dan game, ikut berfungsi.",
-            "Pencarian nama (DNS) juga lewat Hiddify, jadi situs yang diblokir dengan cara itu ikut terbuka."
+            "Pencarian nama (DNS) juga lewat Proxy4You, jadi situs yang diblokir dengan cara itu ikut terbuka."
           ],
           "cons": [
-            "Pertama kali, komputer Anda meminta izin administrator untuk memasang layanan latar belakang Hiddify. Setelah itu, koneksi berjalan tanpa permintaan lagi.",
+            "Pertama kali, komputer Anda meminta izin administrator untuk memasang layanan latar belakang Proxy4You. Setelah itu, koneksi berjalan tanpa permintaan lagi.",
             "Matikan aplikasi VPN lain saat Anda memakainya: dua sekaligus saling mengganggu."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify mengubah pengaturan proxy komputer Anda. Aplikasi yang mengikuti pengaturan itu, seperti peramban web, mengirim lalu lintasnya lewat Hiddify; sisanya tersambung langsung, seolah Hiddify mati.",
+          "what": "Proxy4You mengubah pengaturan proxy komputer Anda. Aplikasi yang mengikuti pengaturan itu, seperti peramban web, mengirim lalu lintasnya lewat Proxy4You; sisanya tersambung langsung, seolah Proxy4You mati.",
           "pros": [
             "Tidak perlu izin administrator.",
-            "Cepat dinyalakan dan dimatikan, dan Hiddify mengembalikan pengaturan saat Anda memutuskan koneksi.",
+            "Cepat dinyalakan dan dimatikan, dan Proxy4You mengembalikan pengaturan saat Anda memutuskan koneksi.",
             "Berjalan berdampingan dengan alat jaringan lain di komputer Anda."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "Tidak ada kode QR di gambar ini"
     },
     "crashReport": {
-      "title": "Hiddify mengalami crash terakhir kali",
+      "title": "Proxy4You mengalami crash terakhir kali",
       "msg": "Kirim laporan ke pengembang agar masalah ini diperbaiki? Isinya detail crash, log, dan konfigurasi Anda dengan server, kunci, dan kata sandi dihapus, dalam satu file zip yang bisa Anda lihat sebelum dikirim.",
       "send": "Kirim laporan"
     },
@@ -1164,7 +1164,7 @@
         "Buka pengaturan proksi aplikasi",
         "Pilih SOCKS5 atau HTTP",
         "Masukkan nilai di bawah · ketuk untuk menyalin",
-        "Biarkan Hiddify terhubung"
+        "Biarkan Proxy4You terhubung"
       ],
       "hint": "Mode proksi · cara memakai",
       "setPassword": "Atur kata sandi",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "Data tersimpan berasal dari versi yang lebih baru",
-      "msg": "Profil dan pengaturan Anda disimpan oleh versi Hiddify yang lebih baru, dan versi lama ini tidak dapat membacanya. Pasang versi terbaru untuk menyimpannya, atau hapus untuk memakai versi ini.",
+      "msg": "Profil dan pengaturan Anda disimpan oleh versi Proxy4You yang lebih baru, dan versi lama ini tidak dapat membacanya. Pasang versi terbaru untuk menyimpannya, atau hapus untuk memakai versi ini.",
       "deleteData": "Hapus data",
       "deleteConfirm": "Data tersimpan dihapus. Langganan dan profil lokal Anda ditambahkan kembali jika memungkinkan; yang lain yang disimpan oleh versi lebih baru hilang.",
       "downloadLatest": "Unduh versi terbaru"
     },
     "dbBroken": {
       "title": "Data tersimpan tidak dapat dibuka",
-      "msg": "Hiddify tidak dapat membuka profil yang tersimpan. Hapus data tersimpan untuk memulai dari awal: langganan dan profil lokal Anda ditambahkan kembali jika memungkinkan, dan pengaturan Anda tetap disimpan.",
+      "msg": "Proxy4You tidak dapat membuka profil yang tersimpan. Hapus data tersimpan untuk memulai dari awal: langganan dan profil lokal Anda ditambahkan kembali jika memungkinkan, dan pengaturan Anda tetap disimpan.",
       "wipeData": "Hapus data",
-      "wipeConfirm": "Data tersimpan dihapus dan Hiddify dimulai dari awal. Profil yang masih bisa dibaca ditambahkan kembali; sisanya tidak dapat dipulihkan.",
+      "wipeConfirm": "Data tersimpan dihapus dan Proxy4You dimulai dari awal. Profil yang masih bisa dibaca ditambahkan kembali; sisanya tidak dapat dipulihkan.",
       "copyError": "Salin kesalahan"
     }
   },

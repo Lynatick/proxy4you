@@ -114,6 +114,10 @@ abstract class Preferences {
 
   static final markNewProfileActive = PreferencesNotifier.create<bool, bool>("mark_new_profile_active", true);
 
+  /// The subscription list in use, by id; empty for none, and then the active profile is what
+  /// connects.
+  static final activeSubscriptionList = PreferencesNotifier.create<String, String>("active_subscription_list", "");
+
   static final dynamicNotification = PreferencesNotifier.create<bool, bool>("dynamic_notification", true);
 
   static final autoCheckIp = PreferencesNotifier.create<bool, bool>("auto_check_ip", true);

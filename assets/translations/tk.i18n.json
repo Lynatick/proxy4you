@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Başla",
     "version": "Wersiýa",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Çäksiz internet üçin zerur bolan hemme zat",
     "termsAndPolicyCaution(rich)": "Dowam etmek bilen siz ${tap(@:pages.about.termsAndConditions)} razy bolýarsyňyz",
-    "info(rich)": "Hiddify tarapyndan ❤️ bilen döredildi. ${tap_source(Açyk çeşme)} we ${tap_license(Ygtyýarnama)}"
+    "info(rich)": "Proxy4You tarapyndan ❤️ bilen döredildi. ${tap_source(Açyk çeşme)} we ${tap_license(Ygtyýarnama)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Paýlaş",
         "edit": "Üýtget",
         "shareTitle": "Proksini paýlaş",
-        "configHint": "Diňe şu proksi we onuň arkaly baglanylýan proksiler. Hiddify muny islendik konfigurasiýa ýaly import edýär.",
+        "configHint": "Diňe şu proksi we onuň arkaly baglanylýan proksiler. Proxy4You muny islendik konfigurasiýa ýaly import edýär.",
         "editTitle": "Täze profil hökmünde üýtget",
         "editMsg": "“${name}” üýtgedip boljak täze profile göçürilýär. Asyl nusga üýtgewsiz galýar, sebäbi abunalyk her täzelenende proksilerini çalyşýar.",
         "editConfirm": "Göçür we üýtget",
@@ -221,7 +221,7 @@
         "received": "Telefonyňyzdan alyndy",
         "from": "$address salgysyndan",
         "page": {
-          "title": "Telewizoryňyzdaky Hiddify-a iberiň",
+          "title": "Telewizoryňyzdaky Proxy4You-a iberiň",
           "intro": "Abunalygy pultdan ýazman, dört ýönekeý ädimde telewizoryňyza goşuň.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Abunalyklary täzele",
       "share": {
         "title": "Profili paýlaş",
-        "scanHint": "Bu profili goşmak üçin ony başga enjamda Hiddify bilen skanerläň",
+        "scanHint": "Bu profili goşmak üçin ony başga enjamda Proxy4You bilen skanerläň",
         "link": "Abunalyk baglanyşygy",
         "config": "Konfigurasiýa",
         "configHint": "Bu profiliň işleýän doly JSON-y, sazlamalaryňyz bilen bilelikde",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Bufere sygmaýar: ony faýl hökmünde paýlaşyň ýa-da saklaň",
         "toTv": {
           "button": "Telewizora ibermek",
-          "scanHint": "Telewizorda Hiddify-ny açyň we profil goşmak üçin + düwmesine basyň, soňra görkezilen kody skanerläň. Iki enjam hem bir Wi-Fi ulgamynda bolmaly.",
+          "scanHint": "Telewizorda Proxy4You-ny açyň we profil goşmak üçin + düwmesine basyň, soňra görkezilen kody skanerläň. Iki enjam hem bir Wi-Fi ulgamynda bolmaly.",
           "sent": "Iberildi. Goşmak üçin telewizorda Import etmek düwmesine basyň.",
-          "notTvCode": "Bu Hiddify telewizor kody däl. Ony görkezmek üçin telewizorda profil goşmak üçin + düwmesine basyň.",
+          "notTvCode": "Bu Proxy4You telewizor kody däl. Ony görkezmek üçin telewizorda profil goşmak üçin + düwmesine basyň.",
           "expired": "Telewizor bu kod bilen indi baglanyşyk kabul etmeýär. Telewizorda profil goşmak ekranyny gaýtadan açyň we täze kody skanerläň.",
           "busy": "Telewizorda garaşýan baglanyşyk gaty köp. Telewizorda olary import ediň ýa-da taşlaň, soňra gaýtadan synanyşyň.",
           "unreachable": "Telewizora ýetip bolmady. Telefonyň we telewizoryň bir Wi-Fi ulgamynda bolandygyna göz ýetiriň."
@@ -930,7 +930,7 @@
       "updateNow": "Indi täzele",
       "downloading": "Ýüklenýär…",
       "installing": "Gurnaýjy başlanýar…",
-      "allowInstall": "Açylan sazlamalarda Hiddify-a programma gurmaga rugsat beriň, soňra gaýtadan synanyşyň.",
+      "allowInstall": "Açylan sazlamalarda Proxy4You-a programma gurmaga rugsat beriň, soňra gaýtadan synanyşyň.",
       "failed": "Täzelenmäni gurup bolmady.",
       "openPage": "Çykaryş sahypasyny aç",
       "tryAgain": "Gaýtadan synanyş"
@@ -977,7 +977,7 @@
         "someApps": "Brauzerler we köp programmalar",
         "switched": "Ulgam proksisi rejimine geçildi. Muny Sazlamalarda üýtgedip bilersiňiz.",
         "waitingTitle": "Administrator rugsadyna garaşylýar",
-        "waitingMsg": "Hiddify VPN rejimine rugsat bermegiňize garaşýar.",
+        "waitingMsg": "Proxy4You VPN rejimine rugsat bermegiňize garaşýar.",
         "waitingWhere": "Açylan penjirede:",
         "waitingWindows": "“Hawa” düwmesine basyň.",
         "waitingMac": "Mac parolyňyzy giriziň we tassyklaň.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Artykmaçlyklary",
         "helpConsTitle": "Ýatda saklaň",
         "helpVpn": {
-          "what": "Hiddify kompýuteriňize wirtual ulgam goşýar, we her programmanyň internet trafigi özbaşdak şondan geçýär: brauzerler, Telegram, oýunlar, täzelenmeler we galanlary. Hiç bir programmada hiç zat sazlamaly däl.",
+          "what": "Proxy4You kompýuteriňize wirtual ulgam goşýar, we her programmanyň internet trafigi özbaşdak şondan geçýär: brauzerler, Telegram, oýunlar, täzelenmeler we galanlary. Hiç bir programmada hiç zat sazlamaly däl.",
           "pros": [
-            "Her programma Hiddify arkaly geçýär, her programmada sazlama gerek däl.",
+            "Her programma Proxy4You arkaly geçýär, her programmada sazlama gerek däl.",
             "Proksi sazlamalaryny äsgermeýän programmalar, mysal üçin Telegram we oýunlar hem işleýär.",
-            "At gözlegleri (DNS) hem Hiddify arkaly geçýär, şonuň üçin şeýle usul bilen petiklenen saýtlar hem açylýar."
+            "At gözlegleri (DNS) hem Proxy4You arkaly geçýär, şonuň üçin şeýle usul bilen petiklenen saýtlar hem açylýar."
           ],
           "cons": [
-            "Ilkinji gezek kompýuteriňiz Hiddify-yň fon hyzmatyny gurmak üçin administrator rugsadyny soraýar. Ondan soň soramazdan baglanýar.",
+            "Ilkinji gezek kompýuteriňiz Proxy4You-yň fon hyzmatyny gurmak üçin administrator rugsadyny soraýar. Ondan soň soramazdan baglanýar.",
             "Ulananyňyzda beýleki VPN programmalaryny öçüriň: ikisi bilelikde biri-birine päsgel berýär."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify kompýuteriňiziň proksi sazlamasyny üýtgedýär. Şol sazlamany yzarlaýan programmalar, mysal üçin web brauzerler, trafigini Hiddify arkaly iberýär; galanlary Hiddify öçük ýaly göni birigýär.",
+          "what": "Proxy4You kompýuteriňiziň proksi sazlamasyny üýtgedýär. Şol sazlamany yzarlaýan programmalar, mysal üçin web brauzerler, trafigini Proxy4You arkaly iberýär; galanlary Proxy4You öçük ýaly göni birigýär.",
           "pros": [
             "Administrator rugsady gerek däl.",
-            "Açmak we öçürmek çalt, we baglanyşygy keseniňizde Hiddify sazlamany öňki ýagdaýyna gaýtarýar.",
+            "Açmak we öçürmek çalt, we baglanyşygy keseniňizde Proxy4You sazlamany öňki ýagdaýyna gaýtarýar.",
             "Kompýuteriňizdäki beýleki ulgam gurallary bilen bilelikde işleýär."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "Bu suratda QR kod tapylmady"
     },
     "crashReport": {
-      "title": "Hiddify soňky gezek çöküpdi",
+      "title": "Proxy4You soňky gezek çöküpdi",
       "msg": "Bu düzedilsin diýip, işläp düzüjilere hasabat iberilsinmi? Onda çökme jikme-jiklikleri, žurnallar we serwerleri, açarlary we paroly aýrylan konfigurasiýaňyz bar, iberilmezden öň göz aýlap boljak bir zip faýlda.",
       "send": "Hasabaty iber"
     },
@@ -1164,7 +1164,7 @@
         "Programmanyň proksi sazlamalaryny açyň",
         "SOCKS5 ýa-da HTTP saýlaň",
         "Aşakdaky bahalary giriziň · göçürmek üçin basyň",
-        "Hiddify-ny baglanyşykda saklaň"
+        "Proxy4You-ny baglanyşykda saklaň"
       ],
       "hint": "Proksi rejimi · nädip ulanmaly",
       "setPassword": "Parol belle",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "Saklanan maglumatlar has täze wersiýadan",
-      "msg": "Profilleriňiz we sazlamalaryňyz Hiddify-yň has täze wersiýasy tarapyndan saklanypdyr, bu köne wersiýa olary okap bilmeýär. Olary saklamak üçin iň soňky wersiýany guruň ýa-da bu wersiýany ulanmak üçin olary pozuň.",
+      "msg": "Profilleriňiz we sazlamalaryňyz Proxy4You-yň has täze wersiýasy tarapyndan saklanypdyr, bu köne wersiýa olary okap bilmeýär. Olary saklamak üçin iň soňky wersiýany guruň ýa-da bu wersiýany ulanmak üçin olary pozuň.",
       "deleteData": "Maglumatlary arassala",
       "deleteConfirm": "Saklanan maglumatlar arassalanýar. Abunalyklaryňyz we ýerli profilleriňiz mümkin bolan ýerinde yzyna goşulýar; has täze wersiýa tarapyndan saklanan galan zatlaryň hemmesi ýitýär.",
       "downloadLatest": "Iň soňky wersiýany ýükle"
     },
     "dbBroken": {
       "title": "Saklanan maglumatlary açyp bolmaýar",
-      "msg": "Hiddify saklanan profillerini açyp bilmedi. Täzeden başlamak üçin saklanan maglumatlary arassalaň: abunalyklaryňyz we ýerli profilleriňiz mümkin bolan ýerinde yzyna goşulýar, sazlamalaryňyz saklanýar.",
+      "msg": "Proxy4You saklanan profillerini açyp bilmedi. Täzeden başlamak üçin saklanan maglumatlary arassalaň: abunalyklaryňyz we ýerli profilleriňiz mümkin bolan ýerinde yzyna goşulýar, sazlamalaryňyz saklanýar.",
       "wipeData": "Maglumatlary arassala",
-      "wipeConfirm": "Saklanan maglumatlar arassalanýar we Hiddify täzeden başlaýar. Henizem okalyp bilinýän profiller yzyna goşulýar; galanlaryny dikeldip bolmaýar.",
+      "wipeConfirm": "Saklanan maglumatlar arassalanýar we Proxy4You täzeden başlaýar. Henizem okalyp bilinýän profiller yzyna goşulýar; galanlaryny dikeldip bolmaýar.",
       "copyError": "Säwligi göçür"
     }
   },

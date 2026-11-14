@@ -1,6 +1,6 @@
 {
   "common": {
-    "appTitle": "Hiddify",
+    "appTitle": "Proxy4You",
     "start": "Avvia",
     "version": "Versione",
     "ok": "OK",
@@ -98,7 +98,7 @@
   "intro": {
     "banner": "Tutto ciò che serve per un internet senza restrizioni",
     "termsAndPolicyCaution(rich)": "Continuando accetti ${tap(@:pages.about.termsAndConditions)}",
-    "info(rich)": "Creato con ❤️ da Hiddify. ${tap_source(Open source)} e ${tap_license(Licenza)}"
+    "info(rich)": "Creato con ❤️ da Proxy4You. ${tap_source(Open source)} e ${tap_license(Licenza)}"
   },
   "pages": {
     "home": {
@@ -201,7 +201,7 @@
         "share": "Condividi",
         "edit": "Modifica",
         "shareTitle": "Condividi il proxy",
-        "configHint": "Solo questo proxy, e ogni proxy attraverso cui si connette. Hiddify lo importa come qualsiasi configurazione.",
+        "configHint": "Solo questo proxy, e ogni proxy attraverso cui si connette. Proxy4You lo importa come qualsiasi configurazione.",
         "editTitle": "Modifica come nuovo profilo",
         "editMsg": "«${name}» viene copiato in un nuovo profilo che puoi modificare. L’originale resta invariato, perché un abbonamento sostituisce i suoi proxy a ogni aggiornamento.",
         "editConfirm": "Copia e modifica",
@@ -221,7 +221,7 @@
         "received": "Ricevuto dal telefono",
         "from": "Da $address",
         "page": {
-          "title": "Invia a Hiddify sulla TV",
+          "title": "Invia a Proxy4You sulla TV",
           "intro": "Aggiungi un abbonamento alla TV in quattro semplici passaggi, senza scriverlo con il telecomando.",
           "steps": {
             "network": {
@@ -260,7 +260,7 @@
       "updateSubscriptions": "Aggiorna gli abbonamenti",
       "share": {
         "title": "Condividi il profilo",
-        "scanHint": "Inquadralo con Hiddify su un altro dispositivo per aggiungere questo profilo",
+        "scanHint": "Inquadralo con Proxy4You su un altro dispositivo per aggiungere questo profilo",
         "link": "Link di abbonamento",
         "config": "Configurazione",
         "configHint": "Il JSON completo con cui funziona questo profilo, comprese le tue impostazioni",
@@ -271,9 +271,9 @@
         "tooLargeToCopy": "Troppo grande per gli appunti: condividilo o salvalo come file",
         "toTv": {
           "button": "Invia alla TV",
-          "scanHint": "Sulla TV apri Hiddify e tocca + per aggiungere un profilo, poi inquadra il codice mostrato. Entrambi i dispositivi devono essere sullo stesso Wi-Fi.",
+          "scanHint": "Sulla TV apri Proxy4You e tocca + per aggiungere un profilo, poi inquadra il codice mostrato. Entrambi i dispositivi devono essere sullo stesso Wi-Fi.",
           "sent": "Inviato. Premi Importa sulla TV per aggiungerlo.",
-          "notTvCode": "Questo non è un codice TV di Hiddify. Sulla TV tocca + per aggiungere un profilo e mostrarlo.",
+          "notTvCode": "Questo non è un codice TV di Proxy4You. Sulla TV tocca + per aggiungere un profilo e mostrarlo.",
           "expired": "La TV non accetta più link con questo codice. Riapri la schermata per aggiungere un profilo sulla TV e inquadra il nuovo codice.",
           "busy": "Sulla TV ci sono troppi link in attesa. Importali o scartali sulla TV, poi riprova.",
           "unreachable": "Impossibile raggiungere la TV. Controlla che telefono e TV siano sulla stessa rete Wi-Fi."
@@ -930,7 +930,7 @@
       "updateNow": "Aggiorna ora",
       "downloading": "Download in corso…",
       "installing": "Avvio del programma di installazione…",
-      "allowInstall": "Consenti a Hiddify di installare app nelle impostazioni che si sono aperte, poi riprova.",
+      "allowInstall": "Consenti a Proxy4You di installare app nelle impostazioni che si sono aperte, poi riprova.",
       "failed": "Impossibile installare l’aggiornamento.",
       "openPage": "Apri la pagina della versione",
       "tryAgain": "Riprova"
@@ -977,7 +977,7 @@
         "someApps": "Browser e la maggior parte delle app",
         "switched": "Passato alla modalità proxy di sistema. Puoi cambiarla nelle Impostazioni.",
         "waitingTitle": "In attesa dell’autorizzazione di amministratore",
-        "waitingMsg": "Hiddify attende che tu consenta la modalità VPN.",
+        "waitingMsg": "Proxy4You attende che tu consenta la modalità VPN.",
         "waitingWhere": "Nella finestra che si è aperta:",
         "waitingWindows": "Fai clic su «Sì».",
         "waitingMac": "Inserisci la password del Mac e conferma.",
@@ -994,22 +994,22 @@
         "helpProsTitle": "Vantaggi",
         "helpConsTitle": "Da tenere presente",
         "helpVpn": {
-          "what": "Hiddify aggiunge una rete virtuale al computer, e il traffico internet di ogni app passa da lì da solo: browser, Telegram, giochi, aggiornamenti e tutto il resto. Non serve configurare nulla in ogni app.",
+          "what": "Proxy4You aggiunge una rete virtuale al computer, e il traffico internet di ogni app passa da lì da solo: browser, Telegram, giochi, aggiornamenti e tutto il resto. Non serve configurare nulla in ogni app.",
           "pros": [
-            "Ogni app passa da Hiddify, senza impostazioni in ciascuna app.",
+            "Ogni app passa da Proxy4You, senza impostazioni in ciascuna app.",
             "Funzionano anche le app che ignorano le impostazioni del proxy, come Telegram e i giochi.",
-            "Anche la risoluzione dei nomi (DNS) passa da Hiddify, quindi si aprono anche i siti bloccati in quel modo."
+            "Anche la risoluzione dei nomi (DNS) passa da Proxy4You, quindi si aprono anche i siti bloccati in quel modo."
           ],
           "cons": [
-            "La prima volta il computer chiede l’autorizzazione di amministratore, per installare il servizio in background di Hiddify. Dopo, si connette senza chiedere.",
+            "La prima volta il computer chiede l’autorizzazione di amministratore, per installare il servizio in background di Proxy4You. Dopo, si connette senza chiedere.",
             "Disattiva le altre app VPN mentre la usi: due insieme si intralciano a vicenda."
           ]
         },
         "helpSystemProxy": {
-          "what": "Hiddify cambia l’impostazione del proxy del computer. Le app che seguono questa impostazione, come i browser, inviano il traffico tramite Hiddify; le altre si connettono direttamente, come se Hiddify fosse spento.",
+          "what": "Proxy4You cambia l’impostazione del proxy del computer. Le app che seguono questa impostazione, come i browser, inviano il traffico tramite Proxy4You; le altre si connettono direttamente, come se Proxy4You fosse spento.",
           "pros": [
             "Non serve l’autorizzazione di amministratore.",
-            "Si attiva e si disattiva in fretta, e Hiddify ripristina l’impostazione quando ti disconnetti.",
+            "Si attiva e si disattiva in fretta, e Proxy4You ripristina l’impostazione quando ti disconnetti.",
             "Funziona insieme ad altri strumenti di rete sul computer."
           ],
           "cons": [
@@ -1101,7 +1101,7 @@
       "notFound": "Nessun codice QR trovato in questa immagine"
     },
     "crashReport": {
-      "title": "Hiddify si è arrestato l’ultima volta",
+      "title": "Proxy4You si è arrestato l’ultima volta",
       "msg": "Inviare un rapporto agli sviluppatori per risolvere il problema? Contiene i dettagli dell’arresto, i log e la tua configurazione senza server, chiavi e password, in un unico file zip che puoi controllare prima di inviare.",
       "send": "Invia il rapporto"
     },
@@ -1164,7 +1164,7 @@
         "Apri le impostazioni del proxy dell’app",
         "Scegli SOCKS5 o HTTP",
         "Inserisci i valori qui sotto · tocca per copiare",
-        "Tieni Hiddify connesso"
+        "Tieni Proxy4You connesso"
       ],
       "hint": "Modalità proxy · come usarla",
       "setPassword": "Imposta la password",
@@ -1184,16 +1184,16 @@
     },
     "dbNewerThanApp": {
       "title": "I dati salvati provengono da una versione più recente",
-      "msg": "I tuoi profili e le tue impostazioni sono stati salvati da una versione più recente di Hiddify, e questa versione più vecchia non può leggerli. Installa l’ultima versione per conservarli, oppure eliminali per usare questa versione.",
+      "msg": "I tuoi profili e le tue impostazioni sono stati salvati da una versione più recente di Proxy4You, e questa versione più vecchia non può leggerli. Installa l’ultima versione per conservarli, oppure eliminali per usare questa versione.",
       "deleteData": "Cancella i dati",
       "deleteConfirm": "I dati salvati vengono cancellati. I tuoi abbonamenti e i profili locali vengono aggiunti di nuovo, dove possibile; tutto il resto salvato dalla versione più recente va perso.",
       "downloadLatest": "Scarica l’ultima versione"
     },
     "dbBroken": {
       "title": "Impossibile aprire i dati salvati",
-      "msg": "Hiddify non è riuscito ad aprire i profili salvati. Cancella i dati salvati per ricominciare: i tuoi abbonamenti e i profili locali vengono aggiunti di nuovo, dove possibile, e le tue impostazioni vengono mantenute.",
+      "msg": "Proxy4You non è riuscito ad aprire i profili salvati. Cancella i dati salvati per ricominciare: i tuoi abbonamenti e i profili locali vengono aggiunti di nuovo, dove possibile, e le tue impostazioni vengono mantenute.",
       "wipeData": "Cancella i dati",
-      "wipeConfirm": "I dati salvati vengono cancellati e Hiddify riparte da zero. I profili ancora leggibili vengono aggiunti di nuovo; gli altri non si possono recuperare.",
+      "wipeConfirm": "I dati salvati vengono cancellati e Proxy4You riparte da zero. I profili ancora leggibili vengono aggiunti di nuovo; gli altri non si possono recuperare.",
       "copyError": "Copia l’errore"
     }
   },

@@ -9,14 +9,17 @@ import 'package:hiddify/core/http_client/http_client_provider.dart';
 import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/model/failures.dart';
 import 'package:hiddify/core/notification/in_app_notification_controller.dart';
+import 'package:hiddify/core/preferences/general_preferences.dart';
 import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/profile/add/model/free_profiles_model.dart';
 import 'package:hiddify/features/profile/data/profile_data_providers.dart';
+import 'package:hiddify/features/profile/data/profile_list_parser.dart';
 import 'package:hiddify/features/profile/data/profile_repository.dart';
 import 'package:hiddify/features/profile/model/profile_entity.dart';
 import 'package:hiddify/features/profile/model/profile_failure.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
+import 'package:hiddify/features/profile/notifier/subscription_list_notifier.dart';
 import 'package:hiddify/features/settings/data/config_option_repository.dart';
 import 'package:hiddify/utils/riverpod_utils.dart';
 import 'package:hiddify/utils/utils.dart';
@@ -69,6 +72,8 @@ class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
       // final markAsActive = activeProfile == null || ref.read(Preferences.markNewProfileActive);
       final TaskEither<ProfileFailure, Unit> task;
       if (LinkParser.parse(rawInput) case (final rs)?) {
+        // A URL whose content is a subscription list is added as one.
+        if (await _addListIfAny(rs.url)) return unit;
         loggy.debug("adding remote profile");
         task = _profilesRepo.upsertRemote(
           rs.url,
@@ -93,6 +98,32 @@ class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
           )
           .run();
     });
+  }
+
+  /// True when [url] is a subscription list (a body of subscription URLs, one a line) and it was
+  /// added. The members are ordinary profiles; the list is selected so its first member connects.
+  Future<bool> _addListIfAny(String url) async {
+    try {
+      final content = await ref.read(httpClientProvider).getText(url);
+      final lines = content
+          .split('\n')
+          .map((line) => line.trim())
+          .where((line) => line.isNotEmpty && !line.startsWith('#') && !line.startsWith('//'))
+          .toList();
+      if (lines.length < 2) return false;
+      if (lines.any((line) => !line.startsWith('http://') && !line.startsWith('https://'))) return false;
+      if (ProfileListParser.parse(content).isEmpty) return false;
+      final lists = ref.read(subscriptionListsProvider.notifier);
+      final id = await lists.add(url);
+      if (id == null) return false;
+      await ref.read(Preferences.activeSubscriptionList.notifier).update(id);
+      await lists.activate(id);
+      loggy.info('added a subscription list with ${lines.length} subscriptions');
+      return true;
+    } catch (error) {
+      loggy.debug('the pasted URL is not a subscription list: $error');
+      return false;
+    }
   }
 
   /// Adds all the files of a zip as one profile named [name]. The files are merged into one text that goes straight to
@@ -155,6 +186,16 @@ class UpdateProfileNotifier extends _$UpdateProfileNotifier with AppLogger {
 
   Future<void> updateProfile(RemoteProfileEntity profile, {bool isBulk = false}) async {
     if (state.isLoading) return;
+    // While a list is in use, its update refreshes every member.
+    if (ref.read(Preferences.activeSubscriptionList).isNotEmpty) {
+      loggy.info('a subscription list is in use; update the list, not one of its subscriptions');
+      if (!isBulk) {
+        ref
+            .read(inAppNotificationControllerProvider)
+            .showInfoToast('Update the subscription list to update its subscriptions');
+      }
+      return;
+    }
     _resetTimer?.cancel();
     state = const AsyncLoading();
     if (!isBulk) await ref.read(hapticServiceProvider.notifier).lightImpact();

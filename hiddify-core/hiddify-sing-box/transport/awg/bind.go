@@ -1,0 +1,223 @@
+package awg
+
+import (
+	"context"
+	"errors"
+	"net"
+	"net/netip"
+	"sync"
+	"sync/atomic"
+	"syscall"
+
+	"github.com/amnezia-vpn/amneziawg-go/v3/conn"
+	E "github.com/sagernet/sing/common/exceptions"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+)
+
+var _ conn.Bind = (*bind_adapter)(nil)
+
+type bind_adapter struct {
+	conn4  net.PacketConn
+	conn6  net.PacketConn
+	dialer N.Dialer
+	ctx    context.Context
+	mutex  sync.Mutex
+	// peer, when valid, is the only peer: the bind opens one packet connection to it instead of
+	// two to any address. A proxy whose UDP needs a destination (an HTTP proxy's UDP, for one)
+	// refused the connections to 0.0.0.0, and the endpoint never started.
+	peer     netip.AddrPort
+	reserved *Reserved
+	opens    int           //H: see h_path.go
+	onReopen func()        //H
+	later    chan struct{} //H: see h_bind_later.go
+	pending  bool          //H: the only peer, given by a domain, is not resolved yet
+	failedTx atomic.Uint64 //H: bytes of the sends that failed, see h_path.go
+}
+
+func newBind(ctx context.Context, dial N.Dialer, peer netip.AddrPort, reserved *Reserved) conn.Bind {
+	return &bind_adapter{
+		ctx:      ctx,
+		dialer:   dial,
+		peer:     peer,
+		reserved: reserved,
+	}
+}
+
+func (b *bind_adapter) connect(addr netip.Addr, port uint16) (net.PacketConn, error) {
+	return b.dialer.ListenPacket(b.ctx, M.Socksaddr{Addr: addr, Port: port})
+}
+
+func (b *bind_adapter) receive(c net.PacketConn) conn.ReceiveFunc {
+	return func(packets [][]byte, sizes []int, eps []conn.Endpoint) (n int, err error) {
+		n, addr, err := c.ReadFrom(packets[0])
+		if err != nil {
+			return 0, E.Cause(err, "read data")
+		}
+
+		bindEp, err := b.ParseEndpoint(addr.String())
+		if err != nil {
+			return 0, E.Cause(err, "parse endpoint")
+		}
+
+		b.reserved.clear(packets[0][:n])
+		sizes[0] = n
+		eps[0] = bindEp
+		return 1, nil
+	}
+}
+
+func (b *bind_adapter) Open(port uint16) (fns []conn.ReceiveFunc, actualPort uint16, err error) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	if b.conn4 != nil || b.conn6 != nil {
+		return nil, 0, conn.ErrBindAlreadyOpen
+	}
+	b.noteOpen() //H: a path change, after the first
+
+	if b.peer.IsValid() {
+		peerConn, err := b.connect(b.peer.Addr(), b.peer.Port())
+		if err != nil {
+			return b.openLater(port) //H: dial again once the detour is ready
+		}
+		if b.peer.Addr().Is4() || b.peer.Addr().Is4In6() {
+			b.conn4 = peerConn
+		} else {
+			b.conn6 = peerConn
+		}
+		return []conn.ReceiveFunc{b.receive(peerConn)}, port, nil
+	}
+
+	if b.pending { //H
+		return b.openPending(port) //H
+	} //H
+
+	conn4, err := b.connect(netip.IPv4Unspecified(), port)
+	if err != nil && !errors.Is(err, syscall.EAFNOSUPPORT) {
+		return nil, 0, E.Cause(err, "create ipv4 connection")
+	}
+	if conn4 != nil {
+		fns = append(fns, b.receive(conn4))
+	}
+
+	conn6, err := b.connect(netip.IPv6Unspecified(), port)
+	if err != nil && !errors.Is(err, syscall.EAFNOSUPPORT) {
+		return nil, 0, E.Cause(err, "create ipv6 connection")
+	}
+	if conn6 != nil {
+		fns = append(fns, b.receive(conn6))
+	}
+
+	b.conn4 = conn4
+	b.conn6 = conn6
+
+	return fns, port, nil
+}
+
+func (b *bind_adapter) Close() error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	var err4, err6 error
+	b.closeLater() //H
+
+	if b.conn4 != nil {
+		err4 = closeConn(b.conn4) //H: closed already by a network change
+		b.conn4 = nil
+	}
+
+	if b.conn6 != nil {
+		err6 = closeConn(b.conn6) //H
+		b.conn6 = nil
+	}
+
+	return errors.Join(err4, err6)
+}
+
+// abort closes the connections without forgetting them, so a send stuck on a stalled detour
+// returns; Close, under the device's network lock, forgets them.
+func (b *bind_adapter) abort() {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+	for _, c := range []net.PacketConn{b.conn4, b.conn6} {
+		if c != nil {
+			c.Close()
+		}
+	}
+}
+
+func (b *bind_adapter) SetMark(mark uint32) error {
+	return nil
+}
+
+func (b *bind_adapter) Send(bufs [][]byte, ep conn.Endpoint) error {
+	conn := b.sendConn(ep) //H: set late by openLater
+
+	if conn == nil {
+		return errors.ErrUnsupported
+	}
+
+	bindEp, ok := ep.(*bind_endpoint)
+	if !ok {
+		return errors.ErrUnsupported
+	}
+
+	udpAddr := &net.UDPAddr{
+		IP:   bindEp.AddrPort.Addr().AsSlice(),
+		Port: int(bindEp.AddrPort.Port()),
+	}
+
+	for _, buf := range bufs {
+		b.reserved.write(buf)
+		if _, err := conn.WriteTo(buf, udpAddr); err != nil {
+			b.noteFailedSend(bufs) //H
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (b *bind_adapter) ParseEndpoint(s string) (conn.Endpoint, error) {
+	ap, err := netip.ParseAddrPort(s)
+	if err != nil {
+		return nil, E.Cause(err, "parse addrport")
+	}
+
+	return &bind_endpoint{AddrPort: ap}, nil
+}
+
+func (b *bind_adapter) BatchSize() int {
+	return 1
+}
+
+var _ conn.Endpoint = (*bind_endpoint)(nil)
+
+type bind_endpoint struct {
+	AddrPort netip.AddrPort
+}
+
+func (e bind_endpoint) ClearSrc() {
+}
+
+func (e bind_endpoint) SrcToString() string {
+	return ""
+}
+
+func (e bind_endpoint) DstToString() string {
+	return e.AddrPort.String()
+}
+
+func (e bind_endpoint) DstToBytes() []byte {
+	b, _ := e.AddrPort.MarshalBinary()
+	return b
+}
+
+func (e bind_endpoint) DstIP() netip.Addr {
+	return e.AddrPort.Addr()
+}
+
+func (e bind_endpoint) SrcIP() netip.Addr {
+	return netip.Addr{}
+}

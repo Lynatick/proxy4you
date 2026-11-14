@@ -27,6 +27,7 @@ import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/connection/widget/connection_wrapper.dart';
 import 'package:hiddify/features/crash_report/notifier/crash_report_notifier.dart';
 import 'package:hiddify/features/profile/notifier/profiles_update_notifier.dart';
+import 'package:hiddify/features/profile/notifier/subscription_list_failover.dart';
 import 'package:hiddify/features/shortcut/shortcut_wrapper.dart';
 import 'package:hiddify/features/system_tray/notifier/system_tray_notifier.dart';
 import 'package:hiddify/features/window/widget/window_wrapper.dart';
@@ -72,6 +73,8 @@ class App extends HookConsumerWidget with WidgetsBindingObserver, PresLogger {
     final activeBreakpoint = Breakpoint(context).activeBreakpoint;
 
     ref.listen(foregroundProfilesUpdateNotifierProvider, (_, _) {});
+    // Keeps the list's one-pass failover listening for as long as the app runs.
+    ref.watch(subscriptionListFailoverProvider);
     if (PlatformUtils.isAndroid) ref.listen(appBasedRoutingProvider, (_, _) {});
     if (PlatformUtils.isDesktop) ref.listen(systemTrayNotifierProvider, (_, _) {});
 
