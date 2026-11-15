@@ -518,8 +518,9 @@ class ProfileParser with InfraLogger {
     return null;
   }
 
-  /// How many proxies run, the fastest, when neither the user nor the subscription says.
-  static const keepTopDefault = 5;
+  /// How many proxies run when neither the user nor the subscription says: every proxy that
+  /// answers its first ping (the core's KeepTopAnswering), not a fixed count.
+  static const keepTopDefault = -2;
 
   /// A `keep-top` header: how many proxies to keep running, or -1 for all. Anything else is no
   /// header at all.
