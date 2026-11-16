@@ -192,18 +192,7 @@ void _paintLook(_Ctx x) {
 /// i back to the short bar, the starting wave played in reverse.
 void _barsWave(_Ctx x, {bool backwards = false}) {
   if (!x.p.drawLogo) return;
-  final color = _alpha(x.col, x.p.logoOpacity);
-  double rank(int part) => backwards ? _HiLogo.rank.last - _HiLogo.rank[part] : _HiLogo.rank[part];
-  final shade = [for (var i = 0; i < 4; i++) _alpha(color, .4 + .6 * _bump((x.f.time - rank(i) * .3) % 1.6))];
-  x.logoSpace((c) {
-    // the H stays one piece: its crossbar fades from the short bar's shade into the tall bar's
-    c.drawPath(
-      _HiLogo.h,
-      Paint()..shader = ui.Gradient.linear(const Offset(16.84, 0), const Offset(23.58, 0), [shade[0], shade[1]]),
-    );
-    c.drawPath(_HiLogo.stem, Paint()..color = shade[2]);
-    c.drawPath(_HiLogo.dot, Paint()..color = shade[3]);
-  });
+  x.logo();
 }
 
 /// A soft sweep turning inside the button, over two faint guide circles, kept out of the logo.
@@ -247,11 +236,11 @@ void _error(_Ctx x) {
     ghost: _alpha(x.col, .16),
     dx: _shake(s),
     parts: _each((i) {
-      final bar = _HiLogo.bar[i];
+      final bar = i.toDouble();
       final drop = _easeOut((s - (2 - bar) * .1) / .55);
       final waver = .06 * math.sin(x.f.time * 2.3 + bar * 1.7) * settled;
       final fade = bar == 2 ? 1 - .4 * _osc(x.f.time, 2.2) * settled : 1.0;
-      return _Part(fill: _lerp(1, weak[bar], drop) + waver, opacity: fade);
+      return _Part(fill: _lerp(1, weak[i], drop) + waver, opacity: fade);
     }),
   );
   final badge = EclipseButtonPainter.errorBadgeRect(x.center, x.r);
@@ -709,7 +698,7 @@ class _Ctx {
     c.save();
     c.translate(logoRect.left, logoRect.top);
     c.scale(k);
-    c.clipPath(_HiLogo.all);
+    c.clipRect(const Rect.fromLTWH(0, 0, 64, 64));
     paint(c);
     c.restore();
   }
@@ -764,96 +753,6 @@ class _Ctx {
   }
 }
 
-// ---------------------------------------------------------------------------------------------
-// The Hi logo, from assets/images/logo.svg, in its 64 × 64 units, in four parts: the short bar with
-// the crossbar, the tall bar, the stem and the dot
-
-Path _svgPath(String d) {
-  final path = Path();
-  final tokens = RegExp(r'[MCLVHZ]|-?\d*\.?\d+').allMatches(d).map((m) => m.group(0)!).toList();
-  var i = 0;
-  var cmd = '';
-  var x = 0.0;
-  var y = 0.0;
-  double n() => double.parse(tokens[i++]);
-  while (i < tokens.length) {
-    if (RegExp('[A-Z]').hasMatch(tokens[i])) cmd = tokens[i++];
-    switch (cmd) {
-      case 'M':
-        x = n();
-        y = n();
-        path.moveTo(x, y);
-        cmd = 'L';
-      case 'L':
-        x = n();
-        y = n();
-        path.lineTo(x, y);
-      case 'H':
-        x = n();
-        path.lineTo(x, y);
-      case 'V':
-        y = n();
-        path.lineTo(x, y);
-      case 'C':
-        final x1 = n();
-        final y1 = n();
-        final x2 = n();
-        final y2 = n();
-        x = n();
-        y = n();
-        path.cubicTo(x1, y1, x2, y2, x, y);
-      case 'Z':
-        path.close();
-    }
-  }
-  return path;
-}
-
-abstract final class _HiLogo {
-  static final dot = _svgPath(
-    'M47.1582 14.4283C47.1582 13.8368 47.4684 13.2886 47.9757 12.9842L61.4494 4.89891C62.5721 4.22529 64.0003 '
-    '5.03389 64.0003 6.34306V20.2103C64.0003 21.1405 63.2461 21.8945 62.3161 21.8945H48.8424C47.9124 21.8945 '
-    '47.1582 21.1405 47.1582 20.2103V14.4283Z',
-  );
-
-  static final h = _svgPath(
-    'M24.3966 26.4593C23.8893 26.7637 23.5789 27.3118 23.5789 27.9034V43.7921L23.5789 45.4751L23.5789 45.4763L23.5789 '
-    '48.0001C23.5789 48.9301 22.8249 49.6001 21.8947 49.6001H18.5263C17.5962 49.6001 16.8421 48.9301 16.8421 48.0001V '
-    '45.4751V34.976C16.8421 33.6669 15.4139 32.8583 14.2913 33.5319L0.817607 41.6171C0.310362 41.9216 0 42.4696 0 '
-    '43.0615V60.6342C0 61.5642 0.754048 62.3184 1.68421 62.3184H15.1579C16.0881 62.3184 16.8421 61.5642 16.8421 '
-    '60.6342V58.9488V56.8314C16.8421 55.9011 17.5962 55.3376 18.5263 55.3376H21.8947C22.8249 55.3376 23.5789 55.9011 '
-    '23.5789 56.8314V58.9488L23.5789 60.6342C23.5789 61.5642 24.333 62.3184 25.2632 62.3184H38.7368C39.6669 62.3184 '
-    '40.4211 61.5642 40.4211 60.6342V45.4763V43.7921V19.8182C40.4211 18.509 38.9928 17.7004 37.8701 18.374L24.3966 '
-    '26.4593Z',
-  )..fillType = PathFillType.evenOdd;
-
-  static final stem = _svgPath(
-    'M47.1592 28.7999V60.7999C47.1592 61.6836 47.9132 62.3999 48.8434 62.3999H62.3171C63.2472 62.3999 64.0013 61.6836 '
-    '64.0013 60.7999V28.7999C64.0013 27.9162 63.2472 27.1999 62.3171 27.1999H48.8434C47.9132 27.1999 47.1592 27.9162 '
-    '47.1592 28.7999Z',
-  );
-
-  static final all = Path.combine(PathOperation.union, Path.combine(PathOperation.union, h, stem), dot);
-
-  static Path pathOf(int part) => part < 2 ? h : (part == 2 ? stem : dot);
-
-  static Rect clipOf(int part) => switch (part) {
-    0 => const Rect.fromLTRB(-2, -2, 23.58, 66),
-    1 => const Rect.fromLTRB(23.58, -2, 42, 66),
-    _ => const Rect.fromLTRB(-2, -2, 66, 66),
-  };
-
-  static const tops = [32.9, 18.2, 27.2, 4.2];
-  static const bottoms = [62.32, 62.32, 62.4, 21.9];
-  static const centersX = [8.4, 32.0, 55.6, 55.6];
-
-  /// The signal bar each part belongs to: the stem and the dot are the third.
-  static const bar = [0, 1, 2, 2];
-
-  /// The order the parts light up in: the dot just after the stem.
-  static const rank = [0.0, 1.0, 2.0, 2.6];
-}
-
 /// How one part of the logo looks.
 class _Part {
   const _Part({this.fill = 1, this.opacity = 1, this.dy = 0, this.scaleY = 1});
@@ -868,31 +767,25 @@ class _Part {
 List<_Part> _each(_Part Function(int part) style) => [for (var i = 0; i < 4; i++) style(i)];
 
 void _paintLogo(Canvas c, Rect r, {required Color color, List<_Part>? parts, Color? ghost}) {
-  c.save();
-  c.translate(r.left, r.top);
-  c.scale(r.width / 64);
-  for (var i = 0; i < 4; i++) {
-    final s = parts?[i] ?? const _Part();
-    final top = _HiLogo.tops[i];
-    final bottom = _HiLogo.bottoms[i];
-    c.save();
-    c.translate(0, s.dy);
-    if (s.scaleY != 1) {
-      c.translate(_HiLogo.centersX[i], bottom);
-      c.scale(1, s.scaleY);
-      c.translate(-_HiLogo.centersX[i], -bottom);
-    }
-    // not antialiased, so the two halves of the H meet without a seam
-    c.clipRect(_HiLogo.clipOf(i), doAntiAlias: false);
-    final path = _HiLogo.pathOf(i);
-    if (ghost != null) c.drawPath(path, Paint()..color = ghost);
-    if (s.fill > 0 && s.opacity > 0) {
-      if (s.fill < 1) c.clipRect(Rect.fromLTRB(-2, bottom - s.fill * (bottom - top), 66, 66));
-      c.drawPath(path, Paint()..color = _alpha(color, s.opacity));
-    }
-    c.restore();
-  }
-  c.restore();
+  // A bold P inside a ring: the mark stays one piece, so the button's animations keep their box.
+  final center = r.center;
+  final radius = r.width * 0.46;
+  c.drawCircle(
+    center,
+    radius,
+    Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = r.width * 0.055,
+  );
+  final painter = TextPainter(
+    text: TextSpan(
+      text: 'P',
+      style: TextStyle(color: color, fontSize: r.width * 0.50, fontWeight: FontWeight.w900, height: 1),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  painter.paint(c, center - Offset(painter.width / 2, painter.height / 2));
 }
 
 // ---------------------------------------------------------------------------------------------
