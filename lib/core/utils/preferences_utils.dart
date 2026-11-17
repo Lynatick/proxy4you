@@ -51,10 +51,10 @@ class PreferencesEntry<T, P> with InfraLogger {
     if (mapTo != null) {
       mapped = mapTo!(value);
     }
-    loggy.debug("updating preference [$key]($T) to [$mapped]");
+    loggy.debug("updating preference [$key]($T)");
     try {
       if (!(validator?.call(value) ?? true)) {
-        loggy.warning("invalid value [$value] for preference [$key]($T)");
+        loggy.warning("invalid value for preference [$key]($T)");
         return false;
       }
 

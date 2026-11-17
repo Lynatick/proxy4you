@@ -37,6 +37,15 @@ class HiddifyCoreService with InfraLogger {
   CoreStatus currentState = const CoreStatus.stopped();
   final statusController = BehaviorSubject<CoreStatus>();
   final CallOptions? grpcOptions = null; //CallOptions(timeout: const Duration(milliseconds: 10000));
+
+  /// A unary call to the core must answer this quickly; a hung engine otherwise leaves the app on
+  /// "connecting" forever.
+  final CallOptions _unaryTimeout = CallOptions(timeout: const Duration(seconds: 10));
+
+  /// The whole start (the gRPC request and the status that reports the outcome) must finish this
+  /// soon; a core that hangs while starting is reported as a failure instead of spinning.
+  final Duration _startTimeout = const Duration(seconds: 30);
+
   final Map<String, StreamSubscription?> subscriptions = {};
   OutboundGroupList latest = OutboundGroupList();
 
@@ -72,11 +81,17 @@ class HiddifyCoreService with InfraLogger {
   TaskEither<String, Unit> validateConfigByPath(String path, String tempPath, bool debug) {
     return TaskEither(() async {
       try {
-        final response = await core.fgClient.parse(ParseRequest(tempPath: tempPath, configPath: path, debug: false));
+        final response = await core.fgClient.parse(
+          ParseRequest(tempPath: tempPath, configPath: path, debug: false),
+          options: _unaryTimeout,
+        );
         if (response.responseCode != ResponseCode.OK) return left("${response.responseCode} ${response.message}");
       } catch (e) {
         await setup().run();
-        final response = await core.fgClient.parse(ParseRequest(tempPath: tempPath, configPath: path, debug: false));
+        final response = await core.fgClient.parse(
+          ParseRequest(tempPath: tempPath, configPath: path, debug: false),
+          options: _unaryTimeout,
+        );
         if (response.responseCode != ResponseCode.OK) return left("${response.responseCode} ${response.message}");
       }
       return right(unit);
@@ -85,7 +100,7 @@ class HiddifyCoreService with InfraLogger {
 
   TaskEither<String, String> generateFullConfigByPath(String path) {
     return TaskEither(() async {
-      final response = await core.fgClient.parse(ParseRequest(configPath: path, debug: false));
+      final response = await core.fgClient.parse(ParseRequest(configPath: path, debug: false), options: _unaryTimeout);
       if (response.responseCode != ResponseCode.OK) return left("${response.responseCode} ${response.message}");
       return right(response.content);
     });
@@ -245,7 +260,7 @@ class HiddifyCoreService with InfraLogger {
     });
     final stopped = _stopRequests.where((n) => n != stops).listen((_) => complete(const CoreStatus.stopped()));
     try {
-      final res = await send();
+      final res = await send().timeout(_startTimeout);
       // the core is started only once it is stopped; the app asks again after it reports STOPPED
       if (res.messageType == MessageType.INSTANCE_NOT_STOPPED) {
         return CoreStatus.stopped(alert: CoreAlert.alreadyStarted, message: res.message);
@@ -257,7 +272,7 @@ class HiddifyCoreService with InfraLogger {
         // a start queued earlier will report the outcome; its STARTING may have gone already
         starting = true;
       }
-      return await outcome.future;
+      return await outcome.future.timeout(_startTimeout);
     } finally {
       await statuses.cancel();
       await stopped.cancel();

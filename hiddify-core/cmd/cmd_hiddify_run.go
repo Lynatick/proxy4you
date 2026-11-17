@@ -31,7 +31,7 @@ func runCommand(cmd *cobra.Command, args []string) {
 			TempDir:           "./tmp",
 			FlutterStatusPort: 0,
 			Debug:             false,
-			Mode:              hcore.SetupMode_GRPC_NORMAL_INSECURE,
+			Mode:              hcore.SetupMode_OLD,
 			Listen:            "127.0.0.1:17078",
 		}, nil,
 	)

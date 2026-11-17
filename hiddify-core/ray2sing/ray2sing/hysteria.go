@@ -21,7 +21,7 @@ func HysteriaSingbox(hysteriaURL string) (*T.Outbound, error) {
 				Enabled:    true,
 				DisableSNI: isIPOnly(SNI),
 				ServerName: SNI,
-				Insecure:   u.Params["insecure"] == "1",
+				Insecure:   toBool(u.Params["insecure"], false),
 			},
 		},
 	}

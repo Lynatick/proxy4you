@@ -69,6 +69,17 @@ class ProfileParser with InfraLogger {
 
   final DioHttpClient _httpClient;
 
+  /// A profile may list other subscriptions, one URL a line. Following them is how a subscription
+  /// is assembled from several panels, but the content comes from whoever wrote the profile: at
+  /// most this many are followed, each at most [maxInnerSubscriptionBytes], together at most
+  /// [maxExpandedSubscriptionBytes].
+  static const maxInnerSubscriptionLinks = 16;
+  static const maxInnerSubscriptionBytes = 2 << 20;
+  static const maxExpandedSubscriptionBytes = 8 << 20;
+
+  /// A downloaded profile larger than this is refused before it is read into memory.
+  static const maxProfileBytes = 32 << 20;
+
   ProfileParser({required DioHttpClient httpClient}) : _httpClient = httpClient;
   TaskEither<ProfileFailure, ProfileEntriesCompanion> addLocal({
     required String id,
@@ -169,6 +180,11 @@ class ProfileParser with InfraLogger {
       }
       throw err;
     });
+    final downloaded = await File(tempFilePath).length();
+    if (downloaded > maxProfileBytes) {
+      await File(tempFilePath).delete();
+      throw ProfileFailure.unexpected('the profile is larger than $maxProfileBytes bytes', StackTrace.current);
+    }
     // fixing headers before return
     return rs.headers.map.map((key, value) {
       if (value.length == 1) return MapEntry(key, value.first);
@@ -181,14 +197,23 @@ class ProfileParser with InfraLogger {
   /// Returns [text] unchanged when no line is a link.
   Future<String> expandLinks(String text, CancelToken cancelToken) async {
     final lines = text.split('\n');
-    if (!lines.any(_isSubscriptionLink)) return text;
+    final links = lines.where(_isSubscriptionLink).length;
+    if (links == 0) return text;
+    if (links > maxInnerSubscriptionLinks) {
+      throw ProfileFailure.unexpected(
+        'the profile lists $links subscription links; at most $maxInnerSubscriptionLinks are followed',
+        StackTrace.current,
+      );
+    }
 
     final results = List<String?>.filled(lines.length, null);
-    int index = 0;
+    var index = 0;
+    var expandedBytes = 0;
+    var budgetExceeded = false;
 
     Future<void> worker() async {
       while (true) {
-        if (cancelToken.isCancelled) return;
+        if (cancelToken.isCancelled || budgetExceeded) return;
 
         final currentIndex = index++;
         if (currentIndex >= lines.length) return;
@@ -198,14 +223,31 @@ class ProfileParser with InfraLogger {
           results[currentIndex] = line;
           continue;
         }
+        if (!isAllowedInnerLink(line)) {
+          // A profile the user chose may not make the device call its own network: a line
+          // pointing at loopback, a router or a metadata address stays a line the core reads.
+          loggy.warning(
+            'kept an inner subscription link that points at a private address: ${Uri.tryParse(line.trimRight())?.host}',
+          );
+          results[currentIndex] = line;
+          continue;
+        }
 
         try {
-          final response = await _httpClient.get<String>(
+          final body = await _httpClient.getText(
             line.trimRight(),
             cancelToken: cancelToken,
-            responseType: ResponseType.plain,
+            maxBytes: maxInnerSubscriptionBytes,
           );
-          results[currentIndex] = (response.data ?? '').trim();
+          expandedBytes += utf8.encode(body).length;
+          if (expandedBytes > maxExpandedSubscriptionBytes) {
+            budgetExceeded = true;
+            return;
+          }
+          results[currentIndex] = body.trim();
+        } on ResponseTooLargeException {
+          loggy.warning('dropped an inner subscription link that is larger than $maxInnerSubscriptionBytes bytes');
+          results[currentIndex] = '';
         } catch (err) {
           if (err is DioException && CancelToken.isCancel(err)) return;
           // the full url carries the user's token, so only the host is logged
@@ -219,10 +261,56 @@ class ProfileParser with InfraLogger {
 
     // 4 downloads at a time
     await Future.wait(List.generate(4, (_) => worker()));
+    if (budgetExceeded) {
+      throw ProfileFailure.unexpected(
+        'the subscription links of the profile are larger than $maxExpandedSubscriptionBytes bytes',
+        StackTrace.current,
+      );
+    }
     if (cancelToken.isCancelled) {
       throw const ProfileFailure.cancelByUser('HTTP request for getting an inner subscription link canceled by user.');
     }
     return results.join('\n');
+  }
+
+  /// Whether a line may be followed as an inner subscription: http(s) to a host that is not the
+  /// device itself, its network or a link-local address. A name is not resolved here, so a public
+  /// name pointing at a private address is left to the core.
+  @visibleForTesting
+  static bool isAllowedInnerLink(String line) {
+    final uri = Uri.tryParse(line.trimRight());
+    if (uri == null || (uri.scheme != 'http' && uri.scheme != 'https')) return false;
+    return isPublicHost(uri.host);
+  }
+
+  @visibleForTesting
+  static bool isPublicHost(String host) {
+    final name = host.toLowerCase();
+    if (name.isEmpty) return false;
+    if (name == 'localhost' || name.endsWith('.localhost') || name.endsWith('.local')) return false;
+    final address = InternetAddress.tryParse(name);
+    if (address == null) return true;
+    if (address.isLoopback || address.isLinkLocal || address.isMulticast) return false;
+    final bytes = address.rawAddress;
+    if (address.type == InternetAddressType.IPv6) {
+      if ((bytes[0] & 0xfe) == 0xfc) return false; // unique local fc00::/7
+      final mapped = bytes.sublist(0, 10).every((byte) => byte == 0) && bytes[10] == 0xff && bytes[11] == 0xff;
+      if (mapped) return _isPublicIpv4(bytes.sublist(12));
+      return true;
+    }
+    return _isPublicIpv4(bytes);
+  }
+
+  static bool _isPublicIpv4(List<int> bytes) {
+    if (bytes.length != 4) return false;
+    if (bytes[0] == 0 || bytes[0] == 10 || bytes[0] == 127) return false;
+    if (bytes[0] == 169 && bytes[1] == 254) return false;
+    if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) return false;
+    if (bytes[0] == 192 && bytes[1] == 168) return false;
+    if (bytes[0] == 100 && bytes[1] >= 64 && bytes[1] <= 127) return false; // carrier-grade NAT
+    if (bytes[0] == 198 && (bytes[1] == 18 || bytes[1] == 19)) return false; // benchmarking
+    if (bytes[0] >= 224) return false; // multicast and reserved
+    return true;
   }
 
   /// An http(s) line is a subscription link only when its URL has a path. HTTP proxy links have none: the core reads

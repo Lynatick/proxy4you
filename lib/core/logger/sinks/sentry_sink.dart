@@ -10,10 +10,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 // plain listener on the root stream, attached when the user turns analytics on
 // and cancelled when they turn it off.
 
-/// Records at or above this become a breadcrumb — the trail Sentry shows
-/// leading up to a crash.
-const _minBreadcrumbLevel = Level.INFO;
-
 /// Records at or above this become a reported event of their own.
 const _minEventLevel = Level.SEVERE;
 
@@ -46,15 +42,38 @@ class SentryLogIntegration implements Integration<SentryOptions> {
 
 Future<void> _toSentry(LogRecord record) async {
   if (!canLogEvent(record.error)) return;
-
-  if (record.level >= _minEventLevel) {
-    await Sentry.captureEvent(record.toSentryEvent(), stackTrace: record.stackTrace);
-  }
-
-  if (record.level >= _minBreadcrumbLevel) {
-    await Sentry.addBreadcrumb(record.toBreadcrumb());
-  }
+  // The engine's own lines stay local: they carry connection details the report does not need.
+  if (isEngineLogger(record.loggerName)) return;
+  // No breadcrumbs: every log line would become part of the Sentry trail.
+  if (record.level < _minEventLevel) return;
+  await Sentry.captureEvent(
+    SentryEvent(
+      timestamp: record.time.toUtc(),
+      logger: record.loggerName,
+      level: record.level.toSentryLevel(),
+      message: SentryMessage(redactLogMessage(record.message)),
+      throwable: record.error,
+      // ignore: deprecated_member_use
+      extra: {
+        if (record.error != null) 'LogRecord.error': record.error,
+        'LogRecord.loggerName': record.loggerName,
+        'LogRecord.sequenceNumber': record.sequenceNumber,
+      },
+    ),
+    stackTrace: record.stackTrace,
+  );
 }
+
+/// The logger names that belong to the Go engine: the app forwards its lines, and they are not
+/// for Sentry.
+bool isEngineLogger(String? name) => name == null || name.startsWith('core.') || name.startsWith('bridge.');
+
+final _urlRedaction = RegExp(r'https?://[^\s]+');
+final _tokenRedaction = RegExp(r'\b[A-Za-z0-9_\-]{32,}\b');
+
+/// Masks URLs and long tokens so a report does not carry a subscription link or a password.
+String redactLogMessage(String message) =>
+    message.replaceAll(_urlRedaction, '<redacted-url>').replaceAll(_tokenRedaction, '<redacted>');
 
 extension LogRecordX on LogRecord {
   Breadcrumb toBreadcrumb() {

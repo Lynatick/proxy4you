@@ -52,7 +52,7 @@ func Hysteria2Singbox(hysteria2Url string) (*T.Outbound, error) {
 		OutboundTLSOptionsContainer: T.OutboundTLSOptionsContainer{
 			TLS: &T.OutboundTLSOptions{
 				Enabled:    true,
-				Insecure:   decoded["insecure"] == "1",
+				Insecure:   toBool(decoded["insecure"], false),
 				DisableSNI: isIPOnly(SNI),
 				ServerName: SNI,
 				ECH:        ECHOpts,

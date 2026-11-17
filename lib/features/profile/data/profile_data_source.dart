@@ -32,7 +32,7 @@ class ProfileDao extends DatabaseAccessor<Db> with _$ProfileDaoMixin, InfraLogge
   @override
   Future<ProfileEntry?> getByUrl(String url) async {
     return await (select(profileEntries)
-          ..where((tbl) => tbl.url.like('%$url%'))
+          ..where((tbl) => tbl.url.equals(url))
           ..limit(1))
         .getSingleOrNull();
   }
