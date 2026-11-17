@@ -42,7 +42,7 @@ jobs:
       id-token: write
       attestations: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - uses: ./.github/actions/setup-flutter
         with:
@@ -67,7 +67,7 @@ jobs:
       # WINDOWS_SIGN_BACKEND and AZURE_OIDC come from configure_windows_signing.ps1.
       - name: Azure login (OIDC) for Artifact Signing
         if: inputs.release && env.WINDOWS_SIGN_BACKEND == 'ArtifactSigning' && env.AZURE_OIDC == 'true'
-        uses: azure/login@v3
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -149,7 +149,7 @@ jobs:
       - name: Attest build provenance
         if: inputs.release
         continue-on-error: true
-        uses: actions/attest-build-provenance@v4
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: out/*
 
@@ -166,7 +166,7 @@ jobs:
 
       - name: Upload the artifact
         if: inputs.release
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: windows
           path: out

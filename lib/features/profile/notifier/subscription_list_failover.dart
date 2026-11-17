@@ -40,32 +40,34 @@ class SubscriptionListFailover extends _$SubscriptionListFailover with AppLogger
 
   Future<void> _advance() async {
     if (_advancing) return;
-    final list = ref.read(activeSubscriptionListProvider);
-    if (list == null || list.memberIds.isEmpty) return;
-    final memberId = nextUntriedMember(list.memberIds, list.activeMemberId, _attempted);
-    if (memberId == null) {
-      _attempted.clear();
-      ref.read(inAppNotificationControllerProvider).showErrorToast('Every subscription in the list failed');
-      return;
-    }
-    _attempted.add(memberId);
     _advancing = true;
     try {
-      final repository = ref.read(profileRepositoryProvider).requireValue;
-      final profile = (await repository.getById(memberId).run()).getOrElse((error) {
-        loggy.warning('the next subscription of the list can not be read', error);
-        return null;
-      });
-      if (profile == null) {
-        _advancing = false;
-        return _advance();
+      // A member whose row can not be read is skipped and the next one is tried, in this loop
+      // rather than by calling _advance again: a list of hundreds would otherwise nest as deep.
+      while (true) {
+        final list = ref.read(activeSubscriptionListProvider);
+        if (list == null || list.memberIds.isEmpty) return;
+        final memberId = nextUntriedMember(list.memberIds, list.activeMemberId, _attempted);
+        if (memberId == null) {
+          _attempted.clear();
+          ref.read(inAppNotificationControllerProvider).showErrorToast('Every subscription in the list failed');
+          return;
+        }
+        _attempted.add(memberId);
+        final repository = ref.read(profileRepositoryProvider).requireValue;
+        final profile = (await repository.getById(memberId).run()).getOrElse((error) {
+          loggy.warning('the next subscription of the list can not be read', error);
+          return null;
+        });
+        if (profile == null) continue;
+        final activated = await repository.setAsActive(memberId).run();
+        if (activated.isLeft()) {
+          loggy.warning('the next subscription of the list can not be activated', activated);
+        }
+        await ref.read(subscriptionListsProvider.notifier).setActiveMember(list.id, memberId);
+        await ref.read(connectionNotifierProvider.notifier).reconnect(profile);
+        return;
       }
-      final activated = await repository.setAsActive(memberId).run();
-      if (activated.isLeft()) {
-        loggy.warning('the next subscription of the list can not be activated', activated);
-      }
-      await ref.read(subscriptionListsProvider.notifier).setActiveMember(list.id, memberId);
-      await ref.read(connectionNotifierProvider.notifier).reconnect(profile);
     } finally {
       _advancing = false;
     }

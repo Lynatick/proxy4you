@@ -79,16 +79,19 @@ class SubscriptionLists extends _$SubscriptionLists with AppLogger {
     if (list == null) return false;
     final links = await _fetch(list.url);
     if (links.isEmpty) return false;
+    // The list may name hundreds of subscriptions, and each costs a download of up to the HTTP
+    // timeout: the update gets a budget of its own, and a few run at a time. A member that did not
+    // finish in the budget is not a member the list dropped, so it is kept as it was.
+    final results = await _updateMembers(links);
     final updated = <String>[];
     final kept = <String>[];
-    for (final link in links) {
-      final (memberId, downloaded) = await _ensureProfile(link);
-      if (memberId != null) {
-        updated.add(memberId);
-      } else if (!downloaded) {
+    for (final result in results) {
+      if (result.memberId != null) {
+        updated.add(result.memberId!);
+      } else if (!result.downloaded) {
         // the subscription is still listed but could not be read: keep it where it was instead of
         // dropping it, so a server having a bad minute does not shrink the list
-        final existing = await ref.read(profileDataSourceProvider).getByUrl(link);
+        final existing = await ref.read(profileDataSourceProvider).getByUrl(result.link);
         if (existing != null) kept.add(existing.id);
       }
     }
@@ -110,6 +113,56 @@ class SubscriptionLists extends _$SubscriptionLists with AppLogger {
           candidate,
     ]);
     return true;
+  }
+
+  /// The most members of one list updated at the same time: each is a download and a validation of
+  /// its own, and the core validates them one by one anyway.
+  static const updateConcurrency = 3;
+
+  /// How long one update of a list may take in total. The HTTP client alone allows 15 s per
+  /// request, so without this a list of unreachable subscriptions would keep the button spinning
+  /// for tens of minutes.
+  static const updateBudget = Duration(minutes: 2);
+
+  /// Refreshes the subscriptions of [links] within [updateBudget], [updateConcurrency] at a time.
+  /// A member that did not finish says so, so the caller keeps it rather than dropping it.
+  Future<List<({String link, String? memberId, bool downloaded})>> _updateMembers(List<String> links) async {
+    final results = List<({String link, String? memberId, bool downloaded})>.empty(growable: true);
+    final deadline = DateTime.now().add(updateBudget);
+    var index = 0;
+    var stopped = false;
+
+    Future<void> worker() async {
+      while (true) {
+        if (stopped || DateTime.now().isAfter(deadline)) {
+          stopped = true;
+          return;
+        }
+        final current = index++;
+        if (current >= links.length) return;
+        final link = links[current];
+        final (memberId, downloaded) = await _ensureProfile(link);
+        if (DateTime.now().isAfter(deadline) && memberId == null) {
+          stopped = true;
+          return;
+        }
+        results.add((link: link, memberId: memberId, downloaded: downloaded));
+      }
+    }
+
+    await Future.wait(List.generate(updateConcurrency, (_) => worker()));
+    if (results.length < links.length) {
+      loggy.warning(
+        'the list update ran out of its ${updateBudget.inSeconds}s budget: '
+        '${results.length} of ${links.length} subscriptions were read',
+      );
+    }
+    // the links' order, whatever order the downloads finished in
+    final byLink = {for (final result in results) result.link: result};
+    return [
+      for (final link in links)
+        if (byLink[link] case final result?) result else (link: link, memberId: null, downloaded: false),
+    ];
   }
 
   Future<void> remove(String id) async {

@@ -48,6 +48,14 @@ class Db extends _$Db with InfraLogger {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
+      // Write-ahead logging lets a read continue while a write is in flight, and a busy timeout
+      // makes a writer wait for the lock instead of failing at once with "database is locked":
+      // profile updates, the update worker and the UI all touch this file.
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA journal_mode = WAL');
+        await customStatement('PRAGMA busy_timeout = 5000');
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
       onCreate: (Migrator m) async {
         await m.createAll();
       },
