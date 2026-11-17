@@ -283,7 +283,8 @@ class ProfileParser with InfraLogger {
     return isPublicHost(uri.host);
   }
 
-  @visibleForTesting
+  /// Whether a link may be followed at all: the same rule the core applies to a profile's own
+  /// subscription links, so a list's members and a profile's lines are judged alike.
   static bool isPublicHost(String host) {
     final name = host.toLowerCase();
     if (name.isEmpty) return false;

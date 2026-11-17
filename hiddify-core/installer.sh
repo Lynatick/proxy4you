@@ -108,7 +108,7 @@ ARTIFACT="hiddify-core-linux-${ARCH}${LIBC}.tar.gz"
 
 # Fetch latest version
 echo -e "Fetching latest version information..."
-REPO="hiddify/hiddify-core"
+REPO="${HIDDIFY_CORE_REPO:-hiddify/hiddify-core}"
 LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 if [ -z "$LATEST_TAG" ]; then
@@ -124,6 +124,51 @@ fi
 
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$LATEST_TAG/$ARTIFACT"
 
+# The archive is unpacked and run as root, so it is checked against the release's checksums before
+# it is used. A release that publishes none is installed with a warning, unless
+# HIDDIFY_REQUIRE_CHECKSUM=1 asks for a hard failure.
+verify_checksum() {
+    local file="$1" name="$2"
+    local sums="$WORKDIR/SHA256SUMS"
+    local sums_url="https://github.com/$REPO/releases/download/$LATEST_TAG/SHA256SUMS"
+
+    if [ ! -s "$sums" ]; then
+        curl -fsL "$sums_url" -o "$sums" 2>/dev/null ||
+            curl -fsL "${sums_url}.txt" -o "$sums" 2>/dev/null || true
+    fi
+    if [ ! -s "$sums" ]; then
+        if [ "${HIDDIFY_REQUIRE_CHECKSUM:-0}" = "1" ]; then
+            echo -e "${RED}Release $LATEST_TAG publishes no SHA256SUMS; refusing to install.${NC}" >&2
+            return 1
+        fi
+        echo -e "${YELLOW}Warning: release $LATEST_TAG publishes no SHA256SUMS; $name is not verified.${NC}" >&2
+        return 0
+    fi
+
+    local expected
+    expected=$(grep -E "[ *]$name\$" "$sums" | head -n 1 | awk '{print $1}')
+    if [ -z "$expected" ]; then
+        if [ "${HIDDIFY_REQUIRE_CHECKSUM:-0}" = "1" ]; then
+            echo -e "${RED}$name is not listed in SHA256SUMS; refusing to install.${NC}" >&2
+            return 1
+        fi
+        echo -e "${YELLOW}Warning: $name is not listed in SHA256SUMS; it is not verified.${NC}" >&2
+        return 0
+    fi
+
+    local actual
+    if command -v sha256sum > /dev/null 2>&1; then
+        actual=$(sha256sum "$file" | awk '{print $1}')
+    else
+        actual=$(shasum -a 256 "$file" | awk '{print $1}')
+    fi
+    if [ "$actual" != "$expected" ]; then
+        echo -e "${RED}Checksum mismatch for $name: expected $expected, got $actual. Nothing was installed.${NC}" >&2
+        return 1
+    fi
+    echo -e "${GREEN}Checksum verified for $name.${NC}"
+}
+
 echo -e "Downloading ${BLUE}$ARTIFACT${NC} ($LATEST_TAG)..."
 curl -L "$DOWNLOAD_URL" -o "$WORKDIR/$ARTIFACT" || {
     # If specific libc variant fails, try generic
@@ -134,6 +179,11 @@ curl -L "$DOWNLOAD_URL" -o "$WORKDIR/$ARTIFACT" || {
         curl -L "$DOWNLOAD_URL" -o "$WORKDIR/$ARTIFACT"
     fi
 }
+
+if ! verify_checksum "$WORKDIR/$ARTIFACT" "$ARTIFACT"; then
+    rm -rf "$WORKDIR"
+    exit 1
+fi
 
 # Install Binary
 echo -e "Installing binary to /usr/bin/hiddify-core..."

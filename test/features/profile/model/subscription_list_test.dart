@@ -60,4 +60,17 @@ void main() {
     attempted.add('c');
     expect(nextUntriedMember(['a', 'b', 'c'], 'c', attempted), isNull);
   });
+
+  test('a member kept after a failed download stays where it was', () {
+    // 'b' could not be read this time; it must not move to the end of the chain.
+    expect(mergeKeepingFailed(['a', 'b', 'c'], ['a', 'c'], ['b']), ['a', 'b', 'c']);
+  });
+
+  test('a member the list no longer names is dropped', () {
+    expect(mergeMemberIds(['a', 'b', 'c'], ['a', 'c']), ['a', 'c']);
+  });
+
+  test('a new member is appended after the ones already there', () {
+    expect(mergeMemberIds(['a', 'b'], ['a', 'b', 'd']), ['a', 'b', 'd']);
+  });
 }

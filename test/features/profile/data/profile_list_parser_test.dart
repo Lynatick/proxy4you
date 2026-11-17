@@ -37,8 +37,27 @@ https://panel.example.com/sub/def
   });
 
   test('the number of members is bounded', () {
-    final content = [for (var i = 0; i < ProfileListParser.maxMembers + 10; i++) 'https://panel.example.com/sub/$i'].join('\n');
+    final content = [
+      for (var i = 0; i < ProfileListParser.maxMembers + 10; i++) 'https://panel.example.com/sub/$i',
+    ].join('\n');
 
     expect(ProfileListParser.parse(content), hasLength(ProfileListParser.maxMembers));
+  });
+
+  test('drops members that point at the device or its own network', () {
+    const content = """
+https://panel.example.com/sub/abc
+http://127.0.0.1:8080/sub
+http://169.254.169.254/latest/meta-data
+http://192.168.1.1/sub
+https://localhost/sub
+http://[::1]/sub
+https://panel.example.com/sub/def
+""";
+
+    expect(ProfileListParser.parse(content), [
+      'https://panel.example.com/sub/abc',
+      'https://panel.example.com/sub/def',
+    ]);
   });
 }

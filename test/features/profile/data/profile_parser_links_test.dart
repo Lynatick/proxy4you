@@ -42,4 +42,12 @@ void main() {
       expect(ProfileParser.isPublicHost('192.168.1.1'), isFalse);
     });
   });
+
+  group('inner links of a profile', () {
+    test('a private link stays a line instead of being followed', () {
+      // expandLinks only fetches public hosts; the rest are left for the core to read as text.
+      expect(ProfileParser.isAllowedInnerLink('http://10.1.2.3/sub'), isFalse);
+      expect(ProfileParser.isAllowedInnerLink('https://example.com/sub'), isTrue);
+    });
+  });
 }

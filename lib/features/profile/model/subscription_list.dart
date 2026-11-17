@@ -110,6 +110,12 @@ List<String> mergeMemberIds(List<String> previous, List<String> updated, {String
   return merged;
 }
 
+/// The members after an update in which some subscriptions could not be downloaded: the readable
+/// ones as the list now names them, and a member kept from before stays where it was. A server
+/// having a bad minute therefore does not reorder the failover chain.
+List<String> mergeKeepingFailed(List<String> previous, List<String> updated, List<String> kept) =>
+    mergeMemberIds(previous, [...updated, ...kept]);
+
 /// The next member to try, in order after [currentId], skipping the ones already tried. Null
 /// once every member was tried: one pass through the list, then the failure is reported.
 String? nextUntriedMember(List<String> memberIds, String? currentId, Set<String> attempted) {

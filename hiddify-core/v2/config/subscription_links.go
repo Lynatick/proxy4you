@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"runtime"
@@ -23,7 +24,8 @@ const (
 )
 
 // isSubscriptionLink reports a line that is the URL of a subscription, not an HTTP proxy: http or
-// https with a path, and without a user or a name (fragment), which proxy links have.
+// https with a path, without a user or a name (fragment), which proxy links have, and to a public
+// host.
 func isSubscriptionLink(line string) bool {
 	if !strings.HasPrefix(line, "http://") && !strings.HasPrefix(line, "https://") || strings.ContainsAny(line, " \t") {
 		return false
@@ -32,7 +34,59 @@ func isSubscriptionLink(line string) bool {
 	if err != nil || u.Host == "" || u.User != nil || u.Fragment != "" {
 		return false
 	}
-	return strings.Trim(u.Path, "/") != ""
+	if strings.Trim(u.Path, "/") == "" {
+		return false
+	}
+	return isPublicHost(u.Hostname())
+}
+
+// isPublicHost reports whether a subscription link may be followed. The content comes from whoever
+// wrote the profile, and following a line to the device itself, its own network, a router or a
+// cloud metadata address is how a subscription turns into a request into the user's network.
+//
+// A name is not resolved here: a public name that answers with a private address is a DNS trick
+// this check does not see, and resolving it would add a lookup of its own.
+func isPublicHost(host string) bool {
+	name := strings.ToLower(strings.Trim(host, "[]"))
+	if name == "" {
+		return false
+	}
+	if name == "localhost" || strings.HasSuffix(name, ".localhost") || strings.HasSuffix(name, ".local") {
+		return false
+	}
+	ip := net.ParseIP(name)
+	if ip == nil {
+		return true
+	}
+	if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() ||
+		ip.IsInterfaceLocalMulticast() || ip.IsMulticast() || ip.IsUnspecified() {
+		return false
+	}
+	if v4 := ip.To4(); v4 != nil {
+		return isPublicIPv4(v4)
+	}
+	// unique local fc00::/7
+	return len(ip) == net.IPv6len && ip[0]&0xfe != 0xfc
+}
+
+func isPublicIPv4(ip net.IP) bool {
+	switch {
+	case ip[0] == 0, ip[0] == 10, ip[0] == 127:
+		return false
+	case ip[0] == 169 && ip[1] == 254: // link-local
+		return false
+	case ip[0] == 172 && ip[1] >= 16 && ip[1] <= 31:
+		return false
+	case ip[0] == 192 && ip[1] == 168:
+		return false
+	case ip[0] == 100 && ip[1] >= 64 && ip[1] <= 127: // carrier-grade NAT
+		return false
+	case ip[0] == 198 && (ip[1] == 18 || ip[1] == 19): // benchmarking
+		return false
+	case ip[0] >= 224: // multicast and reserved
+		return false
+	}
+	return true
 }
 
 // expandSubscriptionLinks replaces the subscription URLs of content with their content. A

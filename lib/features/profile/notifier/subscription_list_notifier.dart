@@ -43,15 +43,19 @@ class SubscriptionLists extends _$SubscriptionLists with AppLogger {
 
   /// Fetches [url], adds the subscriptions it names as profiles, and stores the list. Returns its
   /// id, or null when the list has no usable subscription.
-  Future<String?> add(String url) async {
-    final links = await _fetch(url);
+  ///
+  /// [content] is the list already fetched by the caller: the body decides whether a pasted link is
+  /// a list at all, and fetching it again would add the members of a second, possibly different
+  /// body.
+  Future<String?> add(String url, {String? content}) async {
+    final links = content != null ? ProfileListParser.parse(content) : await _fetch(url);
     if (links.isEmpty) {
       loggy.warning('the subscription list has no subscription links');
       return null;
     }
     final memberIds = <String>[];
     for (final link in links) {
-      final id = await _ensureProfile(link);
+      final (id, _) = await _ensureProfile(link);
       if (id != null) memberIds.add(id);
     }
     if (memberIds.isEmpty) return null;
@@ -76,12 +80,20 @@ class SubscriptionLists extends _$SubscriptionLists with AppLogger {
     final links = await _fetch(list.url);
     if (links.isEmpty) return false;
     final updated = <String>[];
+    final kept = <String>[];
     for (final link in links) {
-      final memberId = await _ensureProfile(link);
-      if (memberId != null) updated.add(memberId);
+      final (memberId, downloaded) = await _ensureProfile(link);
+      if (memberId != null) {
+        updated.add(memberId);
+      } else if (!downloaded) {
+        // the subscription is still listed but could not be read: keep it where it was instead of
+        // dropping it, so a server having a bad minute does not shrink the list
+        final existing = await ref.read(profileDataSourceProvider).getByUrl(link);
+        if (existing != null) kept.add(existing.id);
+      }
     }
-    if (updated.isEmpty) return false;
-    final memberIds = mergeMemberIds(list.memberIds, updated, activeMemberId: list.activeMemberId);
+    if (updated.isEmpty && kept.isEmpty) return false;
+    final memberIds = mergeKeepingFailed(list.memberIds, updated, kept);
     final active = memberIds.contains(list.activeMemberId)
         ? list.activeMemberId
         : (memberIds.isEmpty ? null : memberIds.first);
@@ -133,12 +145,13 @@ class SubscriptionLists extends _$SubscriptionLists with AppLogger {
     return ProfileListParser.parse(content);
   }
 
-  /// Adds or refreshes the profile of [link] and returns its id.
-  Future<String?> _ensureProfile(String link) async {
+  /// Adds or refreshes the profile of [link]. The id, and whether its content was downloaded: a
+  /// member the server refused is not the same as one the list no longer names.
+  Future<(String?, bool)> _ensureProfile(String link) async {
     final repository = ref.read(profileRepositoryProvider).requireValue;
-    await repository.upsertRemote(link, cancelToken: CancelToken()).run();
+    final result = await repository.upsertRemote(link, cancelToken: CancelToken()).run();
     final entry = await ref.read(profileDataSourceProvider).getByUrl(link);
-    return entry?.id;
+    return (entry?.id, result.isRight());
   }
 
   static String _nameFor(String url) {

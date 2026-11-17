@@ -211,13 +211,24 @@ class CoreInterfaceMacOS extends CoreInterfaceDesktop {
     _checkResponse(response);
   }
 
+  /// The install in flight, shared by every caller: the app asks for the service once at startup
+  /// and the connect asks again, and two prompts for the same install is one too many.
+  Future<void>? _installFuture;
+
   /// Installs/updates the root admin_bgservice (may show the macOS password prompt).
   /// Call after Mode B consent; [startManaged] then connects without elevating again.
-  Future<void> installAdminBgService() async {
+  ///
+  /// Concurrent calls wait for the install already running instead of prompting again; a later
+  /// call after a failed one tries anew.
+  Future<void> installAdminBgService() {
     if (!_tunnelServiceAvailable) {
-      throw StateError('VPN is unavailable in this build. Proxy modes are available.');
+      return Future.error(StateError('VPN is unavailable in this build. Proxy modes are available.'));
     }
-    if (_tunnelServiceReady) return;
+    if (_tunnelServiceReady) return Future.value();
+    return _installFuture ??= _installAdminBgService().whenComplete(() => _installFuture = null);
+  }
+
+  Future<void> _installAdminBgService() async {
     try {
       await _methods.invokeMethod<void>('installTunnelService');
     } on PlatformException catch (error) {

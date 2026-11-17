@@ -114,7 +114,8 @@ class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
       if (lines.any((line) => !line.startsWith('http://') && !line.startsWith('https://'))) return false;
       if (ProfileListParser.parse(content).isEmpty) return false;
       final lists = ref.read(subscriptionListsProvider.notifier);
-      final id = await lists.add(url);
+      // the body is already here: a second download could carry other members
+      final id = await lists.add(url, content: content);
       if (id == null) return false;
       await ref.read(Preferences.activeSubscriptionList.notifier).update(id);
       await lists.activate(id);
