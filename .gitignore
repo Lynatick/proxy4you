@@ -1,0 +1,12 @@
+# Gradle и локальные кеши
+.gradle-home/
+.gradle/
+build/
+app/build/
+local.properties
+
+# Ключ подписи остаётся у владельца, в репозиторий не попадает
+keystore/
+
+# Отладочный APK: в репозиторий кладём только release
+Dist/*-debug.apk

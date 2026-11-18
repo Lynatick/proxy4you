@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YouTube Proxy</string>
+    <string name="connect">Подключить</string>
+    <string name="disconnect">Отключить</string>
+</resources>
