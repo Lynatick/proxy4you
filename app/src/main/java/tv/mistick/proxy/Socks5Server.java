@@ -9,8 +9,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 
 /**
  * Локальный SOCKS5-сервер внутри приложения.
@@ -23,15 +24,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 final class Socks5Server {
 
     private final VpnService vpn;
-    private final List<NodeStore.Node> nodes;
-    private final AtomicInteger cursor = new AtomicInteger();
+    private final NodePool pool;
     private volatile boolean running;
     private ServerSocket serverSocket;
     private int port;
 
-    Socks5Server(VpnService vpn, List<NodeStore.Node> nodes) {
+    Socks5Server(VpnService vpn, NodePool pool) {
         this.vpn = vpn;
-        this.nodes = nodes;
+        this.pool = pool;
     }
 
     int port() {
@@ -136,20 +136,26 @@ final class Socks5Server {
         }
     }
 
-    /** Пробует ноды по кругу: одна может быть мертва, следующая — работать. */
+    /**
+     * Открывает туннель через лучшую ноду. Сбойная нода уходит в паузу,
+     * запрос сразу пробует следующую — клиент видит только небольшую задержку.
+     */
     private Socket openThroughAnyNode(String host, int port) {
-        int total = nodes.size();
-        if (total == 0) {
-            return null;
-        }
-        int attempts = Math.min(3, total);
-        int start = cursor.getAndIncrement();
-        for (int i = 0; i < attempts; i++) {
-            NodeStore.Node node = nodes.get(Math.abs(start + i) % total);
+        Set<NodePool.Entry> tried = new HashSet<>();
+        for (int attempt = 0; attempt < 3; attempt++) {
+            List<NodePool.Entry> candidates = pool.except(tried, 1);
+            if (candidates.isEmpty()) {
+                return null;
+            }
+            NodePool.Entry entry = candidates.get(0);
+            tried.add(entry);
+            long started = System.currentTimeMillis();
             try {
-                return Upstream.connect(vpn, node, host, port, 8000);
+                Socket socket = Upstream.connect(vpn, entry.node, host, port, 8000);
+                pool.recordSuccess(entry, (int) (System.currentTimeMillis() - started));
+                return socket;
             } catch (IOException ignored) {
-                // пробуем следующую
+                pool.recordFailure(entry);
             }
         }
         return null;

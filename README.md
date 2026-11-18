@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.0.1.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.0.2.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.0.1.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 3
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.0.1.apk
+adb install -r Dist/YouTubeProxy-TV-1.0.2.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -74,6 +74,16 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
   -keypass mistick123 -alias mistick -keyalg RSA -keysize 2048 -validity 10000 \
   -dname "CN=MiStick Proxy, OU=Dev, O=Local, C=RU"
 ```
+
+## Автоматическое переключение нод
+
+- Ноды хранятся в пуле с состоянием: проверена ли, какая задержка, сколько сбоев.
+- Сбойная нода уходит в экспоненциальную паузу (30 с → 15 мин), запрос сразу
+  пробует следующую — пользователь видит только задержку, а не обрыв.
+- Каждые 45 секунд текущая нода проверяется настоящим TLS-рукопожатием с
+  `www.youtube.com` через неё. Не прошла — сервис сам выбирает рабочую из пула и
+  пишет об этом в статус («переключений: N»).
+- Счётчик переключений и текущая нода видны в строке состояния и в уведомлении.
 
 ## Совместимость
 

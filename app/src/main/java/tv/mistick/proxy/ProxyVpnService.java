@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.VpnService;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
@@ -19,21 +21,73 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * VPN-сервис: поднимает TUN, отдаёт его hev-socks5-tunnel, а тот ходит в наш
- * локальный SOCKS5-сервер. Тот, в свою очередь, соединяется с удалённой нодой
- * через protect(), поэтому трафик не зацикливается в туннеле.
+ * VPN-сервис: TUN → hev-socks5-tunnel → локальный SOCKS5 → нода.
+ *
+ * Ноды живут в пуле с состоянием. Периодически текущая нода проверяется настоящим
+ * TLS-рукопожатием с YouTube; при отказе сервис сам переключается на следующую
+ * рабочую и обновляет статус, ничего не требуя от пользователя.
  */
 public final class ProxyVpnService extends VpnService {
 
     private static final String TAG = "MiStickProxy";
     private static final String CHANNEL_ID = "proxy";
+    private static final long HEALTH_INTERVAL_MS = 45_000L;
 
     static volatile boolean running = false;
     static volatile String status = "Выключено";
 
+    private final Handler healthHandler = new Handler(Looper.getMainLooper());
+
     private ParcelFileDescriptor tun;
     private Socks5Server socks;
-    private String currentNode = "";
+    private NodePool pool;
+    private int appliedApps;
+    private int switchCount;
+
+    private final Runnable healthTask = new Runnable() {
+        @Override
+        public void run() {
+            if (!running || pool == null) {
+                return;
+            }
+            final NodePool.Entry active = pool.current();
+            new Thread(() -> {
+                boolean switched = false;
+                if (active != null) {
+                    int latency = Health.probe(ProxyVpnService.this, active.node, 8000);
+                    if (latency >= 0) {
+                        pool.recordSuccess(active, latency);
+                    } else {
+                        pool.recordFailure(active);
+                        switched = true;
+                    }
+                } else {
+                    switched = true;
+                }
+
+                if (switched) {
+                    for (NodePool.Entry candidate : pool.candidates(3)) {
+                        int latency = Health.probe(ProxyVpnService.this, candidate.node, 8000);
+                        if (latency >= 0) {
+                            pool.recordSuccess(candidate, latency);
+                            switchCount++;
+                            Log.i(TAG, "переключение на " + candidate.label() + " (" + latency + " мс)");
+                            break;
+                        }
+                        pool.recordFailure(candidate);
+                    }
+                }
+
+                healthHandler.post(() -> {
+                    if (!running) {
+                        return;
+                    }
+                    publishStatus();
+                    healthHandler.postDelayed(healthTask, HEALTH_INTERVAL_MS);
+                });
+            }, "health-check").start();
+        }
+    };
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -47,19 +101,23 @@ public final class ProxyVpnService extends VpnService {
         String host = intent.getStringExtra("host");
         int port = intent.getIntExtra("port", 0);
         boolean useSocks = intent.getBooleanExtra("socks", true);
-        currentNode = host + ":" + port;
 
         try {
             List<NodeStore.Node> nodes = new ArrayList<>();
             nodes.add(new NodeStore.Node(host, port, useSocks));
-            List<NodeStore.Node> bundled = NodeStore.load(this);
-            for (NodeStore.Node node : bundled) {
-                if (bundled.size() < 40) {
-                    nodes.add(node);
+            int added = 0;
+            for (NodeStore.Node node : NodeStore.load(this)) {
+                if (added++ >= 40) {
+                    break;
                 }
+                nodes.add(node);
+            }
+            pool = new NodePool(nodes);
+            if (!pool.snapshot().isEmpty()) {
+                pool.select(pool.snapshot().get(0));
             }
 
-            socks = new Socks5Server(this, nodes);
+            socks = new Socks5Server(this, pool);
             int localPort = socks.start();
 
             Builder builder = new Builder();
@@ -69,15 +127,14 @@ public final class ProxyVpnService extends VpnService {
             builder.addDnsServer("1.1.1.1");
             builder.setMtu(1500);
 
-            // Только выбранные приложения: остальной трафик телевизора идёт мимо VPN.
+            appliedApps = 0;
             Set<String> allowed = AppSelection.load(this);
-            int applied = 0;
             for (String packageName : allowed) {
                 try {
                     builder.addAllowedApplication(packageName);
-                    applied++;
+                    appliedApps++;
                 } catch (Exception ignored) {
-                    // приложение удалили после выбора — просто пропускаем
+                    // приложение удалили после выбора — пропускаем
                 }
             }
 
@@ -89,15 +146,13 @@ public final class ProxyVpnService extends VpnService {
             File config = new File(getFilesDir(), "hev.yml");
             writeConfig(config, localPort);
 
-            boolean started = hev.htproxy.TProxyService.TProxyStartService(config.getAbsolutePath(), tun.getFd());
-            if (!started) {
+            if (!hev.htproxy.TProxyService.TProxyStartService(config.getAbsolutePath(), tun.getFd())) {
                 throw new IOException("hev-socks5-tunnel не запустился");
             }
 
             running = true;
-            String scope = applied > 0 ? "только " + applied + " прил." : "все приложения";
-            status = "Подключено · " + currentNode + " · " + scope;
-            updateNotification(status);
+            publishStatus();
+            healthHandler.postDelayed(healthTask, 5000);
         } catch (Exception error) {
             Log.e(TAG, "ошибка запуска", error);
             status = "Ошибка: " + error.getMessage();
@@ -107,6 +162,15 @@ public final class ProxyVpnService extends VpnService {
         }
 
         return START_NOT_STICKY;
+    }
+
+    private void publishStatus() {
+        NodePool.Entry active = pool == null ? null : pool.current();
+        String node = active == null ? "нода не выбрана" : active.label();
+        String scope = appliedApps > 0 ? "только " + appliedApps + " прил." : "все приложения";
+        String failovers = switchCount > 0 ? " · переключений: " + switchCount : "";
+        status = "Подключено · " + node + " · " + scope + failovers;
+        updateNotification(status);
     }
 
     private void writeConfig(File file, int localPort) throws IOException {
@@ -158,12 +222,11 @@ public final class ProxyVpnService extends VpnService {
 
     private void teardown() {
         running = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                hev.htproxy.TProxyService.TProxyStopService();
-            } catch (Throwable ignored) {
-                // библиотека могла не загрузиться
-            }
+        healthHandler.removeCallbacks(healthTask);
+        try {
+            hev.htproxy.TProxyService.TProxyStopService();
+        } catch (Throwable ignored) {
+            // библиотека могла не загрузиться
         }
         if (socks != null) {
             socks.stop();
