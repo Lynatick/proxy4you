@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.0.apk     arm64-v8a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.0.1.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.0.apk     arm64-v8a, minSdk 23, targetSdk 30
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.0.apk
+adb install -r Dist/YouTubeProxy-TV-1.0.1.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -74,6 +74,13 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
   -keypass mistick123 -alias mistick -keyalg RSA -keysize 2048 -validity 10000 \
   -dname "CN=MiStick Proxy, OU=Dev, O=Local, C=RU"
 ```
+
+## Совместимость
+
+APK содержит обе архитектуры (arm64-v8a и armeabi-v7a): часть Android TV устройств
+на Amlogic работает с 32-битным userspace, и сборка только под arm64 не ставится.
+`screenOrientation="landscape"` убран — он добавлял обязательное требование
+`android.hardware.screen.landscape`, из-за которого установщик мог отказать.
 
 ## Ограничения
 
