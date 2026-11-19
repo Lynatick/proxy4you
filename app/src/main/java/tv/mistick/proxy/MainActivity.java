@@ -41,6 +41,7 @@ public final class MainActivity extends Activity {
     private Button appsButton;
     private TextView accessView;
     private TextView footer;
+    private TextView nodeInfoView;
     private EditText subscriptionInput;
     private ArrayAdapter<String> adapter;
     private NodeStore.Node selected;
@@ -152,6 +153,13 @@ public final class MainActivity extends Activity {
             if (checked) singBoxEngine.setChecked(false);
         });
 
+        Button refreshNodesButton = new Button(this);
+        refreshNodesButton.setText("Обновить ноды");
+        refreshNodesButton.setFocusable(true);
+        refreshNodesButton.setOnClickListener(view -> refreshPublicNodes());
+        root.addView(refreshNodesButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         Button nextBatchButton = new Button(this);
         nextBatchButton.setText("Следующая пачка");
         nextBatchButton.setFocusable(true);
@@ -229,6 +237,12 @@ public final class MainActivity extends Activity {
         accessView.setTextSize(13);
         accessView.setPadding(0, dp(6), 0, dp(10));
         root.addView(accessView);
+
+        nodeInfoView = new TextView(this);
+        nodeInfoView.setTextColor(Color.parseColor("#9FB3C8"));
+        nodeInfoView.setTextSize(12);
+        nodeInfoView.setPadding(0, dp(4), 0, dp(10));
+        root.addView(nodeInfoView);
 
         TextView hint = new TextView(this);
         hint.setText("Выберите ноду (OK). Список отсортирован по задержке.");
@@ -393,6 +407,61 @@ public final class MainActivity extends Activity {
         }
     }
 
+    /** Публичные списки нод: те же шесть источников, что в macOS-версии. */
+    private void refreshPublicNodes() {
+        statusView.setText("Загрузка публичных списков…");
+        new Thread(() -> {
+            final List<NodeStore.Node> fetched = NodeSources.fetchAll(this);
+            handler.post(() -> {
+                refreshNodes();
+                statusView.setText("Публичные списки: " + fetched.size() + " нод");
+            });
+        }, "node-sources").start();
+    }
+
+    /** Текущая нода ядра и задержки нод пачки (clash_api sing-box). */
+    private void updateEngineNodes() {
+        if (nodeInfoView == null) {
+            return;
+        }
+        if (!ProxyVpnService.running) {
+            nodeInfoView.setText("");
+            return;
+        }
+        String kind = ProxyVpnService.engineKindId;
+        if (kind == null) {
+            nodeInfoView.setText("Ядро не выбрано — работают ноды пула");
+            return;
+        }
+        if (!"sing-box".equals(kind)) {
+            nodeInfoView.setText("Xray: текущую ноду ядро не отдаёт");
+            return;
+        }
+        final int controller = ProxyVpnService.controllerPort;
+        if (controller == 0) {
+            nodeInfoView.setText("");
+            return;
+        }
+        new Thread(() -> {
+            String current = ClashApi.current(controller);
+            List<ClashApi.NodeInfo> nodes = ClashApi.nodes(controller, 6);
+            StringBuilder text = new StringBuilder();
+            if (current != null) {
+                String[] parts = current.split("\\|");
+                text.append("Сейчас: ").append(parts[0]);
+                if (parts.length > 1 && !"-1".equals(parts[1])) {
+                    text.append(" · ").append(parts[1]).append(" мс");
+                }
+                text.append('\n');
+            }
+            for (ClashApi.NodeInfo info : nodes) {
+                text.append(info.name).append(" · ").append(info.delay).append(" мс\n");
+            }
+            final String result = text.toString().trim();
+            handler.post(() -> nodeInfoView.setText(result));
+        }, "clash-api").start();
+    }
+
     private void checkAccess() {
         final int socksPort = ProxyVpnService.socksPort;
         accessView.setText(socksPort > 0 ? "Проверка через прокси…" : "Проверка напрямую…");
@@ -414,16 +483,29 @@ public final class MainActivity extends Activity {
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
     }
 
+    private final Runnable nodeRefresher = new Runnable() {
+        @Override
+        public void run() {
+            updateEngineNodes();
+            handler.postDelayed(this, 5000);
+        }
+    };
+
     @Override
     protected void onResume() {
         super.onResume();
         updateStatus();
         handler.postDelayed(refresher, 1000);
+        handler.postDelayed(nodeRefresher, 1000);
+        if (!new java.io.File(getFilesDir(), "public_nodes.txt").exists()) {
+            refreshPublicNodes();
+        }
     }
 
     @Override
     protected void onPause() {
         handler.removeCallbacks(refresher);
+        handler.removeCallbacks(nodeRefresher);
         super.onPause();
     }
 

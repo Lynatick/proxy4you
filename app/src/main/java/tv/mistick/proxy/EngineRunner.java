@@ -56,6 +56,7 @@ final class EngineRunner {
     private final Context context;
     private Process process;
     private int port;
+    private int controllerPort;
     private Kind kind;
     private String logPath;
 
@@ -69,6 +70,10 @@ final class EngineRunner {
 
     int port() {
         return port;
+    }
+
+    int controllerPort() {
+        return controllerPort;
     }
 
     Kind kind() {
@@ -91,8 +96,9 @@ final class EngineRunner {
 
         File binary = ensureBinary(requested);
         port = freePort();
+        controllerPort = requested == Kind.SINGBOX ? freePort() : 0;
         String config = requested == Kind.SINGBOX
-                ? EngineConfig.singBox(subscriptionJson, port, batchIndex)
+                ? EngineConfig.singBox(subscriptionJson, port, batchIndex, controllerPort)
                 : EngineConfig.xray(subscriptionJson, port, batchIndex);
 
         File dir = new File(context.getFilesDir(), "engine");

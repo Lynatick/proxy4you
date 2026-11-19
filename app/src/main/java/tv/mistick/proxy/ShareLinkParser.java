@@ -73,6 +73,11 @@ final class ShareLinkParser {
                 case "http":
                 case "https":
                     return simple(line, "http");
+                case "hysteria2":
+                case "hy2":
+                    return hysteria2(line);
+                case "tuic":
+                    return tuic(line);
                 default:
                     return null;
             }
@@ -220,6 +225,72 @@ final class ShareLinkParser {
             tls.put("server_name", source.optString("sni", address));
             outbound.put("tls", tls);
         }
+        return outbound;
+    }
+
+    /** Hysteria2: sing-box поддерживает, Xray — нет (toXrayOutbound вернёт null). */
+    private static JSONObject hysteria2(String line) throws Exception {
+        Parsed parsed = parseUri(line);
+        if (parsed == null) {
+            return null;
+        }
+        JSONObject outbound = new JSONObject();
+        outbound.put("type", "hysteria2");
+        outbound.put("server", parsed.host);
+        outbound.put("server_port", parsed.port);
+        outbound.put("password", parsed.userinfo);
+
+        JSONObject tls = new JSONObject();
+        tls.put("enabled", true);
+        String sni = parsed.query.containsKey("sni")
+                ? parsed.query.get("sni") : parsed.query.getOrDefault("host", parsed.host);
+        tls.put("server_name", sni);
+        if ("1".equals(parsed.query.get("insecure"))) {
+            tls.put("insecure", true);
+        }
+        outbound.put("tls", tls);
+
+        String obfs = parsed.query.get("obfs");
+        if (obfs != null && !obfs.isEmpty()) {
+            outbound.put("obfs", new JSONObject()
+                    .put("type", obfs)
+                    .put("password", parsed.query.getOrDefault("obfs-password", "")));
+        }
+        return outbound;
+    }
+
+    /** TUIC: uuid:password в userinfo. */
+    private static JSONObject tuic(String line) throws Exception {
+        Parsed parsed = parseUri(line);
+        if (parsed == null || !parsed.userinfo.contains(":")) {
+            return null;
+        }
+        String[] credentials = parsed.userinfo.split(":", 2);
+
+        JSONObject outbound = new JSONObject();
+        outbound.put("type", "tuic");
+        outbound.put("server", parsed.host);
+        outbound.put("server_port", parsed.port);
+        outbound.put("uuid", credentials[0]);
+        outbound.put("password", credentials[1]);
+
+        String congestion = parsed.query.getOrDefault("congestion_control", "bbr");
+        outbound.put("congestion_control", congestion);
+
+        JSONObject tls = new JSONObject();
+        tls.put("enabled", true);
+        String sni = parsed.query.containsKey("sni")
+                ? parsed.query.get("sni") : parsed.query.getOrDefault("host", parsed.host);
+        tls.put("server_name", sni);
+        String alpn = parsed.query.get("alpn");
+        if (alpn != null && !alpn.isEmpty()) {
+            JSONArray list = new JSONArray();
+            for (String item : alpn.split(",")) {
+                list.put(item.trim());
+            }
+            tls.put("alpn", list);
+        }
+        outbound.put("tls", tls);
         return outbound;
     }
 

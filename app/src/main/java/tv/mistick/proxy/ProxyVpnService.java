@@ -42,6 +42,9 @@ public final class ProxyVpnService extends VpnService {
     static volatile int socksPort = 0;
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
     static volatile int batchIndex = 0;
+    /** Порт clash_api sing-box (0 — нет) и идентификатор запущенного ядра. */
+    static volatile int controllerPort = 0;
+    static volatile String engineKindId = null;
     static volatile int batchCount = 1;
     private static volatile ProxyVpnService instance;
 
@@ -151,6 +154,8 @@ public final class ProxyVpnService extends VpnService {
                 batchCount = EngineConfig.batchCount(subscriptionText);
                 engine = new EngineRunner(this);
                 engine.start(engineKind, subscriptionText, batchIndex);
+                controllerPort = engine.controllerPort();
+                engineKindId = engineKind.id;
                 Log.i(TAG, "ядро " + engineKind.id + " поднято на 127.0.0.1:" + engine.port());
             }
 
@@ -318,6 +323,8 @@ public final class ProxyVpnService extends VpnService {
             engine.stop();
             engine = null;
         }
+        controllerPort = 0;
+        engineKindId = null;
         socksPort = 0;
         if (tun != null) {
             try {

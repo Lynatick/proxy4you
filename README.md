@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.3.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.4.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.3.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 3
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.3.0.apk
+adb install -r Dist/YouTubeProxy-TV-1.4.0.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -110,11 +110,25 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
 - **Xray**: только arm64-v8a (официальной сборки под 32-битный ARM нет) — на
   32-битных ТВ выбирайте sing-box.
 - Подписка для ядер — **JSON или share-ссылки** (`vless://`, `trojan://`, `ss://`,
-  `vmess://`, `socks5://`, `http://`, base64-обёртка). Ссылки разбираются в формат
-  sing-box, а для Xray конвертируются в его outbounds.
+  `vmess://`, `socks5://`, `http://`, `hysteria2://`, `tuic://`, base64-обёртка).
+  Ссылки разбираются в формат sing-box, а для Xray конвертируются в его outbounds
+  (hysteria2/tuic Xray не умеет — они идут только в sing-box).
 - Конфиг строится пачками по 200 нод; кнопка «Следующая пачка» переключает пачку,
   а после трёх сбоев подряд ядро переходит на следующую само.
 - Запуск ядра вынесен в отдельный поток: скачивание и старт не блокируют интерфейс.
+
+## Публичные списки нод
+
+Кнопка «Обновить ноды» (и автосбор при первом запуске) скачивает те же шесть
+источников, что в macOS-версии: TheSpeedX, monosans, proxifly (http) и TheSpeedX,
+monosans, hookzof (socks5). Список сохраняется в `public_nodes.txt` и объединяется
+с подпиской; повторы убираются.
+
+## Ноды ядра
+
+Для sing-box включается `clash_api`: приложение раз в 5 секунд показывает текущую
+ноду и её задержку, а также до шести нод пачки с измеренными задержками. Xray
+такого API не отдаёт — для него выводится «текущую ноду ядро не отдаёт».
 
 ## Маршрутизация по сервисам
 

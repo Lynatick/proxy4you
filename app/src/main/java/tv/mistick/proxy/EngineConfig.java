@@ -25,7 +25,7 @@ final class EngineConfig {
     }
 
     /** Конфиг sing-box: mixed-inbound + пачка outbounds + urltest. */
-    static String singBox(String subscriptionJson, int inboundPort, int batchIndex) throws Exception {
+    static String singBox(String subscriptionJson, int inboundPort, int batchIndex, int controllerPort) throws Exception {
         List<JSONObject> nodes = nodesFromText(subscriptionJson);
         List<JSONObject> batch = batch(nodes, batchIndex);
         if (batch.isEmpty()) {
@@ -58,6 +58,10 @@ final class EngineConfig {
         config.put("inbounds", new JSONArray().put(inbound));
         config.put("outbounds", outbounds);
         config.put("route", new JSONObject().put("final", "auto"));
+        if (controllerPort > 0) {
+            config.put("experimental", new JSONObject().put("clash_api",
+                    new JSONObject().put("external_controller", "127.0.0.1:" + controllerPort)));
+        }
         return config.toString();
     }
 
