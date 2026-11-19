@@ -46,6 +46,8 @@ public final class MainActivity extends Activity {
     private NodeStore.Node selected;
     private final Map<RoutePolicy.Group, CheckBox> groupBoxes = new EnumMap<>(RoutePolicy.Group.class);
     private CheckBox everythingBox;
+    private CheckBox singBoxEngine;
+    private CheckBox xrayEngine;
 
     private final Runnable refresher = new Runnable() {
         @Override
@@ -124,6 +126,31 @@ public final class MainActivity extends Activity {
         loadButton.setFocusable(true);
         loadButton.setOnClickListener(view -> loadSubscription());
         subscriptionRow.addView(loadButton);
+
+        LinearLayout engineRow = new LinearLayout(this);
+        engineRow.setOrientation(LinearLayout.HORIZONTAL);
+        root.addView(engineRow);
+
+        singBoxEngine = new CheckBox(this);
+        singBoxEngine.setText("Ядро sing-box");
+        singBoxEngine.setTextColor(Color.WHITE);
+        singBoxEngine.setTextSize(14);
+        singBoxEngine.setFocusable(true);
+        engineRow.addView(singBoxEngine);
+
+        xrayEngine = new CheckBox(this);
+        xrayEngine.setText("Ядро Xray");
+        xrayEngine.setTextColor(Color.WHITE);
+        xrayEngine.setTextSize(14);
+        xrayEngine.setFocusable(true);
+        engineRow.addView(xrayEngine);
+
+        singBoxEngine.setOnCheckedChangeListener((view, checked) -> {
+            if (checked) xrayEngine.setChecked(false);
+        });
+        xrayEngine.setOnCheckedChangeListener((view, checked) -> {
+            if (checked) singBoxEngine.setChecked(false);
+        });
 
         TextView routingTitle = new TextView(this);
         routingTitle.setText("Через прокси идут:");
@@ -245,9 +272,15 @@ public final class MainActivity extends Activity {
         connect();
     }
 
+    private String selectedEngine() {
+        if (singBoxEngine != null && singBoxEngine.isChecked()) return "sing-box";
+        if (xrayEngine != null && xrayEngine.isChecked()) return "xray";
+        return null;
+    }
+
     private void connect() {
-        if (selected == null) {
-            statusView.setText("Нет нод для подключения");
+        if (selected == null && selectedEngine() == null) {
+            statusView.setText("Нет нод: загрузите подписку или выберите ядро");
             return;
         }
         Intent permission = VpnService.prepare(this);
@@ -270,9 +303,15 @@ public final class MainActivity extends Activity {
 
     private void startProxy() {
         Intent intent = new Intent(this, ProxyVpnService.class);
-        intent.putExtra("host", selected.host);
-        intent.putExtra("port", selected.port);
-        intent.putExtra("socks", selected.socks5);
+        if (selected != null) {
+            intent.putExtra("host", selected.host);
+            intent.putExtra("port", selected.port);
+            intent.putExtra("socks", selected.socks5);
+        }
+        String engine = selectedEngine();
+        if (engine != null) {
+            intent.putExtra("engine", engine);
+        }
         startService(intent);
         updateStatus();
     }
@@ -302,10 +341,22 @@ public final class MainActivity extends Activity {
         statusView.setText("Загрузка подписки…");
         new Thread(() -> {
             try {
-                final List<NodeStore.Node> loaded = Subscription.refresh(this, url);
+                String raw = Subscription.downloadRaw(this, url);
+                List<NodeStore.Node> socks = Subscription.parse(raw);
+                if (!socks.isEmpty()) {
+                    Subscription.saveNodes(this, socks);
+                }
+                final int socksCount = socks.size();
+                final boolean json = raw.trim().startsWith("{") || raw.trim().startsWith("[");
                 handler.post(() -> {
                     refreshNodes();
-                    statusView.setText("Подписка загружена: " + loaded.size() + " нод");
+                    if (socksCount > 0) {
+                        statusView.setText("Подписка загружена: " + socksCount + " socks/http нод");
+                    } else if (json) {
+                        statusView.setText("JSON-подписка сохранена — выберите ядро и подключитесь");
+                    } else {
+                        statusView.setText("В подписке нет socks/http нод и она не JSON");
+                    }
                 });
             } catch (final Exception error) {
                 handler.post(() -> statusView.setText("Ошибка подписки: " + error.getMessage()));

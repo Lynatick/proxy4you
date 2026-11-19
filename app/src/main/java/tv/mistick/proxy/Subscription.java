@@ -42,6 +42,17 @@ final class Subscription {
         return nodes;
     }
 
+    /** Скачивает подписку и сохраняет исходный текст для ядер. */
+    static String downloadRaw(Context context, String url) throws IOException {
+        String text = download(url);
+        writeText(new File(context.getFilesDir(), "subscription.json"), text);
+        return text;
+    }
+
+    static void saveNodes(Context context, List<NodeStore.Node> nodes) throws IOException {
+        saveNodesFile(context, nodes);
+    }
+
     static String savedUrl(Context context) {
         try {
             File file = new File(context.getFilesDir(), URL_FILE);
@@ -136,7 +147,7 @@ final class Subscription {
         }
     }
 
-    private static void saveNodes(Context context, List<NodeStore.Node> nodes) throws IOException {
+    private static void saveNodesFile(Context context, List<NodeStore.Node> nodes) throws IOException {
         StringBuilder builder = new StringBuilder();
         for (NodeStore.Node node : nodes) {
             builder.append(node.socks5 ? "socks5://" : "http://")

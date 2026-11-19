@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.1.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.2.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.1.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 3
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.1.0.apk
+adb install -r Dist/YouTubeProxy-TV-1.2.0.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -97,6 +97,24 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
   `www.youtube.com` через неё. Не прошла — сервис сам выбирает рабочую из пула и
   пишет об этом в статус («переключений: N»).
 - Счётчик переключений и текущая нода видны в строке состояния и в уведомлении.
+
+## Ядра: sing-box и Xray
+
+На экране есть выбор ядра: «Ядро sing-box», «Ядро Xray» (или ни одного — тогда
+работает пул socks5/http нод). Ядро запускается отдельным процессом и поднимает
+локальный вход; наш SOCKS5-сервер ходит в него как в обычную ноду.
+
+- **Бинарники не встраиваются в APK** (sing-box — 73–79 МБ, Xray — 32 МБ):
+  скачиваются при первом запуске под ABI устройства в `filesDir/bin/`.
+- **sing-box**: есть под arm64-v8a и armeabi-v7a.
+- **Xray**: только arm64-v8a (официальной сборки под 32-битный ARM нет) — на
+  32-битных ТВ выбирайте sing-box.
+- Подписка для ядер — **JSON** (sing-box/clash: `outbounds`/`proxies`). Share-ссылки
+  (`vless://`, `vmess://`, …) для ядер не конвертируются: они остаются в пуле
+  socks5/http. Кнопка «Загрузить» сохраняет и сырой JSON, и socks-ноды.
+- Конфиг строится пачками по 200 нод (как в macOS-версии), чтобы не подвешивать
+  приложение; отбраковка битых outbounds — самим ядром.
+- Запуск ядра вынесен в отдельный поток: скачивание и старт не блокируют интерфейс.
 
 ## Маршрутизация по сервисам
 

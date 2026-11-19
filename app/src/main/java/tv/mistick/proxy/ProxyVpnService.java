@@ -12,9 +12,12 @@ import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,7 @@ public final class ProxyVpnService extends VpnService {
     private ParcelFileDescriptor tun;
     private Socks5Server socks;
     private NodePool pool;
+    private EngineRunner engine;
     private int appliedApps;
     private int switchCount;
 
@@ -93,20 +97,30 @@ public final class ProxyVpnService extends VpnService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent == null || intent.getStringExtra("host") == null) {
+        String engineId = intent == null ? null : intent.getStringExtra("engine");
+        if (intent == null || (intent.getStringExtra("host") == null && engineId == null)) {
             stopSelf();
             return START_NOT_STICKY;
         }
 
         startForeground(1, buildNotification("Подключение…"));
 
-        String host = intent.getStringExtra("host");
-        int port = intent.getIntExtra("port", 0);
-        boolean useSocks = intent.getBooleanExtra("socks", true);
+        final String host = intent.getStringExtra("host");
+        final int port = intent.getIntExtra("port", 0);
+        final boolean useSocks = intent.getBooleanExtra("socks", true);
+        final EngineRunner.Kind engineKind = EngineRunner.Kind.from(engineId);
 
+        // Загрузка ядра может занять минуты: только не в главном потоке.
+        new Thread(() -> setUp(host, port, useSocks, engineKind), "vpn-setup").start();
+        return START_NOT_STICKY;
+    }
+
+    private void setUp(String host, int port, boolean useSocks, EngineRunner.Kind engineKind) {
         try {
             List<NodeStore.Node> nodes = new ArrayList<>();
-            nodes.add(new NodeStore.Node(host, port, useSocks));
+            if (host != null) {
+                nodes.add(new NodeStore.Node(host, port, useSocks));
+            }
             int added = 0;
             for (NodeStore.Node node : NodeStore.load(this)) {
                 if (added++ >= 40) {
@@ -114,12 +128,23 @@ public final class ProxyVpnService extends VpnService {
                 }
                 nodes.add(node);
             }
-            pool = new NodePool(nodes);
-            if (!pool.snapshot().isEmpty()) {
+            pool = nodes.isEmpty() ? null : new NodePool(nodes);
+            if (pool != null && !pool.snapshot().isEmpty()) {
                 pool.select(pool.snapshot().get(0));
             }
 
-            socks = new Socks5Server(this, pool);
+            if (engineKind != null) {
+                File subscription = new File(getFilesDir(), "subscription.json");
+                if (!subscription.exists()) {
+                    throw new IOException("сначала загрузите подписку кнопкой «Загрузить»");
+                }
+                String json = new String(readAll(subscription), StandardCharsets.UTF_8);
+                engine = new EngineRunner(this);
+                engine.start(engineKind, json, 0);
+                Log.i(TAG, "ядро " + engineKind.id + " поднято на 127.0.0.1:" + engine.port());
+            }
+
+            socks = new Socks5Server(this, pool, engine);
             int localPort = socks.start();
             socksPort = localPort;
 
@@ -163,17 +188,28 @@ public final class ProxyVpnService extends VpnService {
             teardown();
             stopSelf();
         }
-
-        return START_NOT_STICKY;
     }
 
     private void publishStatus() {
-        NodePool.Entry active = pool == null ? null : pool.current();
-        String node = active == null ? "нода не выбрана" : active.label();
+        String via = engine != null && engine.isRunning()
+                ? "ядро " + engine.kind().id
+                : (pool != null && pool.current() != null ? pool.current().label() : "нода не выбрана");
         String scope = appliedApps > 0 ? "только " + appliedApps + " прил." : "все приложения";
         String failovers = switchCount > 0 ? " · переключений: " + switchCount : "";
-        status = "Подключено · " + node + " · " + scope + failovers;
+        status = "Подключено · " + via + " · " + scope + failovers;
         updateNotification(status);
+    }
+
+    private static byte[] readAll(File file) throws IOException {
+        try (InputStream in = new FileInputStream(file)) {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] chunk = new byte[65536];
+            int read;
+            while ((read = in.read(chunk)) > 0) {
+                buffer.write(chunk, 0, read);
+            }
+            return buffer.toByteArray();
+        }
     }
 
     private void writeConfig(File file, int localPort) throws IOException {
@@ -234,6 +270,10 @@ public final class ProxyVpnService extends VpnService {
         if (socks != null) {
             socks.stop();
             socks = null;
+        }
+        if (engine != null) {
+            engine.stop();
+            engine = null;
         }
         socksPort = 0;
         if (tun != null) {

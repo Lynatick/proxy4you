@@ -26,13 +26,15 @@ final class Socks5Server {
 
     private final VpnService vpn;
     private final NodePool pool;
+    private final EngineRunner engine;
     private volatile boolean running;
     private ServerSocket serverSocket;
     private int port;
 
-    Socks5Server(VpnService vpn, NodePool pool) {
+    Socks5Server(VpnService vpn, NodePool pool, EngineRunner engine) {
         this.vpn = vpn;
         this.pool = pool;
+        this.engine = engine;
     }
 
     int port() {
@@ -123,9 +125,17 @@ final class Socks5Server {
             }
 
             // Что не входит в выбранные сервисы — идёт напрямую.
-            Socket upstream = RoutePolicy.requiresProxy(vpn, host)
-                    ? openThroughAnyNode(host, targetPort)
-                    : openDirect(host, targetPort);
+            Socket upstream;
+            if (!RoutePolicy.requiresProxy(vpn, host)) {
+                upstream = openDirect(host, targetPort);
+            } else if (engine != null && engine.isRunning()) {
+                upstream = openThroughEngine(host, targetPort);
+                if (upstream == null) {
+                    upstream = openThroughAnyNode(host, targetPort);
+                }
+            } else {
+                upstream = openThroughAnyNode(host, targetPort);
+            }
             if (upstream == null) {
                 reply(out, 5);
                 client.close();
@@ -163,6 +173,23 @@ final class Socks5Server {
             }
         }
         return null;
+    }
+
+    /** Через локальный вход ядра (SOCKS5 на 127.0.0.1). */
+    private Socket openThroughEngine(String host, int port) {
+        Socket socket = new Socket();
+        try {
+            if (!vpn.protect(socket)) {
+                socket.close();
+                return null;
+            }
+            socket.connect(new InetSocketAddress("127.0.0.1", engine.port()), 5000);
+            Upstream.socks5(socket, host, port);
+            return socket;
+        } catch (IOException error) {
+            closeQuietly(socket);
+            return null;
+        }
     }
 
     /** Прямое соединение: сокет исключается из VPN, чтобы не зациклиться в TUN. */
