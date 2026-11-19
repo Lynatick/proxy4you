@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -121,7 +122,10 @@ final class Socks5Server {
                 return;
             }
 
-            Socket upstream = openThroughAnyNode(host, targetPort);
+            // Что не входит в выбранные сервисы — идёт напрямую.
+            Socket upstream = RoutePolicy.requiresProxy(vpn, host)
+                    ? openThroughAnyNode(host, targetPort)
+                    : openDirect(host, targetPort);
             if (upstream == null) {
                 reply(out, 5);
                 client.close();
@@ -159,6 +163,22 @@ final class Socks5Server {
             }
         }
         return null;
+    }
+
+    /** Прямое соединение: сокет исключается из VPN, чтобы не зациклиться в TUN. */
+    private Socket openDirect(String host, int port) {
+        Socket socket = new Socket();
+        try {
+            if (!vpn.protect(socket)) {
+                socket.close();
+                return null;
+            }
+            socket.connect(new InetSocketAddress(host, port), 8000);
+            return socket;
+        } catch (IOException error) {
+            closeQuietly(socket);
+            return null;
+        }
     }
 
     private void reply(OutputStream out, int code) throws IOException {

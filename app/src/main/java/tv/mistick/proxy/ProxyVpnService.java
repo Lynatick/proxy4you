@@ -35,6 +35,8 @@ public final class ProxyVpnService extends VpnService {
 
     static volatile boolean running = false;
     static volatile String status = "Выключено";
+    /** Порт локального SOCKS5, пока VPN работает (0 — выключен). */
+    static volatile int socksPort = 0;
 
     private final Handler healthHandler = new Handler(Looper.getMainLooper());
 
@@ -119,6 +121,7 @@ public final class ProxyVpnService extends VpnService {
 
             socks = new Socks5Server(this, pool);
             int localPort = socks.start();
+            socksPort = localPort;
 
             Builder builder = new Builder();
             builder.setSession("YouTube Proxy");
@@ -232,6 +235,7 @@ public final class ProxyVpnService extends VpnService {
             socks.stop();
             socks = null;
         }
+        socksPort = 0;
         if (tun != null) {
             try {
                 tun.close();

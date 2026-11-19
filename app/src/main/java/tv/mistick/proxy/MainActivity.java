@@ -1,6 +1,7 @@
 package tv.mistick.proxy;
 
 import android.app.Activity;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.VpnService;
@@ -8,17 +9,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /** Экран под пульт: список нод, подключение кнопкой OK, статус и трафик. */
 public final class MainActivity extends Activity {
@@ -31,7 +39,13 @@ public final class MainActivity extends Activity {
     private TextView statusView;
     private Button toggleButton;
     private Button appsButton;
+    private TextView accessView;
+    private TextView footer;
+    private EditText subscriptionInput;
+    private ArrayAdapter<String> adapter;
     private NodeStore.Node selected;
+    private final Map<RoutePolicy.Group, CheckBox> groupBoxes = new EnumMap<>(RoutePolicy.Group.class);
+    private CheckBox everythingBox;
 
     private final Runnable refresher = new Runnable() {
         @Override
@@ -77,6 +91,105 @@ public final class MainActivity extends Activity {
         root.addView(appsButton, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        TextView subscriptionTitle = new TextView(this);
+        subscriptionTitle.setText("Подписка:");
+        subscriptionTitle.setTextColor(Color.parseColor("#9FB3C8"));
+        subscriptionTitle.setTextSize(14);
+        subscriptionTitle.setPadding(0, dp(14), 0, dp(4));
+        root.addView(subscriptionTitle);
+
+        subscriptionInput = new EditText(this);
+        subscriptionInput.setText(Subscription.savedUrl(this));
+        subscriptionInput.setHint("URL подписки");
+        subscriptionInput.setHintTextColor(Color.parseColor("#6B7C8F"));
+        subscriptionInput.setTextColor(Color.WHITE);
+        subscriptionInput.setTextSize(14);
+        subscriptionInput.setSingleLine(true);
+        subscriptionInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+        root.addView(subscriptionInput, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        LinearLayout subscriptionRow = new LinearLayout(this);
+        subscriptionRow.setOrientation(LinearLayout.HORIZONTAL);
+        root.addView(subscriptionRow);
+
+        Button pasteButton = new Button(this);
+        pasteButton.setText("Вставить");
+        pasteButton.setFocusable(true);
+        pasteButton.setOnClickListener(view -> pasteFromClipboard());
+        subscriptionRow.addView(pasteButton);
+
+        Button loadButton = new Button(this);
+        loadButton.setText("Загрузить");
+        loadButton.setFocusable(true);
+        loadButton.setOnClickListener(view -> loadSubscription());
+        subscriptionRow.addView(loadButton);
+
+        TextView routingTitle = new TextView(this);
+        routingTitle.setText("Через прокси идут:");
+        routingTitle.setTextColor(Color.parseColor("#9FB3C8"));
+        routingTitle.setTextSize(14);
+        routingTitle.setPadding(0, dp(14), 0, dp(4));
+        root.addView(routingTitle);
+
+        LinearLayout routingRow = new LinearLayout(this);
+        routingRow.setOrientation(LinearLayout.HORIZONTAL);
+        root.addView(routingRow);
+
+        everythingBox = new CheckBox(this);
+        everythingBox.setText("Всё");
+        everythingBox.setTextColor(Color.WHITE);
+        everythingBox.setTextSize(14);
+        everythingBox.setFocusable(true);
+        everythingBox.setChecked(RoutePolicy.everything(this));
+        routingRow.addView(everythingBox);
+
+        Set<RoutePolicy.Group> chosen = RoutePolicy.load(this);
+        for (RoutePolicy.Group group : RoutePolicy.Group.values()) {
+            CheckBox box = new CheckBox(this);
+            box.setText(group.title);
+            box.setTextColor(Color.WHITE);
+            box.setTextSize(14);
+            box.setFocusable(true);
+            box.setChecked(chosen.contains(group));
+            routingRow.addView(box);
+            groupBoxes.put(group, box);
+        }
+
+        Runnable saveRouting = () -> {
+            Set<RoutePolicy.Group> selectedGroups = new LinkedHashSet<>();
+            for (Map.Entry<RoutePolicy.Group, CheckBox> entry : groupBoxes.entrySet()) {
+                if (entry.getValue().isChecked()) {
+                    selectedGroups.add(entry.getKey());
+                }
+            }
+            RoutePolicy.save(this, selectedGroups);
+        };
+
+        everythingBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            RoutePolicy.setEverything(this, isChecked);
+            for (CheckBox box : groupBoxes.values()) {
+                box.setEnabled(!isChecked);
+            }
+        });
+        for (CheckBox box : groupBoxes.values()) {
+            box.setEnabled(!everythingBox.isChecked());
+            box.setOnCheckedChangeListener((buttonView, isChecked) -> saveRouting.run());
+        }
+
+        Button accessButton = new Button(this);
+        accessButton.setText("Проверить доступ");
+        accessButton.setFocusable(true);
+        accessButton.setOnClickListener(view -> checkAccess());
+        root.addView(accessButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        accessView = new TextView(this);
+        accessView.setTextColor(Color.parseColor("#9FB3C8"));
+        accessView.setTextSize(13);
+        accessView.setPadding(0, dp(6), 0, dp(10));
+        root.addView(accessView);
+
         TextView hint = new TextView(this);
         hint.setText("Выберите ноду (OK). Список отсортирован по задержке.");
         hint.setTextColor(Color.parseColor("#6B7C8F"));
@@ -85,19 +198,21 @@ public final class MainActivity extends Activity {
 
         ListView list = new ListView(this);
         list.setBackgroundColor(Color.parseColor("#151A26"));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, labels());
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, labels());
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selected = nodes.get(position);
-                connect();
+                if (position < nodes.size()) {
+                    selected = nodes.get(position);
+                    connect();
+                }
             }
         });
         root.addView(list, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
-        TextView footer = new TextView(this);
+        footer = new TextView(this);
         footer.setText("Нод в списке: " + nodes.size());
         footer.setTextColor(Color.parseColor("#6B7C8F"));
         footer.setGravity(Gravity.END);
@@ -160,6 +275,71 @@ public final class MainActivity extends Activity {
         intent.putExtra("socks", selected.socks5);
         startService(intent);
         updateStatus();
+    }
+
+    private void pasteFromClipboard() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        if (clipboard == null || !clipboard.hasPrimaryClip() || clipboard.getPrimaryClip() == null
+                || clipboard.getPrimaryClip().getItemCount() == 0) {
+            statusView.setText("Буфер обмена пуст");
+            return;
+        }
+        CharSequence text = clipboard.getPrimaryClip().getItemAt(0).coerceToText(this);
+        if (text == null || text.toString().trim().isEmpty()) {
+            statusView.setText("Буфер обмена пуст");
+            return;
+        }
+        subscriptionInput.setText(text.toString().trim());
+        statusView.setText("Подписка вставлена — нажмите «Загрузить»");
+    }
+
+    private void loadSubscription() {
+        final String url = subscriptionInput.getText().toString().trim();
+        if (url.isEmpty()) {
+            statusView.setText("Вставьте ссылку на подписку");
+            return;
+        }
+        statusView.setText("Загрузка подписки…");
+        new Thread(() -> {
+            try {
+                final List<NodeStore.Node> loaded = Subscription.refresh(this, url);
+                handler.post(() -> {
+                    refreshNodes();
+                    statusView.setText("Подписка загружена: " + loaded.size() + " нод");
+                });
+            } catch (final Exception error) {
+                handler.post(() -> statusView.setText("Ошибка подписки: " + error.getMessage()));
+            }
+        }, "subscription").start();
+    }
+
+    private void refreshNodes() {
+        nodes.clear();
+        nodes.addAll(NodeStore.load(this));
+        if (selected == null && !nodes.isEmpty()) {
+            selected = nodes.get(0);
+        }
+        if (adapter != null) {
+            adapter.clear();
+            adapter.addAll(labels());
+            adapter.notifyDataSetChanged();
+        }
+        if (footer != null) {
+            footer.setText("Нод в списке: " + nodes.size());
+        }
+    }
+
+    private void checkAccess() {
+        final int socksPort = ProxyVpnService.socksPort;
+        accessView.setText(socksPort > 0 ? "Проверка через прокси…" : "Проверка напрямую…");
+        new Thread(() -> {
+            AccessCheck.Result[] results = AccessCheck.check(socksPort);
+            StringBuilder text = new StringBuilder(socksPort > 0 ? "Через прокси:" : "Напрямую:");
+            for (AccessCheck.Result result : results) {
+                text.append("\n").append(result.name).append(": ").append(result.text());
+            }
+            handler.post(() -> accessView.setText(text.toString()));
+        }, "access-check").start();
     }
 
     private void updateStatus() {

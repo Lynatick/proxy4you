@@ -67,7 +67,7 @@ final class Upstream {
         }
     }
 
-    private static void socks5(Socket socket, String host, int port) throws IOException {
+    static void socks5(Socket socket, String host, int port) throws IOException {
         OutputStream out = socket.getOutputStream();
         InputStream in = socket.getInputStream();
 

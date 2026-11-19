@@ -3,6 +3,8 @@ package tv.mistick.proxy;
 import android.content.Context;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +33,7 @@ final class NodeStore {
 
     static List<Node> load(Context context) {
         List<Node> nodes = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(context.getAssets().open("nodes.txt"), "UTF-8"))) {
+        try (BufferedReader reader = openReader(context)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -59,5 +60,14 @@ final class NodeStore {
             // нет ресурса — вернём пустой список, интерфейс это покажет
         }
         return nodes;
+    }
+
+    /** Ноды из подписки (filesDir) важнее встроенного списка из assets. */
+    private static BufferedReader openReader(Context context) throws Exception {
+        File downloaded = new File(context.getFilesDir(), "nodes.txt");
+        if (downloaded.exists()) {
+            return new BufferedReader(new InputStreamReader(new FileInputStream(downloaded), "UTF-8"));
+        }
+        return new BufferedReader(new InputStreamReader(context.getAssets().open("nodes.txt"), "UTF-8"));
     }
 }
