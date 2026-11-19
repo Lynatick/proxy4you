@@ -40,6 +40,10 @@ public final class ProxyVpnService extends VpnService {
     static volatile String status = "Выключено";
     /** Порт локального SOCKS5, пока VPN работает (0 — выключен). */
     static volatile int socksPort = 0;
+    /** Текущая пачка подписки и сколько их всего (для интерфейса). */
+    static volatile int batchIndex = 0;
+    static volatile int batchCount = 1;
+    private static volatile ProxyVpnService instance;
 
     private final Handler healthHandler = new Handler(Looper.getMainLooper());
 
@@ -47,6 +51,8 @@ public final class ProxyVpnService extends VpnService {
     private Socks5Server socks;
     private NodePool pool;
     private EngineRunner engine;
+    private String subscriptionText;
+    private EngineRunner.Kind engineKind;
     private int appliedApps;
     private int switchCount;
 
@@ -109,13 +115,14 @@ public final class ProxyVpnService extends VpnService {
         final int port = intent.getIntExtra("port", 0);
         final boolean useSocks = intent.getBooleanExtra("socks", true);
         final EngineRunner.Kind engineKind = EngineRunner.Kind.from(engineId);
+        final int requestedBatch = intent.getIntExtra("batch", 0);
 
         // Загрузка ядра может занять минуты: только не в главном потоке.
-        new Thread(() -> setUp(host, port, useSocks, engineKind), "vpn-setup").start();
+        new Thread(() -> setUp(host, port, useSocks, engineKind, requestedBatch), "vpn-setup").start();
         return START_NOT_STICKY;
     }
 
-    private void setUp(String host, int port, boolean useSocks, EngineRunner.Kind engineKind) {
+    private void setUp(String host, int port, boolean useSocks, EngineRunner.Kind engineKind, int requestedBatch) {
         try {
             List<NodeStore.Node> nodes = new ArrayList<>();
             if (host != null) {
@@ -138,9 +145,12 @@ public final class ProxyVpnService extends VpnService {
                 if (!subscription.exists()) {
                     throw new IOException("сначала загрузите подписку кнопкой «Загрузить»");
                 }
-                String json = new String(readAll(subscription), StandardCharsets.UTF_8);
+                subscriptionText = new String(readAll(subscription), StandardCharsets.UTF_8);
+                this.engineKind = engineKind;
+                batchIndex = Math.max(0, requestedBatch);
+                batchCount = EngineConfig.batchCount(subscriptionText);
                 engine = new EngineRunner(this);
-                engine.start(engineKind, json, 0);
+                engine.start(engineKind, subscriptionText, batchIndex);
                 Log.i(TAG, "ядро " + engineKind.id + " поднято на 127.0.0.1:" + engine.port());
             }
 
@@ -179,6 +189,7 @@ public final class ProxyVpnService extends VpnService {
             }
 
             running = true;
+            instance = this;
             publishStatus();
             healthHandler.postDelayed(healthTask, 5000);
         } catch (Exception error) {
@@ -190,13 +201,44 @@ public final class ProxyVpnService extends VpnService {
         }
     }
 
+    /** Смена пачки без перезапуска VPN: ядро перезапускается, SOCKS5-сервер живёт. */
+    void switchBatch() {
+        if (engine == null || subscriptionText == null) {
+            return;
+        }
+        if (batchIndex + 1 >= batchCount) {
+            return;
+        }
+        final int next = batchIndex + 1;
+        new Thread(() -> {
+            try {
+                engine.stop();
+                engine.start(engineKind, subscriptionText, next);
+                batchIndex = next;
+                publishStatus();
+            } catch (Exception error) {
+                status = "Смена пачки: " + error.getMessage();
+            }
+        }, "batch-switch").start();
+    }
+
+    /** Вызывается после нескольких сбоев подряд: переходим на следующую пачку. */
+    static void requestNextBatch() {
+        ProxyVpnService service = instance;
+        if (service != null) {
+            service.switchBatch();
+        }
+    }
+
     private void publishStatus() {
         String via = engine != null && engine.isRunning()
                 ? "ядро " + engine.kind().id
                 : (pool != null && pool.current() != null ? pool.current().label() : "нода не выбрана");
         String scope = appliedApps > 0 ? "только " + appliedApps + " прил." : "все приложения";
         String failovers = switchCount > 0 ? " · переключений: " + switchCount : "";
-        status = "Подключено · " + via + " · " + scope + failovers;
+        String batch = engine != null && engine.isRunning() && batchCount > 1
+                ? " · пачка " + (batchIndex + 1) + "/" + batchCount : "";
+        status = "Подключено · " + via + batch + " · " + scope + failovers;
         updateNotification(status);
     }
 
@@ -261,6 +303,7 @@ public final class ProxyVpnService extends VpnService {
 
     private void teardown() {
         running = false;
+        instance = null;
         healthHandler.removeCallbacks(healthTask);
         try {
             hev.htproxy.TProxyService.TProxyStopService();

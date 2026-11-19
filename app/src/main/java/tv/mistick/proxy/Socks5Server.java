@@ -28,6 +28,7 @@ final class Socks5Server {
     private final NodePool pool;
     private final EngineRunner engine;
     private volatile boolean running;
+    private volatile int engineFailures;
     private ServerSocket serverSocket;
     private int port;
 
@@ -185,9 +186,14 @@ final class Socks5Server {
             }
             socket.connect(new InetSocketAddress("127.0.0.1", engine.port()), 5000);
             Upstream.socks5(socket, host, port);
+            engineFailures = 0;
             return socket;
         } catch (IOException error) {
             closeQuietly(socket);
+            if (++engineFailures >= 3) {
+                engineFailures = 0;
+                ProxyVpnService.requestNextBatch();
+            }
             return null;
         }
     }

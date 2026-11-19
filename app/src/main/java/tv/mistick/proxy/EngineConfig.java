@@ -26,7 +26,7 @@ final class EngineConfig {
 
     /** Конфиг sing-box: mixed-inbound + пачка outbounds + urltest. */
     static String singBox(String subscriptionJson, int inboundPort, int batchIndex) throws Exception {
-        List<JSONObject> nodes = collectNodes(subscriptionJson);
+        List<JSONObject> nodes = nodesFromText(subscriptionJson);
         List<JSONObject> batch = batch(nodes, batchIndex);
         if (batch.isEmpty()) {
             throw new IllegalStateException("в подписке нет outbounds для sing-box");
@@ -63,7 +63,7 @@ final class EngineConfig {
 
     /** Конфиг Xray: socks-inbound + конвертированные outbounds + balancer(leastPing). */
     static String xray(String subscriptionJson, int inboundPort, int batchIndex) throws Exception {
-        List<JSONObject> nodes = collectNodes(subscriptionJson);
+        List<JSONObject> nodes = nodesFromText(subscriptionJson);
         List<JSONObject> batch = batch(nodes, batchIndex);
 
         List<JSONObject> converted = new ArrayList<>();
@@ -128,6 +128,26 @@ final class EngineConfig {
     }
 
     // MARK: - Разбор подписки
+
+    /** Outbounds из JSON-подписки или из share-ссылок (base64 тоже). */
+    static List<JSONObject> nodesFromText(String text) throws Exception {
+        String trimmed = text.trim();
+        if (trimmed.startsWith("{")) {
+            return collectNodes(trimmed);
+        }
+        if (trimmed.contains("://")) {
+            return ShareLinkParser.parse(trimmed);
+        }
+        String decoded = ShareLinkParser.decodeBase64(trimmed);
+        if (decoded == null) {
+            return new ArrayList<>();
+        }
+        String candidate = decoded.trim();
+        if (candidate.startsWith("{")) {
+            return collectNodes(candidate);
+        }
+        return ShareLinkParser.parse(candidate);
+    }
 
     static List<JSONObject> collectNodes(String subscriptionJson) throws Exception {
         JSONObject root = new JSONObject(subscriptionJson);
@@ -336,6 +356,6 @@ final class EngineConfig {
 
     /** Сколько пачек получится из подписки. */
     static int batchCount(String subscriptionJson) throws Exception {
-        return Math.max(1, (collectNodes(subscriptionJson).size() + BATCH_SIZE - 1) / BATCH_SIZE);
+        return Math.max(1, (nodesFromText(subscriptionJson).size() + BATCH_SIZE - 1) / BATCH_SIZE);
     }
 }

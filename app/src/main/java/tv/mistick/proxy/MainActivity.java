@@ -152,6 +152,19 @@ public final class MainActivity extends Activity {
             if (checked) singBoxEngine.setChecked(false);
         });
 
+        Button nextBatchButton = new Button(this);
+        nextBatchButton.setText("Следующая пачка");
+        nextBatchButton.setFocusable(true);
+        nextBatchButton.setOnClickListener(view -> {
+            if (ProxyVpnService.running) {
+                ProxyVpnService.requestNextBatch();
+            } else {
+                statusView.setText("Сначала подключитесь через ядро");
+            }
+        });
+        root.addView(nextBatchButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         TextView routingTitle = new TextView(this);
         routingTitle.setText("Через прокси идут:");
         routingTitle.setTextColor(Color.parseColor("#9FB3C8"));
