@@ -170,9 +170,15 @@ APK содержит обе архитектуры (arm64-v8a и armeabi-v7a): �
 ## Тесты и качество
 
 ```
-./gradlew :app:testDebugUnitTest   # 19 unit-тестов: EngineConfig, ShareLinkParser, NodeSources, RoutePolicy
+./gradlew :app:testDebugUnitTest   # 24 unit-теста: EngineConfig, ShareLinkParser,
+                                   # NodeSources, NodePool, Health, UpdateChecker
+./gradlew :app:lintRelease         # 0 ошибок (abortOnError включён)
 ./gradlew :app:assembleRelease     # сборка APK
 ```
+
+`minSdk 23`: в коде нет вызовов API 24+/26+ без проверки версии — `Map.getOrDefault`,
+`List.sort`, `Process.isAlive` и `ProcessBuilder.redirectOutput` заменены
+совместимыми вариантами.
 
 Пароли подписи не хранятся в репозитории: `keystore.properties` (в `.gitignore`) или
 переменные окружения `MISTICK_STORE_PASSWORD` / `MISTICK_KEY_PASSWORD`; пример —

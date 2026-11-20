@@ -80,7 +80,10 @@ final class NodeStore {
                 String host = rest.substring(0, colon);
                 int port = Integer.parseInt(rest.substring(colon + 1));
                 if (port > 0 && port <= 65535) {
-                    merged.putIfAbsent(host + ":" + port + ":" + socks, new Node(host, port, socks));
+                    String key = host + ":" + port + ":" + socks;
+                    if (!merged.containsKey(key)) {
+                        merged.put(key, new Node(host, port, socks));
+                    }
                 }
             } catch (NumberFormatException ignored) {
                 // строка не нашего формата — пропускаем

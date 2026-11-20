@@ -125,7 +125,7 @@ final class ShareLinkParser {
         JSONObject tls = new JSONObject();
         tls.put("enabled", true);
         tls.put("server_name", parsed.query.containsKey("sni")
-                ? parsed.query.get("sni") : parsed.query.getOrDefault("host", parsed.host));
+                ? parsed.query.get("sni") : queryValue(parsed.query, "host", parsed.host));
         outbound.put("tls", tls);
         return outbound;
     }
@@ -243,7 +243,7 @@ final class ShareLinkParser {
         JSONObject tls = new JSONObject();
         tls.put("enabled", true);
         String sni = parsed.query.containsKey("sni")
-                ? parsed.query.get("sni") : parsed.query.getOrDefault("host", parsed.host);
+                ? parsed.query.get("sni") : queryValue(parsed.query, "host", parsed.host);
         tls.put("server_name", sni);
         if ("1".equals(parsed.query.get("insecure"))) {
             tls.put("insecure", true);
@@ -254,7 +254,7 @@ final class ShareLinkParser {
         if (obfs != null && !obfs.isEmpty()) {
             outbound.put("obfs", new JSONObject()
                     .put("type", obfs)
-                    .put("password", parsed.query.getOrDefault("obfs-password", "")));
+                    .put("password", queryValue(parsed.query, "obfs-password", "")));
         }
         return outbound;
     }
@@ -274,13 +274,13 @@ final class ShareLinkParser {
         outbound.put("uuid", credentials[0]);
         outbound.put("password", credentials[1]);
 
-        String congestion = parsed.query.getOrDefault("congestion_control", "bbr");
+        String congestion = queryValue(parsed.query, "congestion_control", "bbr");
         outbound.put("congestion_control", congestion);
 
         JSONObject tls = new JSONObject();
         tls.put("enabled", true);
         String sni = parsed.query.containsKey("sni")
-                ? parsed.query.get("sni") : parsed.query.getOrDefault("host", parsed.host);
+                ? parsed.query.get("sni") : queryValue(parsed.query, "host", parsed.host);
         tls.put("server_name", sni);
         String alpn = parsed.query.get("alpn");
         if (alpn != null && !alpn.isEmpty()) {
@@ -316,14 +316,14 @@ final class ShareLinkParser {
     // MARK: - Общие части
 
     private static JSONObject tlsSettings(Parsed parsed) throws Exception {
-        String security = parsed.query.getOrDefault("security", "none");
+        String security = queryValue(parsed.query, "security", "none");
         if (!"tls".equals(security) && !"reality".equals(security)) {
             return null;
         }
         String sni = parsed.query.containsKey("sni")
                 ? parsed.query.get("sni")
-                : parsed.query.getOrDefault("host", parsed.host);
-        String fingerprint = parsed.query.getOrDefault("fp", "chrome");
+                : queryValue(parsed.query, "host", parsed.host);
+        String fingerprint = queryValue(parsed.query, "fp", "chrome");
 
         JSONObject tls = new JSONObject();
         tls.put("enabled", true);
@@ -333,19 +333,19 @@ final class ShareLinkParser {
         if ("reality".equals(security)) {
             JSONObject reality = new JSONObject();
             reality.put("enabled", true);
-            reality.put("public_key", parsed.query.getOrDefault("pbk", ""));
-            reality.put("short_id", parsed.query.getOrDefault("sid", ""));
+            reality.put("public_key", queryValue(parsed.query, "pbk", ""));
+            reality.put("short_id", queryValue(parsed.query, "sid", ""));
             tls.put("reality", reality);
         }
         return tls;
     }
 
     private static JSONObject transportSettings(Parsed parsed) throws Exception {
-        String type = parsed.query.getOrDefault("type", "tcp");
+        String type = queryValue(parsed.query, "type", "tcp");
         JSONObject transport = new JSONObject();
         if ("ws".equals(type)) {
             transport.put("type", "ws");
-            transport.put("path", parsed.query.getOrDefault("path", "/"));
+            transport.put("path", queryValue(parsed.query, "path", "/"));
             String host = parsed.query.get("host");
             if (host != null && !host.isEmpty()) {
                 transport.put("headers", new JSONObject().put("Host", host));
@@ -354,7 +354,7 @@ final class ShareLinkParser {
         }
         if ("grpc".equals(type)) {
             transport.put("type", "grpc");
-            transport.put("service_name", parsed.query.getOrDefault("serviceName", ""));
+            transport.put("service_name", queryValue(parsed.query, "serviceName", ""));
             return transport;
         }
         return null;
@@ -416,6 +416,12 @@ final class ShareLinkParser {
             return null;
         }
         return new Parsed(userinfo, host, port, query);
+    }
+
+    /** getOrDefault недоступен на API 23 — используем явную проверку. */
+    static String queryValue(Map<String, String> query, String key, String fallback) {
+        String value = query.get(key);
+        return value == null || value.isEmpty() ? fallback : value;
     }
 
     private static String decode(String value) {

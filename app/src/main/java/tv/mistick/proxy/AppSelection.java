@@ -89,7 +89,7 @@ final class AppSelection {
                 result.add(info);
             }
         }
-        result.sort((a, b) -> a.loadLabel(manager).toString()
+        java.util.Collections.sort(result, (a, b) -> a.loadLabel(manager).toString()
                 .compareToIgnoreCase(b.loadLabel(manager).toString()));
         return result;
     }

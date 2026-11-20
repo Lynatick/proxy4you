@@ -76,7 +76,7 @@ final class ClashApi {
         } catch (Exception ignored) {
             // API не ответил — покажем то, что есть
         }
-        result.sort((left, right) -> Integer.compare(left.delay, right.delay));
+        java.util.Collections.sort(result, (left, right) -> Integer.compare(left.delay, right.delay));
         return result.size() > limit ? new ArrayList<>(result.subList(0, limit)) : result;
     }
 

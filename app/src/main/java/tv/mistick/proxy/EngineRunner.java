@@ -1,10 +1,12 @@
 package tv.mistick.proxy;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -57,7 +59,7 @@ final class EngineRunner {
     }
 
     boolean isRunning() {
-        return process != null && process.isAlive();
+        return process != null && isAlive(process);
     }
 
     int port() {
@@ -109,9 +111,34 @@ final class EngineRunner {
         ProcessBuilder builder = new ProcessBuilder(
                 binary.getAbsolutePath(), "run", "-c", configFile.getAbsolutePath());
         builder.redirectErrorStream(true);
-        builder.redirectOutput(new File(logPath));
+        // redirectOutput(File) появился в API 26: на API 23 направляем поток вручную.
+        if (Build.VERSION.SDK_INT >= 26) {
+            builder.redirectOutput(new File(logPath));
+        }
         builder.directory(dir);
         process = builder.start();
+        if (Build.VERSION.SDK_INT < 26) {
+            final InputStream stream = process.getInputStream();
+            final FileOutputStream logOut;
+            try {
+                logOut = new FileOutputStream(logPath);
+            } catch (IOException error) {
+                throw new IOException("не удалось открыть лог: " + logPath, error);
+            }
+            Thread pump = new Thread(() -> {
+                byte[] buffer = new byte[8192];
+                try (InputStream in = stream; FileOutputStream out = logOut) {
+                    int read;
+                    while ((read = in.read(buffer)) > 0) {
+                        out.write(buffer, 0, read);
+                    }
+                } catch (IOException ignored) {
+                    // процесс завершился
+                }
+            }, "engine-log");
+            pump.setDaemon(true);
+            pump.start();
+        }
         kind = requested;
 
         if (!waitForPort(port, 20000)) {
@@ -119,6 +146,16 @@ final class EngineRunner {
             throw new IOException(requested.id + " не поднял вход (см. " + logPath + ")");
         }
         return port;
+    }
+
+    /** Process.isAlive() требует API 26: определяем живость по exitValue(). */
+    private static boolean isAlive(Process process) {
+        try {
+            process.exitValue();
+            return false;
+        } catch (IllegalThreadStateException alive) {
+            return true;
+        }
     }
 
     void stop() {
@@ -140,7 +177,7 @@ final class EngineRunner {
     private boolean waitForPort(int targetPort, int timeoutMs) {
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (System.currentTimeMillis() < deadline) {
-            if (!process.isAlive()) {
+            if (!isAlive(process)) {
                 Log.w(TAG, "ядро завершилось до открытия порта");
                 return false;
             }

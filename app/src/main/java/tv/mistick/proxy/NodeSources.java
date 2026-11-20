@@ -60,7 +60,10 @@ final class NodeSources {
             try {
                 String text = download(source.url);
                 for (NodeStore.Node node : parse(text, source.socks)) {
-                    merged.putIfAbsent(node.host + ":" + node.port + ":" + node.socks5, node);
+                    String key = node.host + ":" + node.port + ":" + node.socks5;
+                    if (!merged.containsKey(key)) {
+                        merged.put(key, node);
+                    }
                 }
             } catch (Exception ignored) {
                 // один источник недоступен — остальные всё равно используем
