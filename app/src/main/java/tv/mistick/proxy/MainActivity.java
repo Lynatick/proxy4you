@@ -315,6 +315,8 @@ public final class MainActivity extends Activity {
             statusView.setText("Вставьте ссылку на подписку");
             return;
         }
+        // Сохраняем URL сразу: он останется даже если сеть недоступна.
+        Subscription.saveUrl(this, url);
         statusView.setText("Загрузка подписки…");
         new Thread(() -> {
             try {

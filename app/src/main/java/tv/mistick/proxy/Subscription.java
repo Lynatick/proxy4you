@@ -44,9 +44,19 @@ final class Subscription {
 
     /** Скачивает подписку и сохраняет исходный текст для ядер. */
     static String downloadRaw(Context context, String url) throws IOException {
+        saveUrl(context, url);
         String text = download(url);
         writeText(new File(context.getFilesDir(), "subscription.json"), text);
         return text;
+    }
+
+    /** Сохраняет URL подписки, чтобы он подставлялся при следующем запуске. */
+    static void saveUrl(Context context, String url) {
+        try {
+            writeText(new File(context.getFilesDir(), URL_FILE), url.trim());
+        } catch (IOException ignored) {
+            // не критично: поле просто не заполнится
+        }
     }
 
     static void saveNodes(Context context, List<NodeStore.Node> nodes) throws IOException {
