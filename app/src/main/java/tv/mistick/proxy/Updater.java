@@ -21,10 +21,15 @@ final class Updater {
 
     static final String AUTHORITY = "tv.mistick.proxy.apk";
 
+    /** Колбэк прогресса: процент 0…100 или -1, если размер неизвестен. */
+    interface ProgressListener {
+        void onProgress(int percent);
+    }
+
     private Updater() {
     }
 
-    static File download(Context context, String urlText) throws Exception {
+    static File download(Context context, String urlText, ProgressListener listener) throws Exception {
         File dir = new File(context.getCacheDir(), "update");
         //noinspection ResultOfMethodCallIgnored
         dir.mkdirs();
@@ -43,12 +48,23 @@ final class Updater {
             if (code < 200 || code >= 300) {
                 throw new Exception("HTTP " + code);
             }
+            int total = connection.getContentLength();
             try (InputStream in = connection.getInputStream();
                  FileOutputStream out = new FileOutputStream(apk)) {
                 byte[] buffer = new byte[65536];
+                long received = 0;
+                int lastPercent = -1;
                 int read;
                 while ((read = in.read(buffer)) > 0) {
                     out.write(buffer, 0, read);
+                    received += read;
+                    if (total > 0 && listener != null) {
+                        int percent = (int) (received * 100 / total);
+                        if (percent != lastPercent) {
+                            lastPercent = percent;
+                            listener.onProgress(percent);
+                        }
+                    }
                 }
             }
         } finally {
