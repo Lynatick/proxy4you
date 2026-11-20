@@ -1,10 +1,13 @@
 package tv.mistick.proxy;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,6 +35,7 @@ import java.util.Set;
 public final class MainActivity extends Activity {
 
     private static final int VPN_REQUEST = 1001;
+    private static final int NOTIFICATION_REQUEST = 1002;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<NodeStore.Node> nodes = new ArrayList<>();
@@ -491,9 +495,18 @@ public final class MainActivity extends Activity {
         }
     };
 
+    /** Android 13+ требует явного разрешения на уведомление foreground-сервиса. */
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        requestNotificationPermission();
         updateStatus();
         handler.postDelayed(refresher, 1000);
         handler.postDelayed(nodeRefresher, 1000);

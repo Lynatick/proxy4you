@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.Handler;
@@ -112,7 +113,7 @@ public final class ProxyVpnService extends VpnService {
             return START_NOT_STICKY;
         }
 
-        startForeground(1, buildNotification("Подключение…"));
+        startForegroundWithType(buildNotification("Подключение…"));
 
         final String host = intent.getStringExtra("host");
         final int port = intent.getIntExtra("port", 0);
@@ -275,6 +276,15 @@ public final class ProxyVpnService extends VpnService {
                 + "  connect-timeout: 10000\n";
         try (FileOutputStream out = new FileOutputStream(file)) {
             out.write(yaml.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    /** Android 14 требует явный тип foreground service. */
+    private void startForegroundWithType(Notification notification) {
+        if (Build.VERSION.SDK_INT >= 34) {
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        } else {
+            startForeground(1, notification);
         }
     }
 

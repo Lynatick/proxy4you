@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.4.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.5.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.4.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 3
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.4.0.apk
+adb install -r Dist/YouTubeProxy-TV-1.5.0.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -172,9 +172,9 @@ APK содержит обе архитектуры (arm64-v8a и armeabi-v7a): �
 переменные окружения `MISTICK_STORE_PASSWORD` / `MISTICK_KEY_PASSWORD`; пример —
 `keystore.properties.example`.
 
-Известное ограничение: `targetSdk 30` устарел (lint выдаёт `ExpiredTargetSdkVersion`).
-Миграция на 34+ требует foreground service type для VPN и запроса
-`POST_NOTIFICATIONS` на Android 13+ — отдельная задача с проверкой на устройстве.
+`targetSdk 34` (Android 14): объявлен `foregroundServiceType="specialUse"` для VPN,
+разрешение `FOREGROUND_SERVICE_SPECIAL_USE`, а на Android 13+ приложение запрашивает
+`POST_NOTIFICATIONS` при запуске.
 
 ## Сторонний код
 
