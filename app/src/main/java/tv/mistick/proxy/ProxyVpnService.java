@@ -67,6 +67,8 @@ public final class ProxyVpnService extends VpnService {
     private NodePool pool;
     private EngineRunner engine;
     private String subscriptionText;
+    /** Разобранная подписка: пачки режутся из кэша, без повторного парсинга. */
+    private java.util.List<org.json.JSONObject> subscriptionNodes;
     private EngineRunner.Kind engineKind;
     private int appliedApps;
     private int switchCount;
@@ -166,10 +168,16 @@ public final class ProxyVpnService extends VpnService {
                 }
                 subscriptionText = new String(readAll(subscription), StandardCharsets.UTF_8);
                 this.engineKind = engineKind;
-                batchIndex = Math.max(0, requestedBatch);
-                batchCount = EngineConfig.batchCount(subscriptionText);
+
+                // Готовность подписки: ядру нужны outbounds, иначе запуск бессмысленен.
+                subscriptionNodes = EngineConfig.nodesFromText(subscriptionText);
+                if (subscriptionNodes.isEmpty()) {
+                    throw new IOException("в подписке нет нод, понятных ядру (нужен JSON или share-ссылки)");
+                }
+                batchCount = EngineConfig.batchCount(subscriptionNodes);
+                batchIndex = Math.max(0, requestedBatch) % batchCount;
                 engine = new EngineRunner(this);
-                engine.start(engineKind, subscriptionText, batchIndex);
+                engine.start(engineKind, subscriptionNodes, batchIndex);
                 controllerPort = engine.controllerPort();
                 engineKindId = engineKind.id;
                 Log.i(TAG, "ядро " + engineKind.id + " поднято на 127.0.0.1:" + engine.port());
@@ -223,23 +231,46 @@ public final class ProxyVpnService extends VpnService {
     }
 
     /** Смена пачки без перезапуска VPN: ядро перезапускается, SOCKS5-сервер живёт. */
+    /**
+     * Смена пачки без простоя: новое ядро поднимается на свободном порту, и только
+     * после успеха заменяет старое. Неудача оставляет работать прежнюю пачку.
+     */
     void switchBatch() {
-        if (engine == null || subscriptionText == null) {
+        if (subscriptionNodes == null || engineKind == null) {
+            status = "Сначала подключитесь через ядро";
             return;
         }
-        if (batchIndex + 1 >= batchCount) {
+        if (batchCount <= 1) {
+            status = "В подписке одна пачка";
             return;
         }
-        final int next = batchIndex + 1;
+        final int next = (batchIndex + 1) % batchCount;
         new Thread(() -> {
+            EngineRunner candidate = new EngineRunner(this);
             try {
-                engine.stop();
-                engine.start(engineKind, subscriptionText, next);
-                batchIndex = next;
-                publishStatus();
+                candidate.start(engineKind, subscriptionNodes, next);
             } catch (Exception error) {
-                status = "Смена пачки: " + error.getMessage();
+                candidate.stop();
+                Log.w(TAG, "пачка " + (next + 1) + " не запустилась", error);
+                healthHandler.post(() -> {
+                    status = "Пачка " + (next + 1) + "/" + batchCount
+                            + " не запустилась: " + error.getMessage();
+                    updateNotification(status);
+                });
+                return;
             }
+
+            EngineRunner old = engine;
+            engine = candidate;
+            batchIndex = next;
+            if (socks != null) {
+                socks.setEngine(candidate);
+            }
+            if (old != null) {
+                old.stop();
+            }
+            Log.i(TAG, "пачка " + (next + 1) + "/" + batchCount + " поднята");
+            healthHandler.post(ProxyVpnService.this::publishStatus);
         }, "batch-switch").start();
     }
 

@@ -26,7 +26,11 @@ final class EngineConfig {
 
     /** Конфиг sing-box: mixed-inbound + пачка outbounds + urltest. */
     static String singBox(String subscriptionJson, int inboundPort, int batchIndex, int controllerPort) throws Exception {
-        List<JSONObject> nodes = nodesFromText(subscriptionJson);
+        return singBox(nodesFromText(subscriptionJson), inboundPort, batchIndex, controllerPort);
+    }
+
+    /** Конфиг из уже разобранного списка — без повторного парсинга подписки. */
+    static String singBox(List<JSONObject> nodes, int inboundPort, int batchIndex, int controllerPort) throws Exception {
         List<JSONObject> batch = batch(nodes, batchIndex);
         if (batch.isEmpty()) {
             throw new IllegalStateException("в подписке нет outbounds для sing-box");
@@ -67,7 +71,10 @@ final class EngineConfig {
 
     /** Конфиг Xray: socks-inbound + конвертированные outbounds + balancer(leastPing). */
     static String xray(String subscriptionJson, int inboundPort, int batchIndex) throws Exception {
-        List<JSONObject> nodes = nodesFromText(subscriptionJson);
+        return xray(nodesFromText(subscriptionJson), inboundPort, batchIndex);
+    }
+
+    static String xray(List<JSONObject> nodes, int inboundPort, int batchIndex) throws Exception {
         List<JSONObject> batch = batch(nodes, batchIndex);
 
         List<JSONObject> converted = new ArrayList<>();
@@ -360,6 +367,10 @@ final class EngineConfig {
 
     /** Сколько пачек получится из подписки. */
     static int batchCount(String subscriptionJson) throws Exception {
-        return Math.max(1, (nodesFromText(subscriptionJson).size() + BATCH_SIZE - 1) / BATCH_SIZE);
+        return batchCount(nodesFromText(subscriptionJson));
+    }
+
+    static int batchCount(List<JSONObject> nodes) {
+        return Math.max(1, (nodes.size() + BATCH_SIZE - 1) / BATCH_SIZE);
     }
 }

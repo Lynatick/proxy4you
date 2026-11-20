@@ -76,8 +76,8 @@ final class EngineRunner {
         return logPath;
     }
 
-    /** Запускает ядро из подписки (JSON или share-ссылки) с пачкой `batchIndex`. */
-    int start(Kind requested, String subscriptionJson, int batchIndex) throws Exception {
+    /** Запускает ядро на готовом списке outbounds с пачкой `batchIndex`. */
+    int start(Kind requested, java.util.List<org.json.JSONObject> nodes, int batchIndex) throws Exception {
         stop();
         if (requested == null) {
             throw new IllegalArgumentException("ядро не выбрано");
@@ -94,8 +94,8 @@ final class EngineRunner {
         port = freePort();
         controllerPort = requested == Kind.SINGBOX ? freePort() : 0;
         String config = requested == Kind.SINGBOX
-                ? EngineConfig.singBox(subscriptionJson, port, batchIndex, controllerPort)
-                : EngineConfig.xray(subscriptionJson, port, batchIndex);
+                ? EngineConfig.singBox(nodes, port, batchIndex, controllerPort)
+                : EngineConfig.xray(nodes, port, batchIndex);
 
         File dir = new File(context.getFilesDir(), "engine");
         //noinspection ResultOfMethodCallIgnored

@@ -26,7 +26,7 @@ final class Socks5Server {
 
     private final VpnService vpn;
     private final NodePool pool;
-    private final EngineRunner engine;
+    private volatile EngineRunner engine;
     private volatile boolean running;
     private volatile int engineFailures;
     private ServerSocket serverSocket;
@@ -36,6 +36,11 @@ final class Socks5Server {
         this.vpn = vpn;
         this.pool = pool;
         this.engine = engine;
+    }
+
+    /** Подменяет ядро без перезапуска SOCKS5-сервера. */
+    void setEngine(EngineRunner next) {
+        this.engine = next;
     }
 
     int port() {
