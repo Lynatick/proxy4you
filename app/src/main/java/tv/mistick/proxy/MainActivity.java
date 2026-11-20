@@ -291,6 +291,10 @@ public final class MainActivity extends Activity {
 
     private void connect() {
         String engine = selectedEngine();
+        if (engine != null && !new java.io.File(getFilesDir(), "subscription.json").exists()) {
+            statusView.setText("Сначала загрузите подписку кнопкой «Загрузить», затем подключитесь");
+            return;
+        }
         if (engine == null && nodes.isEmpty()) {
             statusView.setText("Нет нод: загрузите подписку или выберите ядро");
             return;
@@ -467,14 +471,20 @@ public final class MainActivity extends Activity {
 
     private void updateStatus() {
         boolean isRunning = ProxyVpnService.running;
-        statusView.setText(isRunning ? ProxyVpnService.status : "Выключено");
+        String serviceStatus = ProxyVpnService.status;
         String engine = selectedEngine();
+
         if (isRunning) {
+            statusView.setText(serviceStatus);
             channelView.setText("Через: " + ProxyVpnService.currentNode);
+            toggleButton.setText(R.string.disconnect);
         } else {
+            // Ошибку старта не скрываем: она объясняет, почему кнопка осталась «Подключить».
+            boolean failed = serviceStatus != null && serviceStatus.startsWith("Ошибка");
+            statusView.setText(failed ? serviceStatus : "Выключено");
             channelView.setText(engine == null ? "Канал: ноды пула" : "Канал: ядро " + engine);
+            toggleButton.setText(engine == null ? getString(R.string.connect) : "Подключить через " + engine);
         }
-        toggleButton.setText(isRunning ? R.string.disconnect : R.string.connect);
         int count = AppSelection.load(this).size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
     }
