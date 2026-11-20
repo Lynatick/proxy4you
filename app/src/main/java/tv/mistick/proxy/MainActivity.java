@@ -180,6 +180,13 @@ public final class MainActivity extends Activity {
         root.addView(refreshNodesButton, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        Button updateButton = new Button(this);
+        updateButton.setText("Обновить приложение");
+        updateButton.setFocusable(true);
+        updateButton.setOnClickListener(view -> checkUpdates(false));
+        root.addView(updateButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         Button nextBatchButton = new Button(this);
         nextBatchButton.setText("Следующая пачка");
         nextBatchButton.setFocusable(true);
@@ -243,6 +250,7 @@ public final class MainActivity extends Activity {
 
         setContentView(root);
         toggleButton.requestFocus();
+        checkUpdates(true);
     }
 
     private List<String> labels() {
@@ -398,6 +406,49 @@ public final class MainActivity extends Activity {
         if (footer != null) {
             footer.setText("Нод в списке: " + nodes.size());
         }
+    }
+
+    /** Проверка обновления и передача APK системному установщику. */
+    private void checkUpdates(final boolean silent) {
+        if (!silent) {
+            statusView.setText("Проверка обновлений…");
+        }
+        new Thread(() -> {
+            try {
+                final String current = getPackageManager()
+                        .getPackageInfo(getPackageName(), 0).versionName;
+                UpdateChecker.Release release = UpdateChecker.latest();
+                if (!UpdateChecker.isNewer(release.version, current)) {
+                    if (!silent) {
+                        handler.post(() -> statusView.setText("Обновлений нет (версия " + current + ")"));
+                    }
+                    return;
+                }
+                if (Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+                    handler.post(() -> {
+                        statusView.setText("Разрешите установку приложений из этого приложения");
+                        try {
+                            startActivity(new Intent(
+                                    android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                    android.net.Uri.parse("package:" + getPackageName())));
+                        } catch (Exception ignored) {
+                            // на некоторых ТВ настройки недоступны — останется сообщение
+                        }
+                    });
+                    return;
+                }
+                handler.post(() -> statusView.setText("Скачивание " + release.version + "…"));
+                final java.io.File apk = Updater.download(this, release.apkUrl);
+                handler.post(() -> {
+                    statusView.setText("Установка " + release.version + " — подтвердите на ТВ");
+                    startActivity(Updater.installIntent(apk));
+                });
+            } catch (final Exception error) {
+                if (!silent) {
+                    handler.post(() -> statusView.setText("Ошибка обновления: " + error.getMessage()));
+                }
+            }
+        }, "update-check").start();
     }
 
     /** Публичные списки нод: те же шесть источников, что в macOS-версии. */
