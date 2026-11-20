@@ -44,6 +44,10 @@ public final class ProxyVpnService extends VpnService {
     static volatile int socksPort = 0;
     /** Через что идёт подключение: ядро или нода (для интерфейса). */
     static volatile String currentNode = "—";
+    /** Результат последней проверки ноды: код ответа, задержка, время. */
+    static volatile int lastProbeStatus = 0;
+    static volatile int lastProbeLatencyMs = -1;
+    static volatile long lastProbeAt = 0L;
     /** Какое ядро запросил пользователь (даже если оно не поднялось). */
     static volatile String requestedEngine = null;
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
@@ -76,6 +80,9 @@ public final class ProxyVpnService extends VpnService {
                 boolean switched = false;
                 if (active != null) {
                     int latency = Health.probe(ProxyVpnService.this, active.node, 8000);
+                    lastProbeStatus = Health.lastStatus;
+                    lastProbeLatencyMs = latency;
+                    lastProbeAt = System.currentTimeMillis();
                     if (latency >= 0) {
                         pool.recordSuccess(active, latency);
                     } else {

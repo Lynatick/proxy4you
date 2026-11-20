@@ -26,6 +26,8 @@ final class Health {
     static final String TARGET_PATH = "/generate_204";
     /** Код, который отдаёт YouTube на этот путь при успешном проходе. */
     static final int EXPECTED_STATUS = 204;
+    /** Код ответа последней проверки: -1 — сетевой сбой, 0 — ещё не было. */
+    static volatile int lastStatus = 0;
 
     /** Адрес проверки для интерфейса. */
     static String target() {
@@ -56,6 +58,7 @@ final class Health {
             out.flush();
 
             int status = readStatus(tls.getInputStream());
+            lastStatus = status;
             if (status != EXPECTED_STATUS) {
                 Log.d(TAG, "нода " + node.host + ":" + node.port + " ответила " + status
                         + " на " + target());
@@ -67,6 +70,7 @@ final class Health {
                     + target() + ": " + latency + " мс");
             return latency;
         } catch (Exception error) {
+            lastStatus = -1;
             Log.d(TAG, "нода " + node.host + ":" + node.port + " не отвечает: " + error.getMessage());
             return -1;
         } finally {

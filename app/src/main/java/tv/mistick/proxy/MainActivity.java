@@ -547,6 +547,22 @@ public final class MainActivity extends Activity {
         }, "access-check").start();
     }
 
+    /** Результат последней проверки ноды: код ответа и задержка. */
+    private String probeResultText() {
+        if (ProxyVpnService.lastProbeAt == 0L) {
+            return "проверка ещё не выполнялась";
+        }
+        int status = ProxyVpnService.lastProbeStatus;
+        int latency = ProxyVpnService.lastProbeLatencyMs;
+        String age = android.text.format.DateUtils.getRelativeTimeSpanString(
+                ProxyVpnService.lastProbeAt, System.currentTimeMillis(),
+                android.text.format.DateUtils.SECOND_IN_MILLIS).toString();
+        if (latency >= 0) {
+            return "ответ " + status + " · " + latency + " мс · " + age;
+        }
+        return (status > 0 ? "нет ответа (код " + status + ")" : "нет ответа") + " · " + age;
+    }
+
     /** Что реально идёт через прокси: ограничение задаётся выбранными приложениями. */
     private String scopeText(Set<String> apps) {
         if (apps.isEmpty()) {
@@ -585,7 +601,7 @@ public final class MainActivity extends Activity {
         Set<String> apps = AppSelection.load(this);
         int count = apps.size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
-        scopeView.setText(scopeText(apps));
+        scopeView.setText(scopeText(apps) + " · " + probeResultText());
     }
 
     private final Runnable nodeRefresher = new Runnable() {
