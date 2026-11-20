@@ -13,8 +13,13 @@ import javax.net.ssl.SSLSocketFactory;
 final class Health {
 
     private static final String TAG = "MiStickProxy";
-    private static final String TARGET_HOST = "www.youtube.com";
-    private static final int TARGET_PORT = 443;
+    static final String TARGET_HOST = "www.youtube.com";
+    static final int TARGET_PORT = 443;
+
+    /** Адрес, по которому проверяется доступность ноды. */
+    static String target() {
+        return TARGET_HOST + ":" + TARGET_PORT;
+    }
 
     private Health() {
     }
@@ -30,7 +35,9 @@ final class Health {
             tls = (SSLSocket) factory.createSocket(tunnel, TARGET_HOST, TARGET_PORT, true);
             tls.setSoTimeout(timeoutMs);
             tls.startHandshake();
-            return (int) (System.currentTimeMillis() - started);
+            int latency = (int) (System.currentTimeMillis() - started);
+            Log.d(TAG, "нода " + node.host + ":" + node.port + " работает через " + target() + ": " + latency + " мс");
+            return latency;
         } catch (Exception error) {
             Log.d(TAG, "нода " + node.host + ":" + node.port + " не отвечает: " + error.getMessage());
             return -1;

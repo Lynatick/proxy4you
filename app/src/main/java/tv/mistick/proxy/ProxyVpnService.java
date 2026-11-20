@@ -36,6 +36,7 @@ public final class ProxyVpnService extends VpnService {
     private static final String TAG = "MiStickProxy";
     private static final String CHANNEL_ID = "proxy";
     private static final long HEALTH_INTERVAL_MS = 45_000L;
+    static final long probeIntervalSeconds() { return HEALTH_INTERVAL_MS / 1000; }
 
     static volatile boolean running = false;
     static volatile String status = "Выключено";

@@ -44,6 +44,7 @@ public final class MainActivity extends Activity {
     private TextView statusView;
     private TextView channelView;
     private ProgressBar downloadProgress;
+    private TextView probeView;
     private Button toggleButton;
     private Button appsButton;
     private TextView accessView;
@@ -90,6 +91,14 @@ public final class MainActivity extends Activity {
         channelView.setTextSize(14);
         channelView.setPadding(0, dp(2), 0, dp(6));
         root.addView(channelView);
+
+        probeView = new TextView(this);
+        probeView.setText("Проверка нод: " + Health.target() + " · каждые "
+                + ProxyVpnService.probeIntervalSeconds() + " с");
+        probeView.setTextColor(Color.parseColor("#6B7C8F"));
+        probeView.setTextSize(11);
+        probeView.setPadding(0, dp(2), 0, dp(2));
+        root.addView(probeView);
 
         downloadProgress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         downloadProgress.setMax(100);
