@@ -45,6 +45,7 @@ public final class MainActivity extends Activity {
     private TextView channelView;
     private ProgressBar downloadProgress;
     private TextView probeView;
+    private TextView scopeView;
     private Button toggleButton;
     private Button appsButton;
     private TextView accessView;
@@ -99,6 +100,12 @@ public final class MainActivity extends Activity {
         probeView.setTextSize(11);
         probeView.setPadding(0, dp(2), 0, dp(2));
         root.addView(probeView);
+
+        scopeView = new TextView(this);
+        scopeView.setTextColor(Color.parseColor("#9FB3C8"));
+        scopeView.setTextSize(11);
+        scopeView.setPadding(0, dp(2), 0, dp(2));
+        root.addView(scopeView);
 
         downloadProgress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         downloadProgress.setMax(100);
@@ -540,6 +547,25 @@ public final class MainActivity extends Activity {
         }, "access-check").start();
     }
 
+    /** Что реально идёт через прокси: ограничение задаётся выбранными приложениями. */
+    private String scopeText(Set<String> apps) {
+        if (apps.isEmpty()) {
+            return "Через прокси: все приложения";
+        }
+        boolean onlyYouTube = true;
+        for (String packageName : apps) {
+            if (!"com.google.android.youtube.tv".equals(packageName)
+                    && !"com.google.android.youtube".equals(packageName)) {
+                onlyYouTube = false;
+                break;
+            }
+        }
+        if (onlyYouTube) {
+            return "Через прокси: только YouTube";
+        }
+        return "Через прокси: выбранные приложения (" + apps.size() + ")";
+    }
+
     private void updateStatus() {
         boolean isRunning = ProxyVpnService.running;
         String serviceStatus = ProxyVpnService.status;
@@ -556,8 +582,10 @@ public final class MainActivity extends Activity {
             channelView.setText(engine == null ? "Канал: ноды пула" : "Канал: ядро " + engine);
             toggleButton.setText(engine == null ? getString(R.string.connect) : "Подключить через " + engine);
         }
-        int count = AppSelection.load(this).size();
+        Set<String> apps = AppSelection.load(this);
+        int count = apps.size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
+        scopeView.setText(scopeText(apps));
     }
 
     private final Runnable nodeRefresher = new Runnable() {
