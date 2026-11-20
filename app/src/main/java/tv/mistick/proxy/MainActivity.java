@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -43,9 +42,10 @@ public final class MainActivity extends Activity {
 
     private TextView statusView;
     private TextView channelView;
-    private ProgressBar downloadProgress;
+
     private TextView probeView;
     private TextView scopeView;
+    private Button updateButton;
     private Button toggleButton;
     private Button appsButton;
     private TextView accessView;
@@ -106,14 +106,6 @@ public final class MainActivity extends Activity {
         scopeView.setTextSize(11);
         scopeView.setPadding(0, dp(2), 0, dp(2));
         root.addView(scopeView);
-
-        downloadProgress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        downloadProgress.setMax(100);
-        downloadProgress.setVisibility(android.view.View.GONE);
-        LinearLayout.LayoutParams progressParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(6));
-        progressParams.setMargins(0, dp(4), 0, dp(2));
-        root.addView(downloadProgress, progressParams);
 
         // Строка 1: выбор ядра и кнопка подключения рядом.
         LinearLayout engineRow = new LinearLayout(this);
@@ -239,7 +231,7 @@ public final class MainActivity extends Activity {
         });
         actionsRow.addView(nextBatchButton);
 
-        Button updateButton = new Button(this);
+        updateButton = new Button(this);
         updateButton.setText("Обновить приложение");
         updateButton.setFocusable(true);
         updateButton.setOnClickListener(view -> checkUpdates(false));
@@ -434,7 +426,8 @@ public final class MainActivity extends Activity {
                 if (!UpdateChecker.isNewer(release.version, current)) {
                     if (!silent) {
                         handler.post(() -> {
-                            downloadProgress.setVisibility(android.view.View.GONE);
+                            updateButton.setText("Обновить приложение");
+                            updateButton.setEnabled(true);
                             statusView.setText("Обновлений нет (версия " + current + ")");
                         });
                     }
@@ -454,24 +447,23 @@ public final class MainActivity extends Activity {
                     return;
                 }
                 handler.post(() -> {
-                    statusView.setText("Скачивание " + release.version + "… 0%");
-                    downloadProgress.setProgress(0);
-                    downloadProgress.setVisibility(android.view.View.VISIBLE);
+                    updateButton.setEnabled(false);
+                    updateButton.setText("0%");
+                    statusView.setText("Скачивание " + release.version + "…");
                 });
                 final java.io.File apk = Updater.download(this, release.apkUrl, percent ->
-                        handler.post(() -> {
-                            downloadProgress.setProgress(percent);
-                            statusView.setText("Скачивание " + release.version + "… " + percent + "%");
-                        }));
+                        handler.post(() -> updateButton.setText(percent + "%")));
                 handler.post(() -> {
-                    downloadProgress.setVisibility(android.view.View.GONE);
+                    updateButton.setText("Обновить приложение");
+                    updateButton.setEnabled(true);
                     statusView.setText("Установка " + release.version + " — подтвердите на ТВ");
                     startActivity(Updater.installIntent(apk));
                 });
             } catch (final Exception error) {
                 if (!silent) {
                     handler.post(() -> {
-                        downloadProgress.setVisibility(android.view.View.GONE);
+                        updateButton.setText("Обновить приложение");
+                        updateButton.setEnabled(true);
                         statusView.setText("Ошибка обновления: " + error.getMessage());
                     });
                 }
