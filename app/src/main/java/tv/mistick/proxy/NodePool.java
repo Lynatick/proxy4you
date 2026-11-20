@@ -21,6 +21,8 @@ final class NodePool {
         long lastFailureAt;
         int latencyMs = -1;
         boolean verified;
+        /** Исключена до обновления списка нод (подписки). */
+        boolean disabled;
 
         Entry(NodeStore.Node node) {
             this.node = node;
@@ -63,17 +65,42 @@ final class NodePool {
         return entries.size();
     }
 
+    /** Сколько нод исключено до обновления списка. */
+    synchronized int disabledCount() {
+        int count = 0;
+        for (Entry entry : entries) {
+            if (entry.disabled) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     synchronized void recordSuccess(Entry entry, int latencyMs) {
         entry.failures = 0;
         entry.latencyMs = latencyMs;
         entry.verified = true;
+        entry.disabled = false;
         current = entry;
     }
 
+    /** Сбой соединения: только пауза, без исключения из пула. */
     synchronized void recordFailure(Entry entry) {
+        recordFailure(entry, false);
+    }
+
+    /** Нода не прошла проверку доступности (204): исключаем до обновления списка. */
+    synchronized void recordFailureAndExclude(Entry entry) {
+        recordFailure(entry, true);
+    }
+
+    private synchronized void recordFailure(Entry entry, boolean exclude) {
         entry.failures++;
         entry.lastFailureAt = System.currentTimeMillis();
         entry.verified = false;
+        if (exclude) {
+            entry.disabled = true;
+        }
         if (entry == current) {
             // Не оставляем пул без текущей ноды: берём следующего кандидата.
             current = null;
@@ -106,13 +133,19 @@ final class NodePool {
     synchronized List<Entry> ranked() {
         long now = System.currentTimeMillis();
         List<Entry> alive = new ArrayList<>();
+        List<Entry> available = new ArrayList<>();
         for (Entry entry : entries) {
+            if (entry.disabled) {
+                continue;
+            }
+            available.add(entry);
             if (!entry.inCooldown(now)) {
                 alive.add(entry);
             }
         }
         if (alive.isEmpty()) {
-            alive.addAll(entries);
+            // Все доступные в паузе — возвращаем их, но исключённые не реанимируем.
+            alive.addAll(available);
         }
         Collections.sort(alive, (a, b) -> {
             if (a.verified != b.verified) {

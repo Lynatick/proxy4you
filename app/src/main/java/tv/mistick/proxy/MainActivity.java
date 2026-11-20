@@ -381,11 +381,21 @@ public final class MainActivity extends Activity {
                     statusView.setText(socksCount > 0
                             ? "Подписка загружена: " + socksCount + " socks/http нод"
                             : "Подписка загружена: ядра могут подключаться");
+                    restartIfRunning();
                 });
             } catch (final Exception error) {
                 handler.post(() -> statusView.setText("Ошибка подписки: " + error.getMessage()));
             }
         }, "subscription").start();
+    }
+
+    /** Обновление списка сбрасывает исключённые ноды: перезапускаем канал. */
+    private void restartIfRunning() {
+        if (!ProxyVpnService.running) {
+            return;
+        }
+        stopService(new Intent(this, ProxyVpnService.class));
+        handler.postDelayed(this::connect, 700);
     }
 
     private void refreshNodes() {
@@ -395,7 +405,8 @@ public final class MainActivity extends Activity {
             selected = nodes.get(0);
         }
         if (footer != null) {
-            footer.setText("Нод: " + nodes.size());
+            int excluded = ProxyVpnService.excludedNodes;
+            footer.setText("Нод: " + nodes.size() + (excluded > 0 ? " · исключено: " + excluded : ""));
         }
     }
 
@@ -479,6 +490,7 @@ public final class MainActivity extends Activity {
             handler.post(() -> {
                 refreshNodes();
                 statusView.setText("Публичные списки: " + fetched.size() + " нод");
+                restartIfRunning();
             });
         }, "node-sources").start();
     }
@@ -591,6 +603,10 @@ public final class MainActivity extends Activity {
             toggleButton.setText(engine == null ? getString(R.string.connect) : "Подключить через " + engine);
         }
         Set<String> apps = AppSelection.load(this);
+        if (footer != null) {
+            int excluded = ProxyVpnService.excludedNodes;
+            footer.setText("Нод: " + nodes.size() + (excluded > 0 ? " · исключено: " + excluded : ""));
+        }
         int count = apps.size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
         scopeView.setText(scopeText(apps) + " · " + probeResultText());

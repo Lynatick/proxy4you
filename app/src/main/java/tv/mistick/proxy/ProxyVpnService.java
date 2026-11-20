@@ -48,6 +48,8 @@ public final class ProxyVpnService extends VpnService {
     static volatile int lastProbeStatus = 0;
     static volatile int lastProbeLatencyMs = -1;
     static volatile long lastProbeAt = 0L;
+    /** Сколько нод исключено до обновления списка (для интерфейса). */
+    static volatile int excludedNodes = 0;
     /** Какое ядро запросил пользователь (даже если оно не поднялось). */
     static volatile String requestedEngine = null;
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
@@ -86,7 +88,7 @@ public final class ProxyVpnService extends VpnService {
                     if (latency >= 0) {
                         pool.recordSuccess(active, latency);
                     } else {
-                        pool.recordFailure(active);
+                        pool.recordFailureAndExclude(active);
                         switched = true;
                     }
                 } else {
@@ -102,7 +104,7 @@ public final class ProxyVpnService extends VpnService {
                             Log.i(TAG, "переключение на " + candidate.label() + " (" + latency + " мс)");
                             break;
                         }
-                        pool.recordFailure(candidate);
+                        pool.recordFailureAndExclude(candidate);
                     }
                 }
 
@@ -258,17 +260,21 @@ public final class ProxyVpnService extends VpnService {
             via = "ядро " + engineKindId + " не запущено";
         } else if (pool != null && pool.current() != null) {
             via = pool.current().label();
+        } else if (pool != null && pool.disabledCount() < pool.size()) {
+            via = "нод " + (pool.size() - pool.disabledCount()) + ", рабочая не выбрана";
         } else if (pool != null && pool.size() > 0) {
-            via = "нод " + pool.size() + ", рабочая не выбрана";
+            via = "все ноды исключены — обновите ноды";
         } else {
             via = "нет нод — загрузите подписку или выберите ядро";
         }
+        excludedNodes = pool == null ? 0 : pool.disabledCount();
+        String excluded = excludedNodes > 0 ? " · исключено " + excludedNodes : "";
         String scope = appliedApps > 0 ? "только " + appliedApps + " прил." : "все приложения";
         String failovers = switchCount > 0 ? " · переключений: " + switchCount : "";
         String batch = engine != null && engine.isRunning() && batchCount > 1
                 ? " · пачка " + (batchIndex + 1) + "/" + batchCount : "";
         currentNode = via + batch;
-        status = "Подключено · через " + via + batch + " · " + scope + failovers;
+        status = "Подключено · через " + via + batch + " · " + scope + failovers + excluded;
         updateNotification(status);
     }
 
