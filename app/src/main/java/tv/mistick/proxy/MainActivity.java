@@ -35,6 +35,9 @@ public final class MainActivity extends Activity {
     private static final int NOTIFICATION_REQUEST = 1002;
     private static final String PREFS = "engine";
     private static final String KEY_ENGINE = "selected";
+    private static final String PREFS_UPDATES = "updates";
+    private static final String KEY_LAST_CHECK = "lastCheck";
+    private static final long UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<NodeStore.Node> nodes = new ArrayList<>();
@@ -86,74 +89,44 @@ public final class MainActivity extends Activity {
         channelView = new TextView(this);
         channelView.setTextColor(Color.parseColor("#9FB3C8"));
         channelView.setTextSize(14);
-        channelView.setPadding(0, dp(2), 0, dp(8));
+        channelView.setPadding(0, dp(2), 0, dp(6));
         root.addView(channelView);
 
-        toggleButton = new Button(this);
-        toggleButton.setText(R.string.connect);
-        toggleButton.setFocusable(true);
-        toggleButton.setOnClickListener(view -> toggle());
-        root.addView(toggleButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        appsButton = new Button(this);
-        appsButton.setFocusable(true);
-        appsButton.setOnClickListener(view -> startActivity(new Intent(this, AppsActivity.class)));
-        root.addView(appsButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // Подписка — одна компактная строка: подпись, поле URL и кнопка «Вставить и загрузить».
-        LinearLayout subscriptionRow = new LinearLayout(this);
-        subscriptionRow.setOrientation(LinearLayout.HORIZONTAL);
-        subscriptionRow.setGravity(Gravity.CENTER_VERTICAL);
-        subscriptionRow.setPadding(0, dp(8), 0, dp(4));
-        root.addView(subscriptionRow);
-
-        TextView subscriptionTitle = new TextView(this);
-        subscriptionTitle.setText("Подписка");
-        subscriptionTitle.setTextColor(Color.parseColor("#9FB3C8"));
-        subscriptionTitle.setTextSize(12);
-        subscriptionTitle.setPadding(0, 0, dp(8), 0);
-        subscriptionRow.addView(subscriptionTitle);
-
-        subscriptionInput = new EditText(this);
-        subscriptionInput.setText(Subscription.savedUrl(this));
-        subscriptionInput.setHint("URL подписки");
-        subscriptionInput.setHintTextColor(Color.parseColor("#6B7C8F"));
-        subscriptionInput.setTextColor(Color.WHITE);
-        subscriptionInput.setTextSize(12);
-        subscriptionInput.setSingleLine(true);
-        subscriptionInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-        subscriptionInput.setPadding(dp(6), dp(2), dp(6), dp(2));
-        LinearLayout.LayoutParams inputParams = new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        subscriptionRow.addView(subscriptionInput, inputParams);
-
-        Button pasteAndLoadButton = new Button(this);
-        pasteAndLoadButton.setText("Вставить и загрузить");
-        pasteAndLoadButton.setTextSize(12);
-        pasteAndLoadButton.setFocusable(true);
-        pasteAndLoadButton.setOnClickListener(view -> pasteAndLoad());
-        subscriptionRow.addView(pasteAndLoadButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
+        // Строка 1: выбор ядра и кнопка подключения рядом.
         LinearLayout engineRow = new LinearLayout(this);
         engineRow.setOrientation(LinearLayout.HORIZONTAL);
+        engineRow.setGravity(Gravity.CENTER_VERTICAL);
+        engineRow.setPadding(0, dp(4), 0, dp(4));
         root.addView(engineRow);
 
         singBoxEngine = new CheckBox(this);
-        singBoxEngine.setText("Ядро sing-box");
+        singBoxEngine.setText("sing-box");
         singBoxEngine.setTextColor(Color.WHITE);
         singBoxEngine.setTextSize(14);
         singBoxEngine.setFocusable(true);
         engineRow.addView(singBoxEngine);
 
         xrayEngine = new CheckBox(this);
-        xrayEngine.setText("Ядро Xray");
+        xrayEngine.setText("Xray");
         xrayEngine.setTextColor(Color.WHITE);
         xrayEngine.setTextSize(14);
         xrayEngine.setFocusable(true);
         engineRow.addView(xrayEngine);
+
+        toggleButton = new Button(this);
+        toggleButton.setText(R.string.connect);
+        toggleButton.setFocusable(true);
+        toggleButton.setOnClickListener(view -> toggle());
+        LinearLayout.LayoutParams toggleParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        toggleParams.setMargins(dp(12), 0, dp(12), 0);
+        engineRow.addView(toggleButton, toggleParams);
+
+        appsButton = new Button(this);
+        appsButton.setFocusable(true);
+        appsButton.setOnClickListener(view -> startActivity(new Intent(this, AppsActivity.class)));
+        engineRow.addView(appsButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         String savedEngine = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_ENGINE, "");
         if ("sing-box".equals(savedEngine)) {
@@ -173,19 +146,54 @@ public final class MainActivity extends Activity {
             applyEngineChange();
         });
 
+        // Строка 2: подписка — подпись, компактное поле и одна кнопка.
+        LinearLayout subscriptionRow = new LinearLayout(this);
+        subscriptionRow.setOrientation(LinearLayout.HORIZONTAL);
+        subscriptionRow.setGravity(Gravity.CENTER_VERTICAL);
+        subscriptionRow.setPadding(0, dp(4), 0, dp(4));
+        root.addView(subscriptionRow);
+
+        TextView subscriptionTitle = new TextView(this);
+        subscriptionTitle.setText("Подписка");
+        subscriptionTitle.setTextColor(Color.parseColor("#9FB3C8"));
+        subscriptionTitle.setTextSize(12);
+        subscriptionTitle.setPadding(0, 0, dp(8), 0);
+        subscriptionRow.addView(subscriptionTitle);
+
+        subscriptionInput = new EditText(this);
+        subscriptionInput.setText(Subscription.savedUrl(this));
+        subscriptionInput.setHint("URL подписки");
+        subscriptionInput.setHintTextColor(Color.parseColor("#6B7C8F"));
+        subscriptionInput.setTextColor(Color.WHITE);
+        subscriptionInput.setTextSize(12);
+        subscriptionInput.setSingleLine(true);
+        subscriptionInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+        subscriptionInput.setPadding(dp(6), dp(2), dp(6), dp(2));
+        subscriptionRow.addView(subscriptionInput, new LinearLayout.LayoutParams(
+                dp(420), ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        Button pasteAndLoadButton = new Button(this);
+        pasteAndLoadButton.setText("Вставить и загрузить");
+        pasteAndLoadButton.setTextSize(12);
+        pasteAndLoadButton.setFocusable(true);
+        pasteAndLoadButton.setOnClickListener(view -> pasteAndLoad());
+        LinearLayout.LayoutParams pasteParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        pasteParams.setMargins(dp(8), 0, 0, 0);
+        subscriptionRow.addView(pasteAndLoadButton, pasteParams);
+
+        // Строка 3: ноды, пачка и обновление — рядом.
+        LinearLayout actionsRow = new LinearLayout(this);
+        actionsRow.setOrientation(LinearLayout.HORIZONTAL);
+        actionsRow.setGravity(Gravity.CENTER_VERTICAL);
+        actionsRow.setPadding(0, dp(4), 0, dp(4));
+        root.addView(actionsRow);
+
         Button refreshNodesButton = new Button(this);
         refreshNodesButton.setText("Обновить ноды");
         refreshNodesButton.setFocusable(true);
         refreshNodesButton.setOnClickListener(view -> refreshPublicNodes());
-        root.addView(refreshNodesButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        Button updateButton = new Button(this);
-        updateButton.setText("Обновить приложение");
-        updateButton.setFocusable(true);
-        updateButton.setOnClickListener(view -> checkUpdates(false));
-        root.addView(updateButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        actionsRow.addView(refreshNodesButton);
 
         Button nextBatchButton = new Button(this);
         nextBatchButton.setText("Следующая пачка");
@@ -197,26 +205,30 @@ public final class MainActivity extends Activity {
                 statusView.setText("Сначала подключитесь через ядро");
             }
         });
-        root.addView(nextBatchButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        actionsRow.addView(nextBatchButton);
+
+        Button updateButton = new Button(this);
+        updateButton.setText("Обновить приложение");
+        updateButton.setFocusable(true);
+        updateButton.setOnClickListener(view -> checkUpdates(false));
+        actionsRow.addView(updateButton);
 
         Button accessButton = new Button(this);
         accessButton.setText("Проверить доступ");
         accessButton.setFocusable(true);
         accessButton.setOnClickListener(view -> checkAccess());
-        root.addView(accessButton, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        actionsRow.addView(accessButton);
 
         accessView = new TextView(this);
         accessView.setTextColor(Color.parseColor("#9FB3C8"));
         accessView.setTextSize(13);
-        accessView.setPadding(0, dp(6), 0, dp(10));
+        accessView.setPadding(0, dp(6), 0, dp(6));
         root.addView(accessView);
 
         nodeInfoView = new TextView(this);
         nodeInfoView.setTextColor(Color.parseColor("#9FB3C8"));
         nodeInfoView.setTextSize(12);
-        nodeInfoView.setPadding(0, dp(4), 0, dp(10));
+        nodeInfoView.setPadding(0, dp(2), 0, dp(8));
         root.addView(nodeInfoView);
 
         TextView hint = new TextView(this);
@@ -250,7 +262,7 @@ public final class MainActivity extends Activity {
 
         setContentView(root);
         toggleButton.requestFocus();
-        checkUpdates(true);
+        maybeCheckUpdatesSilently();
     }
 
     private List<String> labels() {
@@ -408,8 +420,22 @@ public final class MainActivity extends Activity {
         }
     }
 
+    /** Тихая проверка не чаще раза в час: GitHub API без токена лимитирован. */
+    private void maybeCheckUpdatesSilently() {
+        android.content.SharedPreferences prefs = getSharedPreferences(PREFS_UPDATES, MODE_PRIVATE);
+        long last = prefs.getLong(KEY_LAST_CHECK, 0L);
+        long now = System.currentTimeMillis();
+        if (now - last < UPDATE_CHECK_INTERVAL_MS) {
+            return;
+        }
+        prefs.edit().putLong(KEY_LAST_CHECK, now).apply();
+        checkUpdates(true);
+    }
+
     /** Проверка обновления и передача APK системному установщику. */
     private void checkUpdates(final boolean silent) {
+        getSharedPreferences(PREFS_UPDATES, MODE_PRIVATE)
+                .edit().putLong(KEY_LAST_CHECK, System.currentTimeMillis()).apply();
         if (!silent) {
             statusView.setText("Проверка обновлений…");
         }
@@ -561,6 +587,7 @@ public final class MainActivity extends Activity {
         requestNotificationPermission();
         updateStatus();
         handler.postDelayed(refresher, 1000);
+        maybeCheckUpdatesSilently();
         handler.postDelayed(nodeRefresher, 1000);
         if (!new java.io.File(getFilesDir(), "public_nodes.txt").exists()) {
             refreshPublicNodes();
