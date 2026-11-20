@@ -237,9 +237,16 @@ public final class ProxyVpnService extends VpnService {
     }
 
     private void publishStatus() {
-        String via = engine != null && engine.isRunning()
-                ? "ядро " + engine.kind().id
-                : (pool != null && pool.current() != null ? pool.current().label() : "нода не выбрана");
+        String via;
+        if (engine != null && engine.isRunning()) {
+            via = "ядро " + engine.kind().id;
+        } else if (pool != null && pool.current() != null) {
+            via = pool.current().label();
+        } else if (pool != null && pool.size() > 0) {
+            via = "нод " + pool.size() + ", рабочая не выбрана";
+        } else {
+            via = "нет нод — загрузите подписку или выберите ядро";
+        }
         String scope = appliedApps > 0 ? "только " + appliedApps + " прил." : "все приложения";
         String failovers = switchCount > 0 ? " · переключений: " + switchCount : "";
         String batch = engine != null && engine.isRunning() && batchCount > 1

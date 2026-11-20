@@ -297,9 +297,6 @@ public final class MainActivity extends Activity {
             stopService(new Intent(this, ProxyVpnService.class));
             return;
         }
-        if (selected == null) {
-            selected = nodes.isEmpty() ? null : nodes.get(0);
-        }
         connect();
     }
 
@@ -310,9 +307,13 @@ public final class MainActivity extends Activity {
     }
 
     private void connect() {
-        if (selected == null && selectedEngine() == null) {
+        String engine = selectedEngine();
+        if (engine == null && nodes.isEmpty()) {
             statusView.setText("Нет нод: загрузите подписку или выберите ядро");
             return;
+        }
+        if (selected == null && !nodes.isEmpty()) {
+            selected = nodes.get(0);
         }
         Intent permission = VpnService.prepare(this);
         if (permission != null) {

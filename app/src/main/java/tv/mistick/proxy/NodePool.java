@@ -75,7 +75,14 @@ final class NodePool {
         entry.lastFailureAt = System.currentTimeMillis();
         entry.verified = false;
         if (entry == current) {
+            // Не оставляем пул без текущей ноды: берём следующего кандидата.
             current = null;
+            for (Entry candidate : ranked()) {
+                if (candidate != entry) {
+                    current = candidate;
+                    break;
+                }
+            }
         }
     }
 
