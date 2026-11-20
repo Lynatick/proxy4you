@@ -110,9 +110,9 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
 работает пул socks5/http нод). Ядро запускается отдельным процессом и поднимает
 локальный вход; наш SOCKS5-сервер ходит в него как в обычную ноду.
 
-- **Ядра встроены в APK**: сжатые архивы лежат в `assets/engines` (~96 МБ), при
-  первом запуске распаковываются в `filesDir/bin/`. Сеть не нужна; загрузка с
-  GitHub осталась запасным путём. APK получается ~77 МБ.
+- **Ядра встроены в APK как jniLibs**: `libsingbox.so` и `libxray.so` для arm64-v8a
+  и armeabi-v7a. При установке они попадают в `nativeLibraryDir` и запускаются
+  оттуда — Android 10+ запрещает exec из `filesDir`. APK ~76 МБ.
 - **sing-box**: arm64-v8a и armeabi-v7a.
 - **Xray**: arm64-v8a (официальная сборка) и **armeabi-v7a** (собственная сборка из
   исходников Xray v26.11.9, Go 1.27 + NDK, стек `-checklinkname=0`).

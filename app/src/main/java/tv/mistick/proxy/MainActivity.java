@@ -128,6 +128,15 @@ public final class MainActivity extends Activity {
         engineRow.addView(appsButton, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        Button accessButton = new Button(this);
+        accessButton.setText("Проверить доступ");
+        accessButton.setFocusable(true);
+        accessButton.setOnClickListener(view -> checkAccess());
+        LinearLayout.LayoutParams accessParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        accessParams.setMargins(dp(8), 0, 0, 0);
+        engineRow.addView(accessButton, accessParams);
+
         String savedEngine = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_ENGINE, "");
         if ("sing-box".equals(savedEngine)) {
             singBoxEngine.setChecked(true);
@@ -212,12 +221,6 @@ public final class MainActivity extends Activity {
         updateButton.setFocusable(true);
         updateButton.setOnClickListener(view -> checkUpdates(false));
         actionsRow.addView(updateButton);
-
-        Button accessButton = new Button(this);
-        accessButton.setText("Проверить доступ");
-        accessButton.setFocusable(true);
-        accessButton.setOnClickListener(view -> checkAccess());
-        actionsRow.addView(accessButton);
 
         accessView = new TextView(this);
         accessView.setTextColor(Color.parseColor("#9FB3C8"));
