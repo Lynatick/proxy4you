@@ -97,14 +97,19 @@ final class RoutePolicy {
 
     /** Идёт ли трафик к `host` через прокси. */
     static boolean requiresProxy(Context context, String host) {
-        if (everything(context)) {
+        return requiresProxy(load(context), everything(context), host);
+    }
+
+    /** Чистая проверка без Android API — используется в тестах. */
+    static boolean requiresProxy(Set<Group> groups, boolean everything, String host) {
+        if (everything) {
             return true;
         }
         String normalized = normalize(host);
         if (normalized.isEmpty()) {
             return false;
         }
-        for (Group group : load(context)) {
+        for (Group group : groups) {
             for (String domain : group.domains) {
                 if (normalized.equals(domain) || normalized.endsWith("." + domain)) {
                     return true;

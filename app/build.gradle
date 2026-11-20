@@ -23,12 +23,26 @@ android {
         ndkBuild { path 'src/main/cpp/hev/Android.mk' }
     }
 
+    // Пароли подписи не хранятся в репозитории: keystore.properties (локально, в .gitignore)
+    // или переменные окружения MISTICK_STORE_PASSWORD / MISTICK_KEY_PASSWORD.
+    def keystoreFile = rootProject.file('keystore.properties')
+    def keystoreProps = new Properties()
+    if (keystoreFile.exists()) {
+        keystoreFile.withInputStream { keystoreProps.load(it) }
+    }
+    def signingStorePassword = keystoreProps.getProperty('storePassword') ?: System.getenv('MISTICK_STORE_PASSWORD')
+    def signingKeyPassword = keystoreProps.getProperty('keyPassword') ?: System.getenv('MISTICK_KEY_PASSWORD')
+
     signingConfigs {
         local {
             storeFile file('../keystore/mistick.jks')
-            storePassword 'mistick123'
             keyAlias 'mistick'
-            keyPassword 'mistick123'
+            if (signingStorePassword != null) {
+                storePassword signingStorePassword
+            }
+            if (signingKeyPassword != null) {
+                keyPassword signingKeyPassword
+            }
         }
     }
 
@@ -48,4 +62,16 @@ android {
     }
 
     lint { abortOnError false }
+
+    testOptions {
+        unitTests.all {
+            // org.json из testImplementation перекрывает заглушки android.jar
+            it.systemProperty 'java.awt.headless', 'true'
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20240303'
 }

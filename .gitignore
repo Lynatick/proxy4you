@@ -10,3 +10,6 @@ keystore/
 
 # Отладочный APK: в репозиторий кладём только release
 Dist/*-debug.apk
+
+# Локальные пароли подписи
+keystore.properties

@@ -161,6 +161,21 @@ APK содержит обе архитектуры (arm64-v8a и armeabi-v7a): �
 - `targetSdk 30` — для сайдлоада; для Google Play потребуется 34+ и
   foregroundServiceType.
 
+## Тесты и качество
+
+```
+./gradlew :app:testDebugUnitTest   # 19 unit-тестов: EngineConfig, ShareLinkParser, NodeSources, RoutePolicy
+./gradlew :app:assembleRelease     # сборка APK
+```
+
+Пароли подписи не хранятся в репозитории: `keystore.properties` (в `.gitignore`) или
+переменные окружения `MISTICK_STORE_PASSWORD` / `MISTICK_KEY_PASSWORD`; пример —
+`keystore.properties.example`.
+
+Известное ограничение: `targetSdk 30` устарел (lint выдаёт `ExpiredTargetSdkVersion`).
+Миграция на 34+ требует foreground service type для VPN и запроса
+`POST_NOTIFICATIONS` на Android 13+ — отдельная задача с проверкой на устройстве.
+
 ## Сторонний код
 
 `app/src/main/cpp/hev` — hev-socks5-tunnel 2.20.0 (MIT, см. LICENSE в каталоге).
