@@ -102,39 +102,40 @@ public final class MainActivity extends Activity {
         root.addView(appsButton, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        // Подписка — одна компактная строка: подпись, поле URL и кнопка «Вставить и загрузить».
+        LinearLayout subscriptionRow = new LinearLayout(this);
+        subscriptionRow.setOrientation(LinearLayout.HORIZONTAL);
+        subscriptionRow.setGravity(Gravity.CENTER_VERTICAL);
+        subscriptionRow.setPadding(0, dp(8), 0, dp(4));
+        root.addView(subscriptionRow);
+
         TextView subscriptionTitle = new TextView(this);
-        subscriptionTitle.setText("Подписка:");
+        subscriptionTitle.setText("Подписка");
         subscriptionTitle.setTextColor(Color.parseColor("#9FB3C8"));
-        subscriptionTitle.setTextSize(14);
-        subscriptionTitle.setPadding(0, dp(14), 0, dp(4));
-        root.addView(subscriptionTitle);
+        subscriptionTitle.setTextSize(12);
+        subscriptionTitle.setPadding(0, 0, dp(8), 0);
+        subscriptionRow.addView(subscriptionTitle);
 
         subscriptionInput = new EditText(this);
         subscriptionInput.setText(Subscription.savedUrl(this));
         subscriptionInput.setHint("URL подписки");
         subscriptionInput.setHintTextColor(Color.parseColor("#6B7C8F"));
         subscriptionInput.setTextColor(Color.WHITE);
-        subscriptionInput.setTextSize(14);
+        subscriptionInput.setTextSize(12);
         subscriptionInput.setSingleLine(true);
         subscriptionInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-        root.addView(subscriptionInput, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        subscriptionInput.setPadding(dp(6), dp(2), dp(6), dp(2));
+        LinearLayout.LayoutParams inputParams = new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        subscriptionRow.addView(subscriptionInput, inputParams);
 
-        LinearLayout subscriptionRow = new LinearLayout(this);
-        subscriptionRow.setOrientation(LinearLayout.HORIZONTAL);
-        root.addView(subscriptionRow);
-
-        Button pasteButton = new Button(this);
-        pasteButton.setText("Вставить");
-        pasteButton.setFocusable(true);
-        pasteButton.setOnClickListener(view -> pasteFromClipboard());
-        subscriptionRow.addView(pasteButton);
-
-        Button loadButton = new Button(this);
-        loadButton.setText("Загрузить");
-        loadButton.setFocusable(true);
-        loadButton.setOnClickListener(view -> loadSubscription());
-        subscriptionRow.addView(loadButton);
+        Button pasteAndLoadButton = new Button(this);
+        pasteAndLoadButton.setText("Вставить и загрузить");
+        pasteAndLoadButton.setTextSize(12);
+        pasteAndLoadButton.setFocusable(true);
+        pasteAndLoadButton.setOnClickListener(view -> pasteAndLoad());
+        subscriptionRow.addView(pasteAndLoadButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LinearLayout engineRow = new LinearLayout(this);
         engineRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -335,24 +336,27 @@ public final class MainActivity extends Activity {
         updateStatus();
     }
 
-    private void pasteFromClipboard() {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (clipboard == null || !clipboard.hasPrimaryClip() || clipboard.getPrimaryClip() == null
-                || clipboard.getPrimaryClip().getItemCount() == 0) {
-            statusView.setText("Буфер обмена пуст");
-            return;
+    /** Одна кнопка: если поле пустое — берём из буфера, затем загружаем. */
+    private void pasteAndLoad() {
+        String url = subscriptionInput.getText().toString().trim();
+        if (url.isEmpty()) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            CharSequence text = null;
+            if (clipboard != null && clipboard.hasPrimaryClip() && clipboard.getPrimaryClip() != null
+                    && clipboard.getPrimaryClip().getItemCount() > 0) {
+                text = clipboard.getPrimaryClip().getItemAt(0).coerceToText(this);
+            }
+            if (text == null || text.toString().trim().isEmpty()) {
+                statusView.setText("Буфер обмена пуст — введите URL подписки");
+                return;
+            }
+            url = text.toString().trim();
+            subscriptionInput.setText(url);
         }
-        CharSequence text = clipboard.getPrimaryClip().getItemAt(0).coerceToText(this);
-        if (text == null || text.toString().trim().isEmpty()) {
-            statusView.setText("Буфер обмена пуст");
-            return;
-        }
-        subscriptionInput.setText(text.toString().trim());
-        statusView.setText("Подписка вставлена — нажмите «Загрузить»");
+        loadSubscription(url);
     }
 
-    private void loadSubscription() {
-        final String url = subscriptionInput.getText().toString().trim();
+    private void loadSubscription(final String url) {
         if (url.isEmpty()) {
             statusView.setText("Вставьте ссылку на подписку");
             return;
@@ -368,16 +372,11 @@ public final class MainActivity extends Activity {
                     Subscription.saveNodes(this, socks);
                 }
                 final int socksCount = socks.size();
-                final boolean json = raw.trim().startsWith("{") || raw.trim().startsWith("[");
                 handler.post(() -> {
                     refreshNodes();
-                    if (socksCount > 0) {
-                        statusView.setText("Подписка загружена: " + socksCount + " socks/http нод");
-                    } else if (json) {
-                        statusView.setText("JSON-подписка сохранена — выберите ядро и подключитесь");
-                    } else {
-                        statusView.setText("В подписке нет socks/http нод и она не JSON");
-                    }
+                    statusView.setText(socksCount > 0
+                            ? "Подписка загружена: " + socksCount + " socks/http нод"
+                            : "Подписка загружена: ядра могут подключаться");
                 });
             } catch (final Exception error) {
                 handler.post(() -> statusView.setText("Ошибка подписки: " + error.getMessage()));
