@@ -91,10 +91,6 @@ final class EngineRunner {
         if (requested == null) {
             throw new IllegalArgumentException("ядро не выбрано");
         }
-        if (requested == Kind.XRAY && is32BitArm()) {
-            throw new IOException("Xray не выпускает сборку под 32-битный ARM — выберите sing-box");
-        }
-
         File binary = ensureBinary(requested);
         port = freePort();
         controllerPort = requested == Kind.SINGBOX ? freePort() : 0;
@@ -164,7 +160,7 @@ final class EngineRunner {
             url = arm64 ? SB_ARM64 : SB_ARM;
         } else {
             if (!arm64) {
-                throw new IOException("Xray не выпускает сборку под 32-битный ARM — выберите sing-box");
+                throw new IOException("встроенной сборки Xray для ARM нет, а официальной загрузки не существует");
             }
             url = XRAY_ARM64;
         }
@@ -195,6 +191,9 @@ final class EngineRunner {
      */
     private boolean extractFromAssets(Kind requested) {
         if (requested == Kind.XRAY) {
+            if (is32BitArm()) {
+                return copyAssetBinary("xray-android-arm", "xray");
+            }
             return extractAsset("xray-android-arm64.zip", requested, false);
         }
         String base = is32BitArm() ? "sing-box-android-arm" : "sing-box-android-arm64";
@@ -286,6 +285,27 @@ final class EngineRunner {
             //noinspection ResultOfMethodCallIgnored
             nested.renameTo(target);
         }
+    }
+
+    /** Копирование готового бинарника из assets (без архива). */
+    private boolean copyAssetBinary(String assetName, String targetName) {
+        File dir = new File(context.getFilesDir(), "bin");
+        //noinspection ResultOfMethodCallIgnored
+        dir.mkdirs();
+        File target = new File(dir, targetName);
+        try (InputStream in = context.getAssets().open(ASSET_DIR + "/" + assetName);
+             FileOutputStream out = new FileOutputStream(target)) {
+            byte[] buffer = new byte[65536];
+            int read;
+            while ((read = in.read(buffer)) > 0) {
+                out.write(buffer, 0, read);
+            }
+        } catch (Exception error) {
+            Log.w(TAG, "встроенного ядра нет: " + assetName);
+            return false;
+        }
+        target.setExecutable(true, false);
+        return target.exists();
     }
 
     /** Рекурсивный поиск файла по имени. */
