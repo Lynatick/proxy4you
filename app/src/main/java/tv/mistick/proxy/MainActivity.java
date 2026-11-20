@@ -33,11 +33,14 @@ public final class MainActivity extends Activity {
 
     private static final int VPN_REQUEST = 1001;
     private static final int NOTIFICATION_REQUEST = 1002;
+    private static final String PREFS = "engine";
+    private static final String KEY_ENGINE = "selected";
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<NodeStore.Node> nodes = new ArrayList<>();
 
     private TextView statusView;
+    private TextView channelView;
     private Button toggleButton;
     private Button appsButton;
     private TextView accessView;
@@ -79,6 +82,12 @@ public final class MainActivity extends Activity {
         statusView.setTextSize(16);
         statusView.setPadding(0, dp(6), 0, dp(16));
         root.addView(statusView);
+
+        channelView = new TextView(this);
+        channelView.setTextColor(Color.parseColor("#9FB3C8"));
+        channelView.setTextSize(14);
+        channelView.setPadding(0, dp(2), 0, dp(8));
+        root.addView(channelView);
 
         toggleButton = new Button(this);
         toggleButton.setText(R.string.connect);
@@ -145,11 +154,22 @@ public final class MainActivity extends Activity {
         xrayEngine.setFocusable(true);
         engineRow.addView(xrayEngine);
 
+        String savedEngine = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_ENGINE, "");
+        if ("sing-box".equals(savedEngine)) {
+            singBoxEngine.setChecked(true);
+        } else if ("xray".equals(savedEngine)) {
+            xrayEngine.setChecked(true);
+        }
+
         singBoxEngine.setOnCheckedChangeListener((view, checked) -> {
             if (checked) xrayEngine.setChecked(false);
+            saveSelectedEngine();
+            applyEngineChange();
         });
         xrayEngine.setOnCheckedChangeListener((view, checked) -> {
             if (checked) singBoxEngine.setChecked(false);
+            saveSelectedEngine();
+            applyEngineChange();
         });
 
         Button refreshNodesButton = new Button(this);
@@ -249,6 +269,24 @@ public final class MainActivity extends Activity {
         if (singBoxEngine != null && singBoxEngine.isChecked()) return "sing-box";
         if (xrayEngine != null && xrayEngine.isChecked()) return "xray";
         return null;
+    }
+
+    private void saveSelectedEngine() {
+        String engine = selectedEngine();
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                .putString(KEY_ENGINE, engine == null ? "" : engine)
+                .apply();
+    }
+
+    /** Смена ядра на подключённом VPN: перезапускаем канал с новым ядром. */
+    private void applyEngineChange() {
+        if (!ProxyVpnService.running) {
+            updateStatus();
+            return;
+        }
+        statusView.setText("Переключение канала…");
+        stopService(new Intent(this, ProxyVpnService.class));
+        handler.postDelayed(this::connect, 700);
     }
 
     private void connect() {
@@ -429,7 +467,13 @@ public final class MainActivity extends Activity {
 
     private void updateStatus() {
         boolean isRunning = ProxyVpnService.running;
-        statusView.setText(ProxyVpnService.status);
+        statusView.setText(isRunning ? ProxyVpnService.status : "Выключено");
+        String engine = selectedEngine();
+        if (isRunning) {
+            channelView.setText("Через: " + ProxyVpnService.currentNode);
+        } else {
+            channelView.setText(engine == null ? "Канал: ноды пула" : "Канал: ядро " + engine);
+        }
         toggleButton.setText(isRunning ? R.string.disconnect : R.string.connect);
         int count = AppSelection.load(this).size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");

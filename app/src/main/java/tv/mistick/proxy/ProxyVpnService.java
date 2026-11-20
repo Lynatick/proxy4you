@@ -43,6 +43,8 @@ public final class ProxyVpnService extends VpnService {
     static volatile int socksPort = 0;
     /** Через что идёт подключение: ядро или нода (для интерфейса). */
     static volatile String currentNode = "—";
+    /** Какое ядро запросил пользователь (даже если оно не поднялось). */
+    static volatile String requestedEngine = null;
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
     static volatile int batchIndex = 0;
     /** Порт clash_api sing-box (0 — нет) и идентификатор запущенного ядра. */
@@ -121,6 +123,7 @@ public final class ProxyVpnService extends VpnService {
         final int port = intent.getIntExtra("port", 0);
         final boolean useSocks = intent.getBooleanExtra("socks", true);
         final EngineRunner.Kind engineKind = EngineRunner.Kind.from(engineId);
+        requestedEngine = engineKind == null ? null : engineKind.id;
         final int requestedBatch = intent.getIntExtra("batch", 0);
 
         // Загрузка ядра может занять минуты: только не в главном потоке.
@@ -242,6 +245,9 @@ public final class ProxyVpnService extends VpnService {
         String via;
         if (engine != null && engine.isRunning()) {
             via = "ядро " + engine.kind().id;
+        } else if (engineKindId != null) {
+            // Ядро было запрошено, но не работает: не выдаём это за ноду пула.
+            via = "ядро " + engineKindId + " не запущено";
         } else if (pool != null && pool.current() != null) {
             via = pool.current().label();
         } else if (pool != null && pool.size() > 0) {
@@ -344,6 +350,7 @@ public final class ProxyVpnService extends VpnService {
             engine = null;
         }
         currentNode = "—";
+        requestedEngine = null;
         controllerPort = 0;
         engineKindId = null;
         socksPort = 0;
