@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.7.1.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.7.2.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.7.1.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 3
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.7.1.apk
+adb install -r Dist/YouTubeProxy-TV-1.7.2.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -131,12 +131,11 @@ monosans, hookzof (socks5). Список сохраняется в `public_nodes
 ноду и её задержку, а также до шести нод пачки с измеренными задержками. Xray
 такого API не отдаёт — для него выводится «текущую ноду ядро не отдаёт».
 
-## Маршрутизация по сервисам
+## Маршрутизация
 
-Под кнопками — переключатели: YouTube, ChatGPT, Telegram, WhatsApp, GitHub и
-«Всё». Отмеченные сервисы идут через прокси-ноду, остальной трафик открывается
-напрямую (сокет проходит `VpnService.protect()`, поэтому не зацикливается в TUN).
-По умолчанию выбран только YouTube. Настройка сохраняется между запусками.
+Выбора сервисов нет: весь трафик VPN идёт через прокси. Ограничение остаётся
+на уровне приложений — в VPN попадают только отмеченные в «Приложения для VPN»
+(по умолчанию YouTube).
 
 ## Проверка доступа
 

@@ -35,7 +35,7 @@ final class NodePool {
         }
 
         String label() {
-            return node.host + ":" + node.port;
+            return (node.socks5 ? "SOCKS5 · " : "HTTP · ") + node.host + ":" + node.port;
         }
     }
 

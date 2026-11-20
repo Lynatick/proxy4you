@@ -25,10 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** Экран под пульт: список нод, подключение кнопкой OK, статус и трафик. */
@@ -49,8 +46,6 @@ public final class MainActivity extends Activity {
     private EditText subscriptionInput;
     private ArrayAdapter<String> adapter;
     private NodeStore.Node selected;
-    private final Map<RoutePolicy.Group, CheckBox> groupBoxes = new EnumMap<>(RoutePolicy.Group.class);
-    private CheckBox everythingBox;
     private CheckBox singBoxEngine;
     private CheckBox xrayEngine;
 
@@ -177,58 +172,6 @@ public final class MainActivity extends Activity {
         root.addView(nextBatchButton, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        TextView routingTitle = new TextView(this);
-        routingTitle.setText("Через прокси идут:");
-        routingTitle.setTextColor(Color.parseColor("#9FB3C8"));
-        routingTitle.setTextSize(14);
-        routingTitle.setPadding(0, dp(14), 0, dp(4));
-        root.addView(routingTitle);
-
-        LinearLayout routingRow = new LinearLayout(this);
-        routingRow.setOrientation(LinearLayout.HORIZONTAL);
-        root.addView(routingRow);
-
-        everythingBox = new CheckBox(this);
-        everythingBox.setText("Всё");
-        everythingBox.setTextColor(Color.WHITE);
-        everythingBox.setTextSize(14);
-        everythingBox.setFocusable(true);
-        everythingBox.setChecked(RoutePolicy.everything(this));
-        routingRow.addView(everythingBox);
-
-        Set<RoutePolicy.Group> chosen = RoutePolicy.load(this);
-        for (RoutePolicy.Group group : RoutePolicy.Group.values()) {
-            CheckBox box = new CheckBox(this);
-            box.setText(group.title);
-            box.setTextColor(Color.WHITE);
-            box.setTextSize(14);
-            box.setFocusable(true);
-            box.setChecked(chosen.contains(group));
-            routingRow.addView(box);
-            groupBoxes.put(group, box);
-        }
-
-        Runnable saveRouting = () -> {
-            Set<RoutePolicy.Group> selectedGroups = new LinkedHashSet<>();
-            for (Map.Entry<RoutePolicy.Group, CheckBox> entry : groupBoxes.entrySet()) {
-                if (entry.getValue().isChecked()) {
-                    selectedGroups.add(entry.getKey());
-                }
-            }
-            RoutePolicy.save(this, selectedGroups);
-        };
-
-        everythingBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            RoutePolicy.setEverything(this, isChecked);
-            for (CheckBox box : groupBoxes.values()) {
-                box.setEnabled(!isChecked);
-            }
-        });
-        for (CheckBox box : groupBoxes.values()) {
-            box.setEnabled(!everythingBox.isChecked());
-            box.setOnCheckedChangeListener((buttonView, isChecked) -> saveRouting.run());
-        }
-
         Button accessButton = new Button(this);
         accessButton.setText("Проверить доступ");
         accessButton.setFocusable(true);
@@ -283,8 +226,10 @@ public final class MainActivity extends Activity {
 
     private List<String> labels() {
         List<String> out = new ArrayList<>();
+        String active = ProxyVpnService.currentNode;
         for (NodeStore.Node node : nodes) {
-            out.add(node.label());
+            String label = node.label();
+            out.add(label.equals(active) ? "▶ " + label : label);
         }
         if (out.isEmpty()) {
             out.add("Нет нод — пересоберите экспорт с Mac");

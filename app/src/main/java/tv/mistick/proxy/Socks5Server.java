@@ -126,10 +126,9 @@ final class Socks5Server {
             }
 
             // Что не входит в выбранные сервисы — идёт напрямую.
+            // Весь трафик VPN идёт через прокси; ограничение — на уровне приложений.
             Socket upstream;
-            if (!RoutePolicy.requiresProxy(vpn, host)) {
-                upstream = openDirect(host, targetPort);
-            } else if (engine != null && engine.isRunning()) {
+            if (engine != null && engine.isRunning()) {
                 upstream = openThroughEngine(host, targetPort);
                 if (upstream == null) {
                     upstream = openThroughAnyNode(host, targetPort);
@@ -194,22 +193,6 @@ final class Socks5Server {
                 engineFailures = 0;
                 ProxyVpnService.requestNextBatch();
             }
-            return null;
-        }
-    }
-
-    /** Прямое соединение: сокет исключается из VPN, чтобы не зациклиться в TUN. */
-    private Socket openDirect(String host, int port) {
-        Socket socket = new Socket();
-        try {
-            if (!vpn.protect(socket)) {
-                socket.close();
-                return null;
-            }
-            socket.connect(new InetSocketAddress(host, port), 8000);
-            return socket;
-        } catch (IOException error) {
-            closeQuietly(socket);
             return null;
         }
     }

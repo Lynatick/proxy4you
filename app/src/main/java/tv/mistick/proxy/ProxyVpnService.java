@@ -41,6 +41,8 @@ public final class ProxyVpnService extends VpnService {
     static volatile String status = "Выключено";
     /** Порт локального SOCKS5, пока VPN работает (0 — выключен). */
     static volatile int socksPort = 0;
+    /** Через что идёт подключение: ядро или нода (для интерфейса). */
+    static volatile String currentNode = "—";
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
     static volatile int batchIndex = 0;
     /** Порт clash_api sing-box (0 — нет) и идентификатор запущенного ядра. */
@@ -251,7 +253,8 @@ public final class ProxyVpnService extends VpnService {
         String failovers = switchCount > 0 ? " · переключений: " + switchCount : "";
         String batch = engine != null && engine.isRunning() && batchCount > 1
                 ? " · пачка " + (batchIndex + 1) + "/" + batchCount : "";
-        status = "Подключено · " + via + batch + " · " + scope + failovers;
+        currentNode = via + batch;
+        status = "Подключено · через " + via + batch + " · " + scope + failovers;
         updateNotification(status);
     }
 
@@ -340,6 +343,7 @@ public final class ProxyVpnService extends VpnService {
             engine.stop();
             engine = null;
         }
+        currentNode = "—";
         controllerPort = 0;
         engineKindId = null;
         socksPort = 0;

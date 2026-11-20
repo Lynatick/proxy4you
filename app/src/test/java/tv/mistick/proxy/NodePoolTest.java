@@ -27,7 +27,7 @@ public class NodePoolTest {
         pool.recordFailure(first);
 
         assertNotNull("после сбоя пул не должен оставаться без ноды", pool.current());
-        assertEquals("2.2.2.2:1080", pool.current().label());
+        assertEquals("SOCKS5 · 2.2.2.2:1080", pool.current().label());
     }
 
     @Test
