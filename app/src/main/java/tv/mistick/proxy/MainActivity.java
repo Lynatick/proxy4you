@@ -16,12 +16,10 @@ import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -50,7 +48,6 @@ public final class MainActivity extends Activity {
     private TextView footer;
     private TextView nodeInfoView;
     private EditText subscriptionInput;
-    private ArrayAdapter<String> adapter;
     private NodeStore.Node selected;
     private CheckBox singBoxEngine;
     private CheckBox xrayEngine;
@@ -234,31 +231,10 @@ public final class MainActivity extends Activity {
         nodeInfoView.setPadding(0, dp(2), 0, dp(8));
         root.addView(nodeInfoView);
 
-        TextView hint = new TextView(this);
-        hint.setText("Выберите ноду (OK). Список отсортирован по задержке.");
-        hint.setTextColor(Color.parseColor("#6B7C8F"));
-        hint.setPadding(0, dp(16), 0, dp(8));
-        root.addView(hint);
-
-        ListView list = new ListView(this);
-        list.setBackgroundColor(Color.parseColor("#151A26"));
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, labels());
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position < nodes.size()) {
-                    selected = nodes.get(position);
-                    connect();
-                }
-            }
-        });
-        root.addView(list, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-
         footer = new TextView(this);
-        footer.setText("Нод в списке: " + nodes.size());
+        footer.setText("Нод: " + nodes.size());
         footer.setTextColor(Color.parseColor("#6B7C8F"));
+        footer.setTextSize(12);
         footer.setGravity(Gravity.END);
         footer.setPadding(0, dp(8), 0, 0);
         root.addView(footer);
@@ -266,19 +242,6 @@ public final class MainActivity extends Activity {
         setContentView(root);
         toggleButton.requestFocus();
         maybeCheckUpdatesSilently();
-    }
-
-    private List<String> labels() {
-        List<String> out = new ArrayList<>();
-        String active = ProxyVpnService.currentNode;
-        for (NodeStore.Node node : nodes) {
-            String label = node.label();
-            out.add(label.equals(active) ? "▶ " + label : label);
-        }
-        if (out.isEmpty()) {
-            out.add("Нет нод — пересоберите экспорт с Mac");
-        }
-        return out;
     }
 
     private void toggle() {
@@ -413,13 +376,8 @@ public final class MainActivity extends Activity {
         if (selected == null && !nodes.isEmpty()) {
             selected = nodes.get(0);
         }
-        if (adapter != null) {
-            adapter.clear();
-            adapter.addAll(labels());
-            adapter.notifyDataSetChanged();
-        }
         if (footer != null) {
-            footer.setText("Нод в списке: " + nodes.size());
+            footer.setText("Нод: " + nodes.size());
         }
     }
 
