@@ -49,6 +49,7 @@ final class EngineRunner {
     }
 
     private static final String TAG = "MiStickProxy";
+    private static final String ASSET_DIR = "engines";
     private static final String SB_ARM64 = "https://github.com/SagerNet/sing-box/releases/download/v1.14.4/sing-box-1.14.4-android-arm64.tar.gz";
     private static final String SB_ARM = "https://github.com/SagerNet/sing-box/releases/download/v1.14.4/sing-box-1.14.4-android-arm.tar.gz";
     private static final String XRAY_ARM64 = "https://github.com/XTLS/Xray-core/releases/download/v26.11.9/Xray-android-arm64-v8a.zip";
@@ -151,6 +152,11 @@ final class EngineRunner {
             return file;
         }
 
+        // Ядра встроены в APK: сначала распаковываем из assets, сеть — только запасной путь.
+        if (extractFromAssets(requested)) {
+            return file;
+        }
+
         String abi = Build.SUPPORTED_ABIS.length > 0 ? Build.SUPPORTED_ABIS[0] : "arm64-v8a";
         boolean arm64 = abi.contains("arm64");
         String url;
@@ -169,7 +175,7 @@ final class EngineRunner {
         if (url.endsWith(".zip")) {
             unzip(archive, dir);
         } else {
-            untar(archive, dir);
+            untar(archive, dir, true);
         }
         File extracted = new File(dir, requested.id);
         if (!extracted.exists()) {
@@ -179,6 +185,57 @@ final class EngineRunner {
         //noinspection ResultOfMethodCallIgnored
         archive.delete();
         return extracted;
+    }
+
+    /**
+     * Распаковка встроенного архива из assets. false — архива нет или он битый.
+     *
+     * AGP при упаковке распаковывает `.tar.gz` в `.tar`, поэтому пробуем оба имени:
+     * сначала `.tar` (без -z), затем `.tar.gz` (с -z).
+     */
+    private boolean extractFromAssets(Kind requested) {
+        if (requested == Kind.XRAY) {
+            return extractAsset("xray-android-arm64.zip", requested, false);
+        }
+        String base = is32BitArm() ? "sing-box-android-arm" : "sing-box-android-arm64";
+        return extractAsset(base + ".tar", requested, false)
+                || extractAsset(base + ".tar.gz", requested, true);
+    }
+
+    private boolean extractAsset(String name, Kind requested, boolean gzipped) {
+        File archive = new File(context.getFilesDir(), name);
+        try (InputStream in = context.getAssets().open(ASSET_DIR + "/" + name);
+             FileOutputStream out = new FileOutputStream(archive)) {
+            byte[] buffer = new byte[65536];
+            int read;
+            while ((read = in.read(buffer)) > 0) {
+                out.write(buffer, 0, read);
+            }
+        } catch (Exception error) {
+            return false;
+        }
+
+        File dir = new File(context.getFilesDir(), "bin");
+        //noinspection ResultOfMethodCallIgnored
+        dir.mkdirs();
+        try {
+            if (name.endsWith(".zip")) {
+                unzip(archive, dir);
+            } else {
+                untar(archive, dir, gzipped);
+            }
+            File binary = new File(dir, requested.id);
+            if (!binary.exists()) {
+                return false;
+            }
+            binary.setExecutable(true, false);
+            //noinspection ResultOfMethodCallIgnored
+            archive.delete();
+            return true;
+        } catch (Exception error) {
+            Log.w(TAG, "не удалось распаковать " + name, error);
+            return false;
+        }
     }
 
     private boolean is32BitArm() {
@@ -212,23 +269,45 @@ final class EngineRunner {
         }
     }
 
-    private void untar(File archive, File dir) throws Exception {
-        Process process = new ProcessBuilder("/system/bin/tar", "-xzf", archive.getAbsolutePath(),
+    private void untar(File archive, File dir, boolean gzipped) throws Exception {
+        String flag = gzipped ? "-xzf" : "-xf";
+        Process process = new ProcessBuilder("/system/bin/tar", flag, archive.getAbsolutePath(),
                 "-C", dir.getAbsolutePath()).start();
         int code = process.waitFor();
         if (code != 0) {
             throw new IOException("tar завершился с кодом " + code);
         }
-        // внутри архива может быть подкаталог — поднимаем файл наверх
-        File nested = new File(dir, archive.getName().replace(".tar.gz", ""));
-        File nestedBinary = new File(nested, "sing-box");
-        if (nestedBinary.exists()) {
-            File target = new File(dir, "sing-box");
+        // внутри архива есть подкаталог (sing-box-1.14.4-android-arm64/sing-box)
+        File nested = findFile(dir, "sing-box");
+        File target = new File(dir, "sing-box");
+        if (nested != null && !nested.getAbsolutePath().equals(target.getAbsolutePath())) {
             //noinspection ResultOfMethodCallIgnored
             target.delete();
             //noinspection ResultOfMethodCallIgnored
-            nestedBinary.renameTo(target);
+            nested.renameTo(target);
         }
+    }
+
+    /** Рекурсивный поиск файла по имени. */
+    private File findFile(File dir, String name) {
+        File[] children = dir.listFiles();
+        if (children == null) {
+            return null;
+        }
+        for (File child : children) {
+            if (child.isFile() && child.getName().equals(name)) {
+                return child;
+            }
+        }
+        for (File child : children) {
+            if (child.isDirectory()) {
+                File found = findFile(child, name);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     private void unzip(File archive, File dir) throws Exception {

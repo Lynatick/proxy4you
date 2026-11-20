@@ -12,7 +12,7 @@ VPN и пускает **только выбранные приложения** �
 из macOS-приложения.
 
 ```
-Dist/YouTubeProxy-TV-1.5.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
+Dist/YouTubeProxy-TV-1.6.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 30
 ```
 
 ## Установка
@@ -23,7 +23,7 @@ Dist/YouTubeProxy-TV-1.5.0.apk   arm64-v8a + armeabi-v7a, minSdk 23, targetSdk 3
 
 ```
 adb connect <ip-телевизора>:5555
-adb install -r Dist/YouTubeProxy-TV-1.5.0.apk
+adb install -r Dist/YouTubeProxy-TV-1.6.0.apk
 ```
 
 Либо скопировать APK на флешку и открыть файловым менеджером (`Downloader`).
@@ -104,8 +104,9 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
 работает пул socks5/http нод). Ядро запускается отдельным процессом и поднимает
 локальный вход; наш SOCKS5-сервер ходит в него как в обычную ноду.
 
-- **Бинарники не встраиваются в APK** (sing-box — 73–79 МБ, Xray — 32 МБ):
-  скачиваются при первом запуске под ABI устройства в `filesDir/bin/`.
+- **Ядра встроены в APK**: сжатые архивы лежат в `assets/engines` (~64 МБ), при
+  первом запуске распаковываются в `filesDir/bin/`. Сеть не нужна; загрузка с
+  GitHub осталась запасным путём. APK получается ~65 МБ.
 - **sing-box**: есть под arm64-v8a и armeabi-v7a.
 - **Xray**: только arm64-v8a (официальной сборки под 32-битный ARM нет) — на
   32-битных ТВ выбирайте sing-box.
