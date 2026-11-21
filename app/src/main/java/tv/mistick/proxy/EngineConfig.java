@@ -58,7 +58,7 @@ final class EngineConfig {
         inbound.put("listen_port", inboundPort);
 
         JSONObject config = new JSONObject();
-        config.put("log", new JSONObject().put("level", "warn"));
+        config.put("log", new JSONObject().put("level", "warn").put("timestamp", true));
         config.put("inbounds", new JSONArray().put(inbound));
         config.put("outbounds", outbounds);
         config.put("route", new JSONObject().put("final", "auto"));
@@ -178,27 +178,10 @@ final class EngineConfig {
         }
 
         for (int i = 0; i < source.length(); i++) {
-            JSONObject record = source.optJSONObject(i);
-            if (record == null) {
-                continue;
+            JSONObject prepared = prepare(source.optJSONObject(i), seen, nodes.size());
+            if (prepared != null) {
+                nodes.add(prepared);
             }
-            String type = record.optString("type", "").toLowerCase();
-            if (type.isEmpty() || serviceTypes.contains(type)) {
-                continue;
-            }
-            if (record.optString("server", "").isEmpty() || record.optInt("server_port", 0) <= 0) {
-                continue;
-            }
-            String tag = record.optString("tag", record.optString("name", ""));
-            if (tag.isEmpty()) {
-                tag = "n" + nodes.size();
-            }
-            if (!seen.add(tag)) {
-                continue;
-            }
-            record.put("tag", tag);
-            normalize(record);
-            nodes.add(record);
         }
         return nodes;
     }
@@ -207,6 +190,43 @@ final class EngineConfig {
      * Приводит outbound к тому, что примет sing-box: `transport: tcp` запрещён
      * (поле нужно убрать), а reality требует uTLS.
      */
+    /** Служебные типы, которые не являются узлами. */
+    private static final java.util.Set<String> SERVICE_TYPES = new java.util.HashSet<>(
+            java.util.Arrays.asList("selector", "urltest", "direct", "block", "dns", "reject", "fallback"));
+
+    /** Проверяет и нормализует один outbound; null — запись не годится. */
+    private static JSONObject prepare(JSONObject record, java.util.Set<String> seen, int index) {
+        if (record == null) {
+            return null;
+        }
+        String type = record.optString("type", "").toLowerCase();
+        if (type.isEmpty() || SERVICE_TYPES.contains(type)) {
+            return null;
+        }
+        if (record.optString("server", "").isEmpty() || record.optInt("server_port", 0) <= 0) {
+            return null;
+        }
+        String tag = record.optString("tag", record.optString("name", ""));
+        if (tag.isEmpty()) {
+            tag = "n" + index;
+        }
+        if (!seen.add(tag)) {
+            return null;
+        }
+        try {
+            record.put("tag", tag);
+        } catch (Exception ignored) {
+            return null;
+        }
+        normalize(record);
+        return record;
+    }
+
+    /** sing-box принимает только эти отпечатки uTLS; прочие (например, unsafe) → chrome. */
+    private static final java.util.Set<String> UTLS_FINGERPRINTS = new java.util.HashSet<>(
+            java.util.Arrays.asList("chrome", "firefox", "safari", "ios", "android", "edge",
+                    "360", "qq", "random", "randomized"));
+
     private static void normalize(JSONObject record) {
         try {
             JSONObject transport = record.optJSONObject("transport");
@@ -218,6 +238,13 @@ final class EngineConfig {
                 JSONObject reality = tls.optJSONObject("reality");
                 if (reality != null && reality.optBoolean("enabled", false) && !tls.has("utls")) {
                     tls.put("utls", new JSONObject().put("enabled", true).put("fingerprint", "chrome"));
+                }
+                JSONObject utls = tls.optJSONObject("utls");
+                if (utls != null) {
+                    String fingerprint = utls.optString("fingerprint", "chrome").toLowerCase();
+                    if (!UTLS_FINGERPRINTS.contains(fingerprint)) {
+                        utls.put("fingerprint", "chrome");
+                    }
                 }
             }
         } catch (Exception ignored) {
@@ -365,12 +392,139 @@ final class EngineConfig {
         return stream;
     }
 
-    /** Сколько пачек получится из подписки. */
-    static int batchCount(String subscriptionJson) throws Exception {
-        return batchCount(nodesFromText(subscriptionJson));
-    }
-
     static int batchCount(List<JSONObject> nodes) {
         return Math.max(1, (nodes.size() + BATCH_SIZE - 1) / BATCH_SIZE);
+    }
+
+    // ------------------------------------------------------------------
+    // Разбор больших подписок по одной пачке.
+    //
+    // Держать в памяти все outbounds нельзя: goida/all.json содержит 57 601
+    // outbound, и на 32-битном ТВ (heap 256 МБ) это даёт OutOfMemoryError.
+    // Поэтому считаем и извлекаем элементы прямо по тексту, разбирая только
+    // нужный диапазон.
+    // ------------------------------------------------------------------
+
+    /** Индекс '[' массива outbounds/proxies или -1. */
+    private static int arrayStart(String text) {
+        for (String key : new String[]{"\"outbounds\"", "\"proxies\""}) {
+            int keyIndex = text.indexOf(key);
+            if (keyIndex >= 0) {
+                int bracket = text.indexOf('[', keyIndex);
+                if (bracket >= 0) {
+                    return bracket;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /** Сколько пачек в подписке: JSON считаем сканированием, ссылки — разбором. */
+    static int batchCountText(String text) {
+        if (!text.trim().startsWith("{")) {
+            return batchCount(ShareLinkParser.parse(text));
+        }
+        int start = arrayStart(text);
+        if (start < 0) {
+            return 1;
+        }
+        int count = 0;
+        int depth = 1;
+        boolean inString = false;
+        boolean escape = false;
+        for (int i = start + 1; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (inString) {
+                if (escape) {
+                    escape = false;
+                } else if (c == '\\') {
+                    escape = true;
+                } else if (c == '"') {
+                    inString = false;
+                }
+                continue;
+            }
+            if (c == '"') {
+                inString = true;
+            } else if (c == '{' || c == '[') {
+                depth++;
+                if (depth == 2) {
+                    count++;
+                }
+            } else if (c == '}' || c == ']') {
+                depth--;
+                if (depth == 0) {
+                    break;
+                }
+            }
+        }
+        return Math.max(1, (count + BATCH_SIZE - 1) / BATCH_SIZE);
+    }
+
+    /** Элементы пачки `batchIndex`; при JSON в память попадает только она. */
+    static List<JSONObject> batchFromText(String text, int batchIndex) throws Exception {
+        if (!text.trim().startsWith("{")) {
+            List<JSONObject> links = ShareLinkParser.parse(text);
+            int from = Math.max(0, batchIndex) * BATCH_SIZE;
+            if (from >= links.size()) {
+                return new ArrayList<>();
+            }
+            return new ArrayList<>(links.subList(from, Math.min(from + BATCH_SIZE, links.size())));
+        }
+        List<JSONObject> result = new ArrayList<>();
+        int start = arrayStart(text);
+        if (start < 0) {
+            return result;
+        }
+        int from = Math.max(0, batchIndex) * BATCH_SIZE;
+        int to = from + BATCH_SIZE;
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        int depth = 1;
+        int index = -1;
+        int elementStart = -1;
+        boolean inString = false;
+        boolean escape = false;
+
+        for (int i = start + 1; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (inString) {
+                if (escape) {
+                    escape = false;
+                } else if (c == '\\') {
+                    escape = true;
+                } else if (c == '"') {
+                    inString = false;
+                }
+                continue;
+            }
+            if (c == '"') {
+                inString = true;
+            } else if (c == '{' || c == '[') {
+                depth++;
+                if (depth == 2) {
+                    elementStart = i;
+                }
+            } else if (c == '}' || c == ']') {
+                if (depth == 2 && elementStart >= 0) {
+                    index++;
+                    if (index >= from && index < to) {
+                        JSONObject prepared = prepare(
+                                new JSONObject(text.substring(elementStart, i + 1)), seen, index);
+                        if (prepared != null) {
+                            result.add(prepared);
+                        }
+                    }
+                    elementStart = -1;
+                    if (index + 1 >= to) {
+                        break;
+                    }
+                }
+                depth--;
+                if (depth == 0) {
+                    break;
+                }
+            }
+        }
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 package tv.mistick.proxy;
 
 import android.net.VpnService;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,8 @@ import java.util.Set;
  * открывается туннель к удалённой ноде (HTTP CONNECT или SOCKS5).
  */
 final class Socks5Server {
+
+    private static final String TAG = "MiStickProxy";
 
     private final VpnService vpn;
     private final NodePool pool;
@@ -185,8 +188,7 @@ final class Socks5Server {
         Socket socket = new Socket();
         try {
             if (!vpn.protect(socket)) {
-                socket.close();
-                return null;
+                Log.w(TAG, "protect() отказал для входа ядра — идём напрямую");
             }
             socket.connect(new InetSocketAddress("127.0.0.1", engine.port()), 5000);
             Upstream.socks5(socket, host, port);

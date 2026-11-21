@@ -104,7 +104,7 @@ public class EngineConfigTest {
         builder.append("]}");
         String json = builder.toString();
 
-        assertEquals(2, EngineConfig.batchCount(json));
+        assertEquals(2, EngineConfig.batchCountText(json));
         JSONArray first = new JSONObject(EngineConfig.singBox(json, 18080, 0, 0)).getJSONArray("outbounds");
         assertEquals("200 нод + urltest", 201, first.length());
         JSONArray second = new JSONObject(EngineConfig.singBox(json, 18080, 1, 0)).getJSONArray("outbounds");

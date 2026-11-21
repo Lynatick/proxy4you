@@ -95,57 +95,203 @@ final class EngineRunner {
 
         port = freePort();
         controllerPort = requested == Kind.SINGBOX ? freePort() : 0;
-        String config = requested == Kind.SINGBOX
-                ? EngineConfig.singBox(nodes, port, batchIndex, controllerPort)
-                : EngineConfig.xray(nodes, port, batchIndex);
 
         File dir = new File(context.getFilesDir(), "engine");
         //noinspection ResultOfMethodCallIgnored
         dir.mkdirs();
         File configFile = new File(dir, requested.id + ".json");
+
+        // nodes — уже готовая пачка: повторно её не режем (иначе пачка 2+ пустая).
+        // Битые outbounds (например, неизвестный uTLS-отпечаток) отбраковываем по check.
+        java.util.List<org.json.JSONObject> current = new java.util.ArrayList<>(nodes);
+        String config = "";
+        for (int attempt = 0; attempt < 30; attempt++) {
+            config = requested == Kind.SINGBOX
+                    ? EngineConfig.singBox(current, port, 0, controllerPort)
+                    : EngineConfig.xray(current, port, 0);
+            try (FileOutputStream out = new FileOutputStream(configFile)) {
+                out.write(config.getBytes("UTF-8"));
+            }
+            String check = runCapture(binary, 6000, "check", "-c", configFile.getAbsolutePath());
+            int bad = outboundIndex(check);
+            if (bad < 0) {
+                break;
+            }
+            if (bad >= current.size()) {
+                break;
+            }
+            Log.w(TAG, "outbound[" + bad + "] невалиден, отбрасываю: " + check.trim());
+            current.remove(bad);
+            if (current.isEmpty()) {
+                throw new IOException("в подписке нет валидных outbounds");
+            }
+        }
         try (FileOutputStream out = new FileOutputStream(configFile)) {
             out.write(config.getBytes("UTF-8"));
         }
         logPath = new File(dir, requested.id + ".log").getAbsolutePath();
+        Log.i(TAG, "конфиг " + config.length() + " символов, начало: "
+                + config.substring(0, Math.min(160, config.length())));
 
         ProcessBuilder builder = new ProcessBuilder(
                 binary.getAbsolutePath(), "run", "-c", configFile.getAbsolutePath());
         builder.redirectErrorStream(true);
-        // redirectOutput(File) появился в API 26: на API 23 направляем поток вручную.
-        if (Build.VERSION.SDK_INT >= 26) {
-            builder.redirectOutput(new File(logPath));
-        }
-        builder.directory(dir);
+        // Вывод всегда читаем сами: redirectOutput(File) на Android ненадёжен —
+        // дочерний процесс повисает, не дойдя до открытия входа.
+        Log.i(TAG, "ядро: " + binary.getAbsolutePath() + " (" + binary.length()
+                + " байт, exec=" + binary.canExecute() + "), порт " + port);
         process = builder.start();
-        if (Build.VERSION.SDK_INT < 26) {
-            final InputStream stream = process.getInputStream();
-            final FileOutputStream logOut;
-            try {
-                logOut = new FileOutputStream(logPath);
-            } catch (IOException error) {
-                throw new IOException("не удалось открыть лог: " + logPath, error);
-            }
-            Thread pump = new Thread(() -> {
-                byte[] buffer = new byte[8192];
-                try (InputStream in = stream; FileOutputStream out = logOut) {
-                    int read;
-                    while ((read = in.read(buffer)) > 0) {
-                        out.write(buffer, 0, read);
-                    }
-                } catch (IOException ignored) {
-                    // процесс завершился
+        Log.i(TAG, "ядро запущено, pid=" + pid(process));
+
+        final InputStream stream = process.getInputStream();
+        final FileOutputStream logOut = new FileOutputStream(logPath);
+        Log.i(TAG, "поток лога запускается, файл " + logPath);
+        Thread pump = new Thread(() -> {
+            byte[] buffer = new byte[8192];
+            long total = 0;
+            try (InputStream in = stream; FileOutputStream out = logOut) {
+                int read;
+                while ((read = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, read);
+                    out.flush();
+                    total += read;
                 }
-            }, "engine-log");
-            pump.setDaemon(true);
-            pump.start();
-        }
+                Log.i(TAG, "поток лога завершён, прочитано " + total + " байт");
+            } catch (Throwable error) {
+                Log.w(TAG, "поток лога: " + error);
+            }
+        }, "engine-log");
+        pump.setDaemon(true);
+        pump.start();
         kind = requested;
 
         if (!waitForPort(port, 20000)) {
+            String tail = readLogTail(logPath);
+            String version = runAndCapture(binary, "version");
+            String check = runAndCapture(binary, "check", "-c", configFile.getAbsolutePath());
+            Log.e(TAG, "диагностика: version=[" + version + "] check=[" + check + "]");
             stop();
-            throw new IOException(requested.id + " не поднял вход (см. " + logPath + ")");
+            throw new IOException(requested.id + " не поднял вход; version=[" + version
+                    + "] check=[" + check + "] лог: [" + tail + "]");
         }
         return port;
+    }
+
+    /** Номер битого outbound из вывода check (-1 — конфиг валиден). */
+    private static int outboundIndex(String output) {
+        if (output == null || output.isEmpty()) {
+            return -1;
+        }
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("outbound\\[(\\d+)\\]").matcher(output);
+        if (!matcher.find()) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException error) {
+            return -1;
+        }
+    }
+
+    /** Запускает ядро с аргументами и возвращает его вывод (для диагностики). */
+    private String runCapture(File binary, int timeoutMs, String... args) {
+        try {
+            java.util.List<String> command = new java.util.ArrayList<>();
+            command.add(binary.getAbsolutePath());
+            java.util.Collections.addAll(command, args);
+            Process probe = new ProcessBuilder(command).redirectErrorStream(true).start();
+            java.io.InputStream in = probe.getInputStream();
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            long deadline = System.currentTimeMillis() + timeoutMs;
+            while (System.currentTimeMillis() < deadline) {
+                int available = in.available();
+                if (available > 0) {
+                    int read = in.read(buffer, 0, Math.min(buffer.length, available));
+                    if (read > 0) {
+                        out.write(buffer, 0, read);
+                    }
+                } else if (!isAlive(probe)) {
+                    break;
+                } else {
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException stopped) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+            probe.destroy();
+            return out.toString("UTF-8").trim();
+        } catch (Exception error) {
+            return "ошибка запуска: " + error.getMessage();
+        }
+    }
+
+    private String runAndCapture(File binary, String... args) {
+        try {
+            java.util.List<String> command = new java.util.ArrayList<>();
+            command.add(binary.getAbsolutePath());
+            java.util.Collections.addAll(command, args);
+            ProcessBuilder builder = new ProcessBuilder(command);
+            builder.redirectErrorStream(true);
+            Process probe = builder.start();
+            java.io.InputStream in = probe.getInputStream();
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            long deadline = System.currentTimeMillis() + 8000;
+            while (System.currentTimeMillis() < deadline && out.size() < 4096) {
+                int available = in.available();
+                if (available > 0) {
+                    int read = in.read(buffer, 0, Math.min(buffer.length, available));
+                    if (read > 0) {
+                        out.write(buffer, 0, read);
+                    }
+                } else {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException stopped) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+            probe.destroy();
+            return out.toString("UTF-8").trim();
+        } catch (Exception error) {
+            return "ошибка запуска: " + error.getMessage();
+        }
+    }
+
+    /** PID процесса через reflection: Process.pid() есть только с API 26. */
+    private static String pid(Process process) {
+        try {
+            java.lang.reflect.Method method = Process.class.getMethod("pid");
+            return String.valueOf(method.invoke(process));
+        } catch (Exception ignored) {
+            return "?";
+        }
+    }
+
+    /** Последние строки лога ядра — чтобы причина отказа была видна без доступа к файлу. */
+    private static String readLogTail(String path) {
+        java.io.File file = new java.io.File(path);
+        if (!file.exists()) {
+            return "лог пуст";
+        }
+        try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(file, "r")) {
+            long length = raf.length();
+            long from = Math.max(0, length - 1200);
+            raf.seek(from);
+            byte[] buffer = new byte[(int) (length - from)];
+            raf.readFully(buffer);
+            String text = new String(buffer, "UTF-8").trim();
+            return text.isEmpty() ? "лог пуст" : text;
+        } catch (Exception error) {
+            return "лог недоступен: " + error.getMessage();
+        }
     }
 
     /** Process.isAlive() требует API 26: определяем живость по exitValue(). */

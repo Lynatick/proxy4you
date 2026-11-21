@@ -1,6 +1,7 @@
 package tv.mistick.proxy;
 
 import android.net.VpnService;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,15 +13,19 @@ import java.nio.charset.StandardCharsets;
 /** Соединение к удалённой ноде. Сокет обязательно проходит через VpnService.protect(). */
 final class Upstream {
 
+    private static final String TAG = "MiStickProxy";
+
     private Upstream() {
     }
 
     static Socket connect(VpnService vpn, NodeStore.Node node, String host, int port, int timeoutMs)
             throws IOException {
         Socket socket = new Socket();
+        // protect() нужен, только когда трафик приложения попадает в VPN. При белом
+        // списке приложений наш UID из VPN исключён, и protect() возвращает false —
+        // это не ошибка, соединение и так идёт напрямую.
         if (vpn != null && !vpn.protect(socket)) {
-            socket.close();
-            throw new IOException("VpnService.protect() отказал");
+            Log.w(TAG, "protect() отказал — соединение пойдёт напрямую");
         }
         socket.connect(new InetSocketAddress(node.host, node.port), timeoutMs);
         socket.setSoTimeout(timeoutMs);

@@ -66,9 +66,8 @@ public final class ProxyVpnService extends VpnService {
     private Socks5Server socks;
     private NodePool pool;
     private EngineRunner engine;
-    private String subscriptionText;
-    /** Разобранная подписка: пачки режутся из кэша, без повторного парсинга. */
-    private java.util.List<org.json.JSONObject> subscriptionNodes;
+    /** Файл подписки: пачки извлекаются из него по одной, без полного разбора в память. */
+    private java.io.File subscriptionFile;
     private EngineRunner.Kind engineKind;
     private int appliedApps;
     private int switchCount;
@@ -79,6 +78,26 @@ public final class ProxyVpnService extends VpnService {
             if (!running || pool == null) {
                 return;
             }
+            // Если работает ядро, проверяем именно его вход: пул в этом режиме не используется.
+            if (engine != null && engine.isRunning()) {
+                final int enginePort = engine.port();
+                new Thread(() -> {
+                    int latency = Health.probe(ProxyVpnService.this,
+                            new NodeStore.Node("127.0.0.1", enginePort, true), 8000);
+                    lastProbeStatus = Health.lastStatus;
+                    lastProbeLatencyMs = latency;
+                    lastProbeAt = System.currentTimeMillis();
+                    healthHandler.post(() -> {
+                        if (!running) {
+                            return;
+                        }
+                        publishStatus();
+                        healthHandler.postDelayed(healthTask, HEALTH_INTERVAL_MS);
+                    });
+                }, "health-check-engine").start();
+                return;
+            }
+
             final NodePool.Entry active = pool.current();
             new Thread(() -> {
                 boolean switched = false;
@@ -166,18 +185,21 @@ public final class ProxyVpnService extends VpnService {
                 if (!subscription.exists()) {
                     throw new IOException("сначала загрузите подписку кнопкой «Загрузить»");
                 }
-                subscriptionText = new String(readAll(subscription), StandardCharsets.UTF_8);
                 this.engineKind = engineKind;
+                this.subscriptionFile = subscription;
 
-                // Готовность подписки: ядру нужны outbounds, иначе запуск бессмысленен.
-                subscriptionNodes = EngineConfig.nodesFromText(subscriptionText);
-                if (subscriptionNodes.isEmpty()) {
+                // Готовность подписки: текста в памяти не держим (goida — 22 МБ JSON).
+                String text = new String(readAll(subscription), StandardCharsets.UTF_8);
+                batchCount = EngineConfig.batchCountText(text);
+                java.util.List<org.json.JSONObject> batchNodes = EngineConfig.batchFromText(text, requestedBatch);
+                text = null; // отпускаем большой текст до старта ядра
+
+                if (batchNodes.isEmpty()) {
                     throw new IOException("в подписке нет нод, понятных ядру (нужен JSON или share-ссылки)");
                 }
-                batchCount = EngineConfig.batchCount(subscriptionNodes);
                 batchIndex = Math.max(0, requestedBatch) % batchCount;
                 engine = new EngineRunner(this);
-                engine.start(engineKind, subscriptionNodes, batchIndex);
+                engine.start(engineKind, batchNodes, batchIndex);
                 controllerPort = engine.controllerPort();
                 engineKindId = engineKind.id;
                 Log.i(TAG, "ядро " + engineKind.id + " поднято на 127.0.0.1:" + engine.port());
@@ -236,7 +258,7 @@ public final class ProxyVpnService extends VpnService {
      * после успеха заменяет старое. Неудача оставляет работать прежнюю пачку.
      */
     void switchBatch() {
-        if (subscriptionNodes == null || engineKind == null) {
+        if (subscriptionFile == null || engineKind == null) {
             status = "Сначала подключитесь через ядро";
             return;
         }
@@ -248,7 +270,13 @@ public final class ProxyVpnService extends VpnService {
         new Thread(() -> {
             EngineRunner candidate = new EngineRunner(this);
             try {
-                candidate.start(engineKind, subscriptionNodes, next);
+                String text = new String(readAll(subscriptionFile), StandardCharsets.UTF_8);
+                java.util.List<org.json.JSONObject> nodes = EngineConfig.batchFromText(text, next);
+                text = null;
+                if (nodes.isEmpty()) {
+                    throw new IOException("пачка пуста");
+                }
+                candidate.start(engineKind, nodes, next);
             } catch (Exception error) {
                 candidate.stop();
                 Log.w(TAG, "пачка " + (next + 1) + " не запустилась", error);
