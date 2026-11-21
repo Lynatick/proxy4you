@@ -359,7 +359,7 @@ public final class ProxyVpnService extends VpnService {
                 + "socks5:\n"
                 + "  port: " + localPort + "\n"
                 + "  address: 127.0.0.1\n"
-                + "  udp: 'tcp'\n"
+                + "  udp: 'udp'\n"
                 + "misc:\n"
                 + "  log-level: warn\n"
                 + "  connect-timeout: 10000\n";

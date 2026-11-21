@@ -110,6 +110,9 @@ keytool -genkeypair -keystore keystore/mistick.jks -storepass mistick123 \
 работает пул socks5/http нод). Ядро запускается отдельным процессом и поднимает
 локальный вход; наш SOCKS5-сервер ходит в него как в обычную ноду.
 
+- **DNS через прокси**: локальный SOCKS5 отвечает на `UDP ASSOCIATE` и отправляет
+  DNS-запросы (UDP 53) к серверу имён по TCP через ноду. Без этого приложения
+  вроде YouTube пишут «Нет подключения к сети», хотя TCP-проверка прокси проходит.
 - **Ядра встроены в APK как jniLibs**: `libsingbox.so` и `libxray.so` для arm64-v8a
   и armeabi-v7a. При установке они попадают в `nativeLibraryDir` и запускаются
   оттуда — Android 10+ запрещает exec из `filesDir`. APK ~76 МБ.

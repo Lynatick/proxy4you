@@ -8,9 +8,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,6 +107,12 @@ final class Socks5Server {
             out.flush();
 
             byte[] request = Upstream.readFully(in, 4);
+            if (request[1] == 3) {
+                // UDP ASSOCIATE: нужен для DNS (UDP 53) — без него приложения
+                // вроде YouTube не могут разрешить имена и пишут «нет сети».
+                handleUdpAssociate(client, in, out);
+                return;
+            }
             if (request[1] != 1) {
                 reply(out, 7);
                 client.close();
@@ -204,6 +214,133 @@ final class Socks5Server {
         }
     }
 
+    /**
+     * UDP ASSOCIATE: hev-socks5-tunnel отдаёт сюда UDP-пакеты приложений.
+     * Поддерживаем DNS (порт 53) — запрос уходит к серверу имени через прокси,
+     * потому что прямой DNS в РФ отдаёт подменённые адреса. Остальной UDP
+     * (QUIC) отбрасывается: приложение откатится на TCP.
+     */
+    private void handleUdpAssociate(Socket client, InputStream in, OutputStream out) {
+        DatagramSocket relay = null;
+        try {
+            relay = new DatagramSocket(0, InetAddress.getByName("127.0.0.1"));
+            int relayPort = relay.getLocalPort();
+            out.write(new byte[]{5, 0, 0, 1, 127, 0, 0, 1,
+                    (byte) (relayPort >> 8), (byte) (relayPort & 0xff)});
+            out.flush();
+
+            byte[] buffer = new byte[65535];
+            relay.setSoTimeout(60000);
+            while (running && !client.isClosed()) {
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                try {
+                    relay.receive(packet);
+                } catch (SocketTimeoutException timeout) {
+                    break;
+                }
+                DatagramPacket answer = answerDatagram(packet);
+                if (answer != null) {
+                    relay.send(answer);
+                }
+            }
+        } catch (Exception error) {
+            Log.w(TAG, "UDP ASSOCIATE: " + error);
+        } finally {
+            if (relay != null) {
+                relay.close();
+            }
+            closeQuietly(client);
+        }
+    }
+
+    /** Разбирает SOCKS5-UDP пакет и возвращает ответ (null — пакет не поддержан). */
+    DatagramPacket answerDatagram(DatagramPacket packet) {
+        byte[] data = packet.getData();
+        int length = packet.getLength();
+        if (length < 10) {
+            return null;
+        }
+        int atyp = data[3] & 0xff;
+        int offset = 4;
+        String host;
+        if (atyp == 1) {
+            if (length < offset + 4 + 2) {
+                return null;
+            }
+            host = (data[offset] & 0xff) + "." + (data[offset + 1] & 0xff) + "."
+                    + (data[offset + 2] & 0xff) + "." + (data[offset + 3] & 0xff);
+            offset += 4;
+        } else if (atyp == 3) {
+            int nameLength = data[offset] & 0xff;
+            if (length < offset + 1 + nameLength + 2) {
+                return null;
+            }
+            host = new String(data, offset + 1, nameLength, StandardCharsets.US_ASCII);
+            offset += 1 + nameLength;
+        } else if (atyp == 4) {
+            if (length < offset + 16 + 2) {
+                return null;
+            }
+            byte[] raw = Arrays.copyOfRange(data, offset, offset + 16);
+            try {
+                host = InetAddress.getByAddress(raw).getHostAddress();
+            } catch (Exception error) {
+                return null;
+            }
+            offset += 16;
+        } else {
+            return null;
+        }
+        int port = ((data[offset] & 0xff) << 8) | (data[offset + 1] & 0xff);
+        offset += 2;
+        if (port != 53) {
+            return null;
+        }
+        byte[] query = Arrays.copyOfRange(data, offset, length);
+        byte[] response = dnsThroughProxy(host, port, query);
+        if (response == null) {
+            return null;
+        }
+        byte[] header = Arrays.copyOfRange(data, 0, offset);
+        byte[] body = new byte[header.length + response.length];
+        System.arraycopy(header, 0, body, 0, header.length);
+        System.arraycopy(response, 0, body, header.length, response.length);
+        return new DatagramPacket(body, body.length, packet.getAddress(), packet.getPort());
+    }
+
+    /** DNS-запрос по TCP через прокси (RFC 1035: 2 байта длины + сообщение). */
+    private byte[] dnsThroughProxy(String host, int port, byte[] query) {
+        Socket upstream = null;
+        try {
+            if (engine != null && engine.isRunning()) {
+                upstream = openThroughEngine(host, port);
+            }
+            if (upstream == null) {
+                upstream = openThroughAnyNode(host, port);
+            }
+            if (upstream == null) {
+                return null;
+            }
+            upstream.setSoTimeout(8000);
+            OutputStream out = upstream.getOutputStream();
+            out.write(new byte[]{(byte) (query.length >> 8), (byte) (query.length & 0xff)});
+            out.write(query);
+            out.flush();
+            InputStream in = upstream.getInputStream();
+            byte[] lengthBytes = Upstream.readFully(in, 2);
+            int responseLength = ((lengthBytes[0] & 0xff) << 8) | (lengthBytes[1] & 0xff);
+            if (responseLength <= 0 || responseLength > 65535) {
+                return null;
+            }
+            return Upstream.readFully(in, responseLength);
+        } catch (Exception error) {
+            Log.d(TAG, "DNS через прокси не удался: " + error.getMessage());
+            return null;
+        } finally {
+            closeQuietly(upstream);
+        }
+    }
+
     private void reply(OutputStream out, int code) throws IOException {
         out.write(new byte[]{5, (byte) code, 0, 1, 0, 0, 0, 0, 0, 0});
         out.flush();
@@ -243,6 +380,9 @@ final class Socks5Server {
     }
 
     private void closeQuietly(Socket socket) {
+        if (socket == null) {
+            return;
+        }
         try {
             socket.close();
         } catch (IOException ignored) {
