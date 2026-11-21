@@ -1,0 +1,62 @@
+{
+ "outbounds": [
+  {
+   "server": "195.133.5.196",
+   "password": "NTiHBg64fsY8u8DbGrtypD9gPGSL386p",
+   "method": "aes-256-gcm",
+   "server_port": 18443,
+   "tag": "n83",
+   "type": "shadowsocks"
+  },
+  {
+   "server": "195.133.5.196",
+   "password": "NTiHBg64fsY8u8DbGrtypD9gPGSL386p",
+   "method": "aes-256-gcm",
+   "server_port": 18443,
+   "tag": "n155",
+   "type": "shadowsocks"
+  },
+  {
+   "server": "144.31.90.235",
+   "server_port": 8445,
+   "tls": {
+    "utls": {
+     "fingerprint": "firefox",
+     "enabled": true
+    },
+    "server_name": "portal.gifmems.com",
+    "reality": {
+     "public_key": "32eua16pKE179lLHv-VNZGrX287qQFMXA3n0VgEzNTQ",
+     "short_id": "b3a633bc754b648d",
+     "enabled": true
+    },
+    "enabled": true
+   },
+   "tag": "n1332",
+   "type": "vless",
+   "uuid": "cac10246-5b76-4809-9fd0-417c58a3ca90",
+   "flow": "xtls-rprx-vision"
+  },
+  {
+   "server": "188.225.35.83",
+   "server_port": 443,
+   "tls": {
+    "utls": {
+     "fingerprint": "firefox",
+     "enabled": true
+    },
+    "server_name": "pinemetrics.net",
+    "reality": {
+     "public_key": "YZtDA-Mz6GSlPnrhnQkSpzj8TSaGDcMjukrGI_xFg1Y",
+     "short_id": "d9c79602",
+     "enabled": true
+    },
+    "enabled": true
+   },
+   "tag": "n1438",
+   "type": "vless",
+   "uuid": "f7331345-aac5-4e81-b8ac-8b8aa3ee2068",
+   "flow": "xtls-rprx-vision"
+  }
+ ]
+}

@@ -80,6 +80,11 @@ final class EngineRunner {
 
     /** Запускает ядро на готовом списке outbounds с пачкой `batchIndex`. */
     int start(Kind requested, java.util.List<org.json.JSONObject> nodes, int batchIndex) throws Exception {
+        return start(requested, nodes, batchIndex, 3);
+    }
+
+    private int start(Kind requested, java.util.List<org.json.JSONObject> nodes, int batchIndex,
+                      int attemptsLeft) throws Exception {
         stop();
         if (requested == null) {
             throw new IllegalArgumentException("ядро не выбрано");
@@ -172,6 +177,11 @@ final class EngineRunner {
 
         if (!waitForPort(port, 20000)) {
             String tail = readLogTail(logPath, 4000);
+            // Порт мог занять прежний экземпляр ядра: пробуем ещё раз на свободном.
+            if (tail.contains("address already in use") && attemptsLeft > 1) {
+                stop();
+                return start(requested, nodes, batchIndex, attemptsLeft - 1);
+            }
             String version = runAndCapture(binary, "version");
             String check = requested == Kind.SINGBOX
                     ? runAndCapture(binary, "check", "-c", configFile.getAbsolutePath())
