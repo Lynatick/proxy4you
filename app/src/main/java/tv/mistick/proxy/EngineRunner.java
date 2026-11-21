@@ -112,8 +112,13 @@ final class EngineRunner {
             try (FileOutputStream out = new FileOutputStream(configFile)) {
                 out.write(config.getBytes("UTF-8"));
             }
-            String check = runCapture(binary, 6000, "check", "-c", configFile.getAbsolutePath());
+            String check = requested == Kind.SINGBOX
+                    ? runCapture(binary, 6000, "check", "-c", configFile.getAbsolutePath())
+                    : runCapture(binary, 8000, "run", "-test", "-c", configFile.getAbsolutePath());
             int bad = outboundIndex(check);
+            if (bad < 0) {
+                bad = outboundIndexByTag(current, check);
+            }
             if (bad < 0) {
                 break;
             }
@@ -166,9 +171,11 @@ final class EngineRunner {
         kind = requested;
 
         if (!waitForPort(port, 20000)) {
-            String tail = readLogTail(logPath);
+            String tail = readLogTail(logPath, 4000);
             String version = runAndCapture(binary, "version");
-            String check = runAndCapture(binary, "check", "-c", configFile.getAbsolutePath());
+            String check = requested == Kind.SINGBOX
+                    ? runAndCapture(binary, "check", "-c", configFile.getAbsolutePath())
+                    : runAndCapture(binary, "run", "-test", "-c", configFile.getAbsolutePath());
             Log.e(TAG, "диагностика: version=[" + version + "] check=[" + check + "]");
             stop();
             throw new IOException(requested.id + " не поднял вход; version=[" + version
@@ -192,6 +199,26 @@ final class EngineRunner {
         } catch (NumberFormatException error) {
             return -1;
         }
+    }
+
+    /** Индекс outbound по тегу из текста ошибки (-1, если тег не найден). */
+    private static int outboundIndexByTag(java.util.List<org.json.JSONObject> nodes, String output) {
+        if (output == null || output.isEmpty()) {
+            return -1;
+        }
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("with tag (.+?)(?:\\s*>|\\s*$)", java.util.regex.Pattern.MULTILINE)
+                .matcher(output);
+        if (!matcher.find()) {
+            return -1;
+        }
+        String tag = matcher.group(1).trim();
+        for (int i = 0; i < nodes.size(); i++) {
+            if (tag.equals(nodes.get(i).optString("tag"))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /** Запускает ядро с аргументами и возвращает его вывод (для диагностики). */
@@ -276,14 +303,14 @@ final class EngineRunner {
     }
 
     /** Последние строки лога ядра — чтобы причина отказа была видна без доступа к файлу. */
-    private static String readLogTail(String path) {
+    private static String readLogTail(String path, int maxChars) {
         java.io.File file = new java.io.File(path);
         if (!file.exists()) {
             return "лог пуст";
         }
         try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(file, "r")) {
             long length = raf.length();
-            long from = Math.max(0, length - 1200);
+            long from = Math.max(0, length - maxChars);
             raf.seek(from);
             byte[] buffer = new byte[(int) (length - from)];
             raf.readFully(buffer);

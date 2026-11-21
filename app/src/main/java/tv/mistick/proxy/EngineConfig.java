@@ -262,7 +262,28 @@ final class EngineConfig {
 
     // MARK: - sing-box outbound → Xray outbound
 
+    /** Xray принимает REALITY только с RAW/XHTTP/gRPC: ws/http ноды для него не годятся. */
+    private static boolean realityWithUnsupportedTransport(JSONObject record) {
+        JSONObject tls = record.optJSONObject("tls");
+        JSONObject reality = tls == null ? null : tls.optJSONObject("reality");
+        if (reality == null || !reality.optBoolean("enabled", false)) {
+            return false;
+        }
+        String network = record.optString("network", "tcp").toLowerCase();
+        return !(network.isEmpty() || network.equals("tcp") || network.equals("raw")
+                || network.equals("xhttp") || network.equals("grpc"));
+    }
+
     static JSONObject toXrayOutbound(JSONObject record) {
+        if (realityWithUnsupportedTransport(record)) {
+            return null;
+        }
+        // Xray 26 запрещает VLESS без TLS/шифрования (кроме приватных адресов).
+        JSONObject recordTls = record.optJSONObject("tls");
+        boolean encrypted = recordTls != null && recordTls.optBoolean("enabled", false);
+        if ("vless".equalsIgnoreCase(record.optString("type", "")) && !encrypted) {
+            return null;
+        }
         String type = record.optString("type", "").toLowerCase();
         String server = record.optString("server", "");
         int port = record.optInt("server_port", record.optInt("port", 0));
