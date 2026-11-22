@@ -51,6 +51,20 @@ final class EngineConfig {
         auto.put("tolerance", 100);
         outbounds.put(auto);
 
+        // Селектор нужен для быстрого поиска: найденную рабочую ноду можно
+        // включить точечно через clash_api, не перезапуская ядро.
+        JSONArray pickOptions = new JSONArray();
+        pickOptions.put("auto");
+        for (int i = 0; i < tags.length(); i++) {
+            pickOptions.put(tags.optString(i));
+        }
+        JSONObject pick = new JSONObject();
+        pick.put("type", "selector");
+        pick.put("tag", PICK_TAG);
+        pick.put("outbounds", pickOptions);
+        pick.put("default", "auto");
+        outbounds.put(pick);
+
         JSONObject inbound = new JSONObject();
         inbound.put("type", "mixed");
         inbound.put("tag", "in");
@@ -61,7 +75,7 @@ final class EngineConfig {
         config.put("log", new JSONObject().put("level", "warn").put("timestamp", true));
         config.put("inbounds", new JSONArray().put(inbound));
         config.put("outbounds", outbounds);
-        config.put("route", new JSONObject().put("final", "auto"));
+        config.put("route", new JSONObject().put("final", PICK_TAG));
         if (controllerPort > 0) {
             config.put("experimental", new JSONObject().put("clash_api",
                     new JSONObject().put("external_controller", "127.0.0.1:" + controllerPort)));
@@ -191,6 +205,9 @@ final class EngineConfig {
      * (поле нужно убрать), а reality требует uTLS.
      */
     /** Служебные типы, которые не являются узлами. */
+    /** Селектор, которым управляет быстрый поиск ноды. */
+    static final String PICK_TAG = "pick";
+
     private static final java.util.Set<String> SERVICE_TYPES = new java.util.HashSet<>(
             java.util.Arrays.asList("selector", "urltest", "direct", "block", "dns", "reject", "fallback"));
 
@@ -425,6 +442,166 @@ final class EngineConfig {
     // Поэтому считаем и извлекаем элементы прямо по тексту, разбирая только
     // нужный диапазон.
     // ------------------------------------------------------------------
+
+
+    // ------------------------------------------------------------------
+    // Потоковый разбор файла подписки.
+    //
+    // Подписка goida — 21 МБ. Читать её целиком в byte[] и String на 32-битном
+    // телевизоре нельзя: при смене пачки это давало OutOfMemoryError. Здесь файл
+    // читается по символам, и в память попадает только нужная пачка.
+    // ------------------------------------------------------------------
+
+    /** Сколько элементов массива outbounds: потоково, без чтения файла целиком. */
+    static int batchCountFromFile(java.io.File file) {
+        final int[] count = {0};
+        try {
+            streamElements(file, 0, Integer.MAX_VALUE, (index, element) -> count[0]++);
+        } catch (Exception error) {
+            return 1;
+        }
+        return Math.max(1, (count[0] + BATCH_SIZE - 1) / BATCH_SIZE);
+    }
+
+    /** Элементы пачки `batchIndex` из файла подписки. */
+    static List<JSONObject> batchFromFile(java.io.File file, int batchIndex) throws Exception {
+        int from = Math.max(0, batchIndex) * BATCH_SIZE;
+        int to = from + BATCH_SIZE;
+        List<JSONObject> result = new ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        final int[] index = {0};
+        streamElements(file, from, to, (position, element) -> {
+            JSONObject prepared = prepare(new JSONObject(element), seen, from + position);
+            if (prepared != null) {
+                result.add(prepared);
+            }
+            index[0]++;
+        });
+        return result;
+    }
+
+    /** Разбирает share-ссылки из файла (они небольшие) обычным путём. */
+    static List<JSONObject> linksFromFile(java.io.File file) throws Exception {
+        StringBuilder text = new StringBuilder();
+        try (java.io.Reader reader = new java.io.InputStreamReader(
+                new java.io.FileInputStream(file), java.nio.charset.StandardCharsets.UTF_8)) {
+            char[] buffer = new char[8192];
+            int read;
+            while ((read = reader.read(buffer)) > 0) {
+                text.append(buffer, 0, read);
+                if (text.length() > 4_000_000) {
+                    break;
+                }
+            }
+        }
+        return ShareLinkParser.parse(text.toString());
+    }
+
+    /** Начинается ли файл с JSON-объекта. */
+    static boolean looksLikeJson(java.io.File file) {
+        try (java.io.Reader reader = new java.io.InputStreamReader(
+                new java.io.FileInputStream(file), java.nio.charset.StandardCharsets.UTF_8)) {
+            int c;
+            while ((c = reader.read()) != -1) {
+                if (!Character.isWhitespace((char) c)) {
+                    return c == '{';
+                }
+            }
+        } catch (Exception ignored) {
+            // считаем, что не JSON
+        }
+        return false;
+    }
+
+    /** Посетитель элементов массива outbounds. */
+    interface ElementVisitor {
+        void visit(int position, String element) throws Exception;
+    }
+
+    /**
+     * Потоково перебирает элементы outbounds[from, to) и отдаёт их посетителю.
+     * Память — один элемент за раз.
+     */
+    private static void streamElements(java.io.File file, int from, int to, ElementVisitor visitor)
+            throws Exception {
+        final String key = "\"outbounds\"";
+        try (java.io.Reader reader = new java.io.InputStreamReader(
+                new java.io.FileInputStream(file), java.nio.charset.StandardCharsets.UTF_8)) {
+            int keyMatch = 0;
+            boolean keyFound = false;
+            boolean started = false;
+            int depth = 0;
+            int position = -1;
+            boolean inString = false;
+            boolean escape = false;
+            StringBuilder element = null;
+            int value;
+            while ((value = reader.read()) != -1) {
+                char c = (char) value;
+                if (!started) {
+                    if (c == key.charAt(keyMatch)) {
+                        keyMatch++;
+                        if (keyMatch == key.length()) {
+                            keyFound = true;
+                            keyMatch = 0;
+                        }
+                    } else {
+                        keyMatch = c == key.charAt(0) ? 1 : 0;
+                    }
+                    if (keyFound && c == '[') {
+                        started = true;
+                        depth = 1;
+                    }
+                    continue;
+                }
+                if (inString) {
+                    if (escape) {
+                        escape = false;
+                    } else if (c == '\\') {
+                        escape = true;
+                    } else if (c == '"') {
+                        inString = false;
+                    }
+                    if (element != null) {
+                        element.append(c);
+                    }
+                    continue;
+                }
+                if (c == '"') {
+                    inString = true;
+                    if (element != null) {
+                        element.append(c);
+                    }
+                } else if (c == '{' || c == '[') {
+                    depth++;
+                    if (depth == 2) {
+                        position++;
+                        element = position >= from && position < to ? new StringBuilder() : null;
+                    }
+                    if (element != null) {
+                        element.append(c);
+                    }
+                } else if (c == '}' || c == ']') {
+                    if (depth == 2 && element != null) {
+                        element.append(c);
+                        visitor.visit(position, element.toString());
+                        element = null;
+                        if (position + 1 >= to) {
+                            return;
+                        }
+                    } else if (element != null) {
+                        element.append(c);
+                    }
+                    depth--;
+                    if (depth == 0) {
+                        return;
+                    }
+                } else if (element != null) {
+                    element.append(c);
+                }
+            }
+        }
+    }
 
     /** Индекс '[' массива outbounds/proxies или -1. */
     private static int arrayStart(String text) {

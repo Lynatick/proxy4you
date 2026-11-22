@@ -30,11 +30,11 @@ public class EngineConfigTest {
         assertEquals(18080, inbound.getInt("listen_port"));
 
         JSONArray outbounds = object.getJSONArray("outbounds");
-        assertEquals("2 ноды + urltest", 3, outbounds.length());
+        assertEquals("2 ноды + urltest + селектор pick", 4, outbounds.length());
         JSONObject urlTest = outbounds.getJSONObject(2);
         assertEquals("urltest", urlTest.getString("type"));
         assertEquals("auto", urlTest.getString("tag"));
-        assertEquals("auto", object.getJSONObject("route").getString("final"));
+        assertEquals("маршрут идёт через селектор", "pick", object.getJSONObject("route").getString("final"));
 
         assertEquals("127.0.0.1:19090",
                 object.getJSONObject("experimental").getJSONObject("clash_api").getString("external_controller"));
@@ -70,7 +70,7 @@ public class EngineConfigTest {
                 + "trojan://pw@5.6.7.8:443?sni=t.example#t\n";
         String config = EngineConfig.singBox(links, 18080, 0, 0);
         JSONArray outbounds = new JSONObject(config).getJSONArray("outbounds");
-        assertEquals("2 ноды + urltest", 3, outbounds.length());
+        assertEquals("2 ноды + urltest + селектор pick", 4, outbounds.length());
         assertEquals("vless", outbounds.getJSONObject(0).getString("type"));
     }
 
@@ -106,8 +106,28 @@ public class EngineConfigTest {
 
         assertEquals(2, EngineConfig.batchCountText(json));
         JSONArray first = new JSONObject(EngineConfig.singBox(json, 18080, 0, 0)).getJSONArray("outbounds");
-        assertEquals("200 нод + urltest", 201, first.length());
+        assertEquals("200 нод + urltest + селектор pick", 202, first.length());
         JSONArray second = new JSONObject(EngineConfig.singBox(json, 18080, 1, 0)).getJSONArray("outbounds");
-        assertEquals("50 нод + urltest", 51, second.length());
+        assertEquals("50 нод + urltest + селектор pick", 52, second.length());
+    }
+
+    @Test
+    public void configUsesPickSelectorForFastSearch() throws Exception {
+        JSONObject object = new JSONObject(EngineConfig.singBox(JSON_SUBSCRIPTION, 18080, 0, 19090));
+        assertEquals("pick", object.getJSONObject("route").getString("final"));
+
+        JSONObject pick = null;
+        JSONArray outbounds = object.getJSONArray("outbounds");
+        for (int i = 0; i < outbounds.length(); i++) {
+            JSONObject item = outbounds.getJSONObject(i);
+            if ("pick".equals(item.optString("tag"))) {
+                pick = item;
+            }
+        }
+        assertNotNull("селектор pick должен быть в конфиге", pick);
+        assertEquals("selector", pick.getString("type"));
+        JSONArray options = pick.getJSONArray("outbounds");
+        assertEquals("первым в списке идёт auto", "auto", options.getString(0));
+        assertTrue("в селекторе есть ноды пачки", options.length() >= 3);
     }
 }

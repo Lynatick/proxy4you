@@ -80,6 +80,62 @@ final class ClashApi {
         return result.size() > limit ? new ArrayList<>(result.subList(0, limit)) : result;
     }
 
+    /** Замер одной ноды через clash_api: задержка в мс или -1. */
+    static int delay(int controllerPort, String tag, int timeoutMs) {
+        try {
+            String url = "http://127.0.0.1:" + controllerPort + "/proxies/"
+                    + encode(tag) + "/delay?url=" + encode("https://www.youtube.com/generate_204")
+                    + "&timeout=" + timeoutMs;
+            JSONObject object = new JSONObject(get(url));
+            return object.optInt("delay", -1);
+        } catch (Exception error) {
+            return -1;
+        }
+    }
+
+    /** Переключает селектор на конкретную ноду. */
+    static boolean select(int controllerPort, String selector, String tag) {
+        try {
+            String body = "{\"name\":\"" + tag.replace("\"", "\\\"") + "\"}";
+            request("PUT", "http://127.0.0.1:" + controllerPort + "/proxies/" + encode(selector), body);
+            return true;
+        } catch (Exception error) {
+            return false;
+        }
+    }
+
+    private static String encode(String value) {
+        try {
+            return java.net.URLEncoder.encode(value, "UTF-8");
+        } catch (Exception error) {
+            return value;
+        }
+    }
+
+    private static String request(String method, String urlText, String body) throws Exception {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(urlText).openConnection();
+            connection.setRequestMethod(method);
+            connection.setConnectTimeout(2000);
+            connection.setReadTimeout(4000);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            try (java.io.OutputStream out = connection.getOutputStream()) {
+                out.write(body.getBytes("UTF-8"));
+            }
+            int code = connection.getResponseCode();
+            if (code < 200 || code >= 300) {
+                throw new IllegalStateException("HTTP " + code);
+            }
+            return "";
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
     private static String get(String urlText) throws Exception {
         HttpURLConnection connection = null;
         try {

@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +46,10 @@ public final class MainActivity extends Activity {
 
     private TextView probeView;
     private TextView scopeView;
+    private Button nextBatchButton;
+    private Button fastSearchButton;
+    /** Текст поиска: пока он задан, он показывается вместо статуса службы. */
+    private String searchStatus;
     private Button updateButton;
     private Button toggleButton;
     private Button appsButton;
@@ -71,24 +76,20 @@ public final class MainActivity extends Activity {
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.parseColor("#101420"));
         int pad = dp(28);
         root.setPadding(pad, pad, pad, pad);
 
         TextView title = new TextView(this);
         title.setText("YouTube Proxy");
-        title.setTextColor(Color.WHITE);
         title.setTextSize(30);
         root.addView(title);
 
         statusView = new TextView(this);
-        statusView.setTextColor(Color.parseColor("#9FB3C8"));
         statusView.setTextSize(16);
         statusView.setPadding(0, dp(6), 0, dp(16));
         root.addView(statusView);
 
         channelView = new TextView(this);
-        channelView.setTextColor(Color.parseColor("#9FB3C8"));
         channelView.setTextSize(14);
         channelView.setPadding(0, dp(2), 0, dp(6));
         root.addView(channelView);
@@ -96,13 +97,11 @@ public final class MainActivity extends Activity {
         probeView = new TextView(this);
         probeView.setText("Проверка нод: " + Health.target() + " · каждые "
                 + ProxyVpnService.probeIntervalSeconds() + " с");
-        probeView.setTextColor(Color.parseColor("#6B7C8F"));
         probeView.setTextSize(11);
         probeView.setPadding(0, dp(2), 0, dp(2));
         root.addView(probeView);
 
         scopeView = new TextView(this);
-        scopeView.setTextColor(Color.parseColor("#9FB3C8"));
         scopeView.setTextSize(11);
         scopeView.setPadding(0, dp(2), 0, dp(2));
         root.addView(scopeView);
@@ -116,14 +115,12 @@ public final class MainActivity extends Activity {
 
         singBoxEngine = new CheckBox(this);
         singBoxEngine.setText("sing-box");
-        singBoxEngine.setTextColor(Color.WHITE);
         singBoxEngine.setTextSize(14);
         singBoxEngine.setFocusable(true);
         engineRow.addView(singBoxEngine);
 
         xrayEngine = new CheckBox(this);
         xrayEngine.setText("Xray");
-        xrayEngine.setTextColor(Color.WHITE);
         xrayEngine.setTextSize(14);
         xrayEngine.setFocusable(true);
         engineRow.addView(xrayEngine);
@@ -179,7 +176,6 @@ public final class MainActivity extends Activity {
 
         TextView subscriptionTitle = new TextView(this);
         subscriptionTitle.setText("Подписка");
-        subscriptionTitle.setTextColor(Color.parseColor("#9FB3C8"));
         subscriptionTitle.setTextSize(12);
         subscriptionTitle.setPadding(0, 0, dp(8), 0);
         subscriptionRow.addView(subscriptionTitle);
@@ -187,8 +183,6 @@ public final class MainActivity extends Activity {
         subscriptionInput = new EditText(this);
         subscriptionInput.setText(Subscription.savedUrl(this));
         subscriptionInput.setHint("URL подписки");
-        subscriptionInput.setHintTextColor(Color.parseColor("#6B7C8F"));
-        subscriptionInput.setTextColor(Color.WHITE);
         subscriptionInput.setTextSize(12);
         subscriptionInput.setSingleLine(true);
         subscriptionInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
@@ -219,7 +213,13 @@ public final class MainActivity extends Activity {
         refreshNodesButton.setOnClickListener(view -> refreshPublicNodes());
         actionsRow.addView(refreshNodesButton);
 
-        Button nextBatchButton = new Button(this);
+        fastSearchButton = new Button(this);
+        fastSearchButton.setText("Быстрый поиск");
+        fastSearchButton.setFocusable(true);
+        fastSearchButton.setOnClickListener(view -> startFastSearch());
+        actionsRow.addView(fastSearchButton);
+
+        nextBatchButton = new Button(this);
         nextBatchButton.setText("Следующая пачка");
         nextBatchButton.setFocusable(true);
         nextBatchButton.setOnClickListener(view -> {
@@ -238,20 +238,17 @@ public final class MainActivity extends Activity {
         actionsRow.addView(updateButton);
 
         accessView = new TextView(this);
-        accessView.setTextColor(Color.parseColor("#9FB3C8"));
         accessView.setTextSize(13);
         accessView.setPadding(0, dp(6), 0, dp(6));
         root.addView(accessView);
 
         nodeInfoView = new TextView(this);
-        nodeInfoView.setTextColor(Color.parseColor("#9FB3C8"));
         nodeInfoView.setTextSize(12);
         nodeInfoView.setPadding(0, dp(2), 0, dp(8));
         root.addView(nodeInfoView);
 
         footer = new TextView(this);
         footer.setText("Нод: " + nodes.size());
-        footer.setTextColor(Color.parseColor("#6B7C8F"));
         footer.setTextSize(12);
         footer.setGravity(Gravity.END);
         footer.setPadding(0, dp(8), 0, 0);
@@ -586,6 +583,67 @@ public final class MainActivity extends Activity {
         return "Через прокси: выбранные приложения (" + apps.size() + ")";
     }
 
+    /** Быстрый поиск рабочей ноды через запущенное ядро. */
+    private void startFastSearch() {
+        if (!ProxyVpnService.running) {
+            statusView.setText("Сначала подключитесь — поиск идёт через ядро");
+            return;
+        }
+        if (ProxyVpnService.fastSearchRunning) {
+            return;
+        }
+        fastSearchButton.setEnabled(false);
+        setSearchStatus("Поиск рабочей ноды…", 0);
+        ProxyVpnService.fastSearch(new FastSearch.Listener() {
+            @Override
+            public void onProgress(int checked, int total) {
+                handler.post(() -> setSearchStatus("Поиск: " + checked + " из " + total, 0));
+            }
+
+            @Override
+            public void onFound(String tag, int delayMs) {
+                handler.post(() -> {
+                    fastSearchButton.setEnabled(true);
+                    setSearchStatus("Найдена нода " + tag + " · " + delayMs + " мс", 20000);
+                    checkAccess();
+                });
+            }
+
+            @Override
+            public void onNothing(int total) {
+                handler.post(() -> {
+                    fastSearchButton.setEnabled(true);
+                    setSearchStatus(total == 0
+                            ? "Поиск: нет нод для проверки"
+                            : "Рабочих нод нет среди " + total + " — смените пачку", 20000);
+                });
+            }
+        });
+    }
+
+    /** Показывает текст поиска поверх статуса службы; 0 — держать до новой команды. */
+    private void setSearchStatus(String text, int hideAfterMs) {
+        searchStatus = text;
+        statusView.setText(text);
+        if (hideAfterMs > 0) {
+            handler.postDelayed(() -> {
+                if (text.equals(searchStatus)) {
+                    searchStatus = null;
+                    updateStatus();
+                }
+            }, hideAfterMs);
+        }
+    }
+
+    /** Жирный шрифт для активного элемента; неактивный можно приглушить. */
+    private static void setActive(TextView view, boolean active, boolean dimInactive) {
+        if (view == null) {
+            return;
+        }
+        view.setTypeface(active ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        view.setAlpha(active || !dimInactive ? 1f : 0.65f);
+    }
+
     private void updateStatus() {
         boolean isRunning = ProxyVpnService.running;
         String serviceStatus = ProxyVpnService.status;
@@ -610,6 +668,18 @@ public final class MainActivity extends Activity {
         int count = apps.size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
         scopeView.setText(scopeText(apps) + " · " + probeResultText());
+        if (searchStatus != null) {
+            statusView.setText(searchStatus);
+        }
+
+        // Активные элементы выделяем жирным; главная кнопка всегда полной яркости.
+        setActive(toggleButton, isRunning, false);
+        setActive(singBoxEngine, "sing-box".equals(engine), true);
+        setActive(xrayEngine, "xray".equals(engine), true);
+        if (nextBatchButton != null) {
+            nextBatchButton.setEnabled(isRunning && engine != null);
+            setActive(nextBatchButton, isRunning && engine != null, false);
+        }
     }
 
     private final Runnable nodeRefresher = new Runnable() {

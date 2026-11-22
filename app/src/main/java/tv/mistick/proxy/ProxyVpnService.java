@@ -50,6 +50,10 @@ public final class ProxyVpnService extends VpnService {
     static volatile long lastProbeAt = 0L;
     /** Сколько нод исключено до обновления списка (для интерфейса). */
     static volatile int excludedNodes = 0;
+    /** Теги нод текущей пачки — для быстрого поиска. */
+    private static volatile java.util.List<String> batchTags = new java.util.ArrayList<>();
+    /** Идёт ли быстрый поиск (для интерфейса). */
+    static volatile boolean fastSearchRunning = false;
     /** Какое ядро запросил пользователь (даже если оно не поднялось). */
     static volatile String requestedEngine = null;
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
@@ -188,16 +192,21 @@ public final class ProxyVpnService extends VpnService {
                 this.engineKind = engineKind;
                 this.subscriptionFile = subscription;
 
-                // Готовность подписки: текста в памяти не держим (goida — 22 МБ JSON).
-                String text = new String(readAll(subscription), StandardCharsets.UTF_8);
-                batchCount = EngineConfig.batchCountText(text);
-                java.util.List<org.json.JSONObject> batchNodes = EngineConfig.batchFromText(text, requestedBatch);
-                text = null; // отпускаем большой текст до старта ядра
+                // Готовность подписки: файл читается потоково, в памяти только пачка.
+                boolean json = EngineConfig.looksLikeJson(subscription);
+                batchCount = json
+                        ? EngineConfig.batchCountFromFile(subscription)
+                        : Math.max(1, (EngineConfig.linksFromFile(subscription).size() + 199) / 200);
+                java.util.List<org.json.JSONObject> batchNodes = json
+                        ? EngineConfig.batchFromFile(subscription, requestedBatch)
+                        : EngineConfig.batchFromText(
+                                new String(readAll(subscription), StandardCharsets.UTF_8), requestedBatch);
 
                 if (batchNodes.isEmpty()) {
                     throw new IOException("в подписке нет нод, понятных ядру (нужен JSON или share-ссылки)");
                 }
                 batchIndex = Math.max(0, requestedBatch) % batchCount;
+                batchTags = tagsOf(batchNodes);
                 engine = new EngineRunner(this);
                 engine.start(engineKind, batchNodes, batchIndex);
                 controllerPort = engine.controllerPort();
@@ -235,8 +244,23 @@ public final class ProxyVpnService extends VpnService {
             File config = new File(getFilesDir(), "hev.yml");
             writeConfig(config, localPort);
 
+            // Прежний экземпляр мог остаться от быстрого перезапуска службы:
+            // без остановки TProxyStartService возвращает false.
+            try {
+                hev.htproxy.TProxyService.TProxyStopService();
+            } catch (Throwable ignored) {
+                // ещё не запускался
+            }
             if (!hev.htproxy.TProxyService.TProxyStartService(config.getAbsolutePath(), tun.getFd())) {
-                throw new IOException("hev-socks5-tunnel не запустился");
+                try {
+                    Thread.sleep(300);
+                    hev.htproxy.TProxyService.TProxyStopService();
+                } catch (Throwable ignored) {
+                    // продолжаем: ниже повторная попытка
+                }
+                if (!hev.htproxy.TProxyService.TProxyStartService(config.getAbsolutePath(), tun.getFd())) {
+                    throw new IOException("hev-socks5-tunnel не запустился");
+                }
             }
 
             running = true;
@@ -253,6 +277,51 @@ public final class ProxyVpnService extends VpnService {
     }
 
     /** Смена пачки без перезапуска VPN: ядро перезапускается, SOCKS5-сервер живёт. */
+    private static java.util.List<String> tagsOf(java.util.List<org.json.JSONObject> nodes) {
+        java.util.List<String> tags = new java.util.ArrayList<>();
+        for (org.json.JSONObject node : nodes) {
+            String tag = node.optString("tag", "");
+            if (!tag.isEmpty()) {
+                tags.add(tag);
+            }
+        }
+        return tags;
+    }
+
+    /** Запускает быстрый поиск рабочей ноды через clash_api запущенного ядра. */
+    static void fastSearch(FastSearch.Listener listener) {
+        ProxyVpnService service = instance;
+        if (service == null || service.engine == null || !service.engine.isRunning()) {
+            listener.onNothing(0);
+            return;
+        }
+        int port = service.engine.controllerPort();
+        java.util.List<String> tags = batchTags;
+        if (tags.isEmpty()) {
+            listener.onNothing(0);
+            return;
+        }
+        fastSearchRunning = true;
+        FastSearch.run(port, tags, 24, new FastSearch.Listener() {
+            @Override
+            public void onProgress(int checked, int total) {
+                listener.onProgress(checked, total);
+            }
+
+            @Override
+            public void onFound(String tag, int delayMs) {
+                fastSearchRunning = false;
+                listener.onFound(tag, delayMs);
+            }
+
+            @Override
+            public void onNothing(int total) {
+                fastSearchRunning = false;
+                listener.onNothing(total);
+            }
+        });
+    }
+
     /**
      * Смена пачки без простоя: новое ядро поднимается на свободном порту, и только
      * после успеха заменяет старое. Неудача оставляет работать прежнюю пачку.
@@ -270,9 +339,10 @@ public final class ProxyVpnService extends VpnService {
         new Thread(() -> {
             EngineRunner candidate = new EngineRunner(this);
             try {
-                String text = new String(readAll(subscriptionFile), StandardCharsets.UTF_8);
-                java.util.List<org.json.JSONObject> nodes = EngineConfig.batchFromText(text, next);
-                text = null;
+                java.util.List<org.json.JSONObject> nodes = EngineConfig.looksLikeJson(subscriptionFile)
+                        ? EngineConfig.batchFromFile(subscriptionFile, next)
+                        : EngineConfig.batchFromText(
+                                new String(readAll(subscriptionFile), StandardCharsets.UTF_8), next);
                 if (nodes.isEmpty()) {
                     throw new IOException("пачка пуста");
                 }
@@ -423,6 +493,8 @@ public final class ProxyVpnService extends VpnService {
             engine = null;
         }
         currentNode = "—";
+        batchTags = new java.util.ArrayList<>();
+        fastSearchRunning = false;
         requestedEngine = null;
         controllerPort = 0;
         engineKindId = null;
