@@ -49,6 +49,7 @@ final class FastSearch {
             AtomicInteger checked = new AtomicInteger();
             AtomicBoolean finished = new AtomicBoolean(false);
             int total = queue.size();
+            Log.i(TAG, "быстрый поиск: " + total + " нод, первая " + queue.get(0));
             int workers = Math.max(1, Math.min(concurrency, total));
 
             List<Thread> pool = new ArrayList<>();

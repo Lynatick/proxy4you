@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.VpnService;
@@ -50,11 +51,13 @@ public final class MainActivity extends Activity {
     private Button fastSearchButton;
     /** Текст поиска: пока он задан, он показывается вместо статуса службы. */
     private String searchStatus;
+    private ColorStateList accent;
+    private ColorStateList normalText;
+    private android.graphics.drawable.Drawable border;
     private Button updateButton;
     private Button toggleButton;
     private Button appsButton;
     private TextView accessView;
-    private TextView footer;
     private TextView nodeInfoView;
     private EditText subscriptionInput;
     private NodeStore.Node selected;
@@ -247,13 +250,6 @@ public final class MainActivity extends Activity {
         nodeInfoView.setPadding(0, dp(2), 0, dp(8));
         root.addView(nodeInfoView);
 
-        footer = new TextView(this);
-        footer.setText("Нод: " + nodes.size());
-        footer.setTextSize(12);
-        footer.setGravity(Gravity.END);
-        footer.setPadding(0, dp(8), 0, 0);
-        root.addView(footer);
-
         setContentView(root);
         toggleButton.requestFocus();
         maybeCheckUpdatesSilently();
@@ -401,10 +397,6 @@ public final class MainActivity extends Activity {
         if (selected == null && !nodes.isEmpty()) {
             selected = nodes.get(0);
         }
-        if (footer != null) {
-            int excluded = ProxyVpnService.excludedNodes;
-            footer.setText("Нод: " + nodes.size() + (excluded > 0 ? " · исключено: " + excluded : ""));
-        }
     }
 
     /** Тихая проверка не чаще раза в час: GitHub API без токена лимитирован. */
@@ -498,16 +490,14 @@ public final class MainActivity extends Activity {
             return;
         }
         if (!ProxyVpnService.running) {
-            nodeInfoView.setText("");
+            nodeInfoView.setText(nodeLine(null, null));
             return;
         }
         String kind = ProxyVpnService.engineKindId;
-        if (kind == null) {
-            nodeInfoView.setText("Ядро не выбрано — работают ноды пула");
-            return;
-        }
         if (!"sing-box".equals(kind)) {
-            nodeInfoView.setText("Xray: текущую ноду ядро не отдаёт");
+            nodeInfoView.setText(nodeLine(
+                    kind == null ? null : ProxyVpnService.currentNode,
+                    null));
             return;
         }
         final int controller = ProxyVpnService.controllerPort;
@@ -517,21 +507,16 @@ public final class MainActivity extends Activity {
         }
         new Thread(() -> {
             String current = ClashApi.current(controller);
-            List<ClashApi.NodeInfo> nodes = ClashApi.nodes(controller, 6);
-            StringBuilder text = new StringBuilder();
+            String name = null;
+            String delay = null;
             if (current != null) {
                 String[] parts = current.split("\\|");
-                text.append("Сейчас: ").append(parts[0]);
-                if (parts.length > 1 && !"-1".equals(parts[1])) {
-                    text.append(" · ").append(parts[1]).append(" мс");
-                }
-                text.append('\n');
+                name = parts[0];
+                delay = parts.length > 1 ? parts[1] : null;
             }
-            for (ClashApi.NodeInfo info : nodes) {
-                text.append(info.name).append(" · ").append(info.delay).append(" мс\n");
-            }
-            final String result = text.toString().trim();
-            handler.post(() -> nodeInfoView.setText(result));
+            final String nodeName = name;
+            final String nodeDelay = delay;
+            handler.post(() -> nodeInfoView.setText(nodeLine(nodeName, nodeDelay)));
         }, "clash-api").start();
     }
 
@@ -621,6 +606,35 @@ public final class MainActivity extends Activity {
         });
     }
 
+    /** Строка «Ядро: …» — только про ядро и пачку. */
+    private String engineLine(String engine) {
+        if (engine == null) {
+            return "Ядро: не выбрано — работают ноды пула";
+        }
+        String batch = ProxyVpnService.batchLabel();
+        return "Ядро: " + engine + (batch.isEmpty() ? "" : " · " + batch);
+    }
+
+    /** Строка «Нода: …» — только про текущую ноду и их количество. */
+    private String nodeLine(String current, String delay) {
+        int total = nodes.size();
+        int excluded = ProxyVpnService.excludedNodes;
+        StringBuilder text = new StringBuilder("Нода: ");
+        if (current == null || current.isEmpty()) {
+            text.append("не выбрана");
+        } else {
+            text.append(current);
+            if (delay != null && !delay.isEmpty() && !"-1".equals(delay)) {
+                text.append(" · ").append(delay).append(" мс");
+            }
+        }
+        text.append(" · всего ").append(total);
+        if (excluded > 0) {
+            text.append(" · исключено ").append(excluded);
+        }
+        return text.toString();
+    }
+
     /** Показывает текст поиска поверх статуса службы; 0 — держать до новой команды. */
     private void setSearchStatus(String text, int hideAfterMs) {
         searchStatus = text;
@@ -635,13 +649,62 @@ public final class MainActivity extends Activity {
         }
     }
 
-    /** Жирный шрифт для активного элемента; неактивный можно приглушить. */
-    private static void setActive(TextView view, boolean active, boolean dimInactive) {
+    /** Акцентный цвет темы — для подсветки активной кнопки. */
+    private ColorStateList accentColor() {
+        if (accent == null) {
+            android.content.res.TypedArray array = getTheme()
+                    .obtainStyledAttributes(new int[]{android.R.attr.colorAccent});
+            ColorStateList value = array.getColorStateList(0);
+            array.recycle();
+            accent = value != null ? value : ColorStateList.valueOf(Color.WHITE);
+            // Если тема не даёт заметного акцента (белый/серый), берём зелёный:
+            // иначе выделение активной кнопки не видно.
+            int color = accent.getDefaultColor();
+            int brightness = ((Color.red(color) + Color.green(color) + Color.blue(color)) / 3);
+            if (value == null || brightness > 200) {
+                accent = ColorStateList.valueOf(Color.parseColor("#66BB6A"));
+            }
+            android.util.Log.i("MiStickProxy", "акцент для подсветки: #"
+                    + Integer.toHexString(accent.getDefaultColor()));
+        }
+        return accent;
+    }
+
+    /** Выделение активного элемента: жирный шрифт, акцентный фон или цвет текста. */
+    private void setActive(TextView view, boolean active, boolean dimInactive) {
         if (view == null) {
             return;
         }
         view.setTypeface(active ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         view.setAlpha(active || !dimInactive ? 1f : 0.65f);
+        // Фон и цвет текста не меняем — читаемость сохраняется. Активную кнопку
+        // обводим жёлтой рамкой в 1 dp.
+        if (view instanceof Button) {
+            view.setForeground(active ? borderDrawable() : null);
+            view.setTextColor(textColor());
+        } else {
+            view.setTextColor(active ? accentColor() : textColor());
+        }
+    }
+
+    /** Жёлтая рамка вокруг активной кнопки. */
+    private android.graphics.drawable.Drawable borderDrawable() {
+        if (border == null) {
+            border = getResources().getDrawable(R.drawable.active_border, getTheme());
+        }
+        return border;
+    }
+
+    /** Обычный цвет текста темы (когда выделение снимается). */
+    private ColorStateList textColor() {
+        if (normalText == null) {
+            android.content.res.TypedArray array = getTheme()
+                    .obtainStyledAttributes(new int[]{android.R.attr.textColorPrimary});
+            ColorStateList value = array.getColorStateList(0);
+            array.recycle();
+            normalText = value != null ? value : ColorStateList.valueOf(Color.WHITE);
+        }
+        return normalText;
     }
 
     private void updateStatus() {
@@ -651,20 +714,16 @@ public final class MainActivity extends Activity {
 
         if (isRunning) {
             statusView.setText(serviceStatus);
-            channelView.setText("Через: " + ProxyVpnService.currentNode);
+            channelView.setText(engineLine(engine));
             toggleButton.setText(R.string.disconnect);
         } else {
             // Ошибку старта не скрываем: она объясняет, почему кнопка осталась «Подключить».
             boolean failed = serviceStatus != null && serviceStatus.startsWith("Ошибка");
             statusView.setText(failed ? serviceStatus : "Выключено");
-            channelView.setText(engine == null ? "Канал: ноды пула" : "Канал: ядро " + engine);
+            channelView.setText(engineLine(engine));
             toggleButton.setText(engine == null ? getString(R.string.connect) : "Подключить через " + engine);
         }
         Set<String> apps = AppSelection.load(this);
-        if (footer != null) {
-            int excluded = ProxyVpnService.excludedNodes;
-            footer.setText("Нод: " + nodes.size() + (excluded > 0 ? " · исключено: " + excluded : ""));
-        }
         int count = apps.size();
         appsButton.setText(count > 0 ? "Приложения для VPN: " + count : "Приложения для VPN: все");
         scopeView.setText(scopeText(apps) + " · " + probeResultText());
@@ -674,11 +733,15 @@ public final class MainActivity extends Activity {
 
         // Активные элементы выделяем жирным; главная кнопка всегда полной яркости.
         setActive(toggleButton, isRunning, false);
+        if (fastSearchButton != null) {
+            setActive(fastSearchButton, ProxyVpnService.fastSearchRunning, false);
+        }
         setActive(singBoxEngine, "sing-box".equals(engine), true);
         setActive(xrayEngine, "xray".equals(engine), true);
         if (nextBatchButton != null) {
             nextBatchButton.setEnabled(isRunning && engine != null);
-            setActive(nextBatchButton, isRunning && engine != null, false);
+            nextBatchButton.setEnabled(isRunning && engine != null);
+            setActive(nextBatchButton, false, false);
         }
     }
 

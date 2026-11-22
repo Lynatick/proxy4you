@@ -44,6 +44,18 @@ public final class ProxyVpnService extends VpnService {
     static volatile int socksPort = 0;
     /** Через что идёт подключение: ядро или нода (для интерфейса). */
     static volatile String currentNode = "—";
+    /** Подробности подключения (ядро, пачка, приложения) — отдельная строка экрана. */
+    static volatile String statusDetail = "";
+    /** «пачка 2/5» для строки про ядро; пусто, если пачка одна или ядро не запущено. */
+    static String batchLabel() {
+        ProxyVpnService service = instance;
+        if (service == null || service.engine == null || !service.engine.isRunning()
+                || service.batchCount <= 1) {
+            return "";
+        }
+        return "пачка " + (service.batchIndex + 1) + "/" + service.batchCount;
+    }
+
     /** Результат последней проверки ноды: код ответа, задержка, время. */
     static volatile int lastProbeStatus = 0;
     static volatile int lastProbeLatencyMs = -1;
@@ -338,8 +350,9 @@ public final class ProxyVpnService extends VpnService {
         final int next = (batchIndex + 1) % batchCount;
         new Thread(() -> {
             EngineRunner candidate = new EngineRunner(this);
+            java.util.List<org.json.JSONObject> nodes;
             try {
-                java.util.List<org.json.JSONObject> nodes = EngineConfig.looksLikeJson(subscriptionFile)
+                nodes = EngineConfig.looksLikeJson(subscriptionFile)
                         ? EngineConfig.batchFromFile(subscriptionFile, next)
                         : EngineConfig.batchFromText(
                                 new String(readAll(subscriptionFile), StandardCharsets.UTF_8), next);
@@ -361,6 +374,8 @@ public final class ProxyVpnService extends VpnService {
             EngineRunner old = engine;
             engine = candidate;
             batchIndex = next;
+            // Теги новой пачки: иначе быстрый поиск проверял бы ноды прежней пачки.
+            batchTags = tagsOf(nodes);
             if (socks != null) {
                 socks.setEngine(candidate);
             }
@@ -403,8 +418,10 @@ public final class ProxyVpnService extends VpnService {
         String batch = engine != null && engine.isRunning() && batchCount > 1
                 ? " · пачка " + (batchIndex + 1) + "/" + batchCount : "";
         currentNode = via + batch;
-        status = "Подключено · через " + via + batch + " · " + scope + failovers + excluded;
-        updateNotification(status);
+        // Короткий статус для экрана: ядро и нода показываются отдельными строками.
+        statusDetail = "через " + via + batch + " · " + scope + failovers + excluded;
+        status = "Подключено";
+        updateNotification("Подключено · " + statusDetail);
     }
 
     private static byte[] readAll(File file) throws IOException {

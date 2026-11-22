@@ -28,24 +28,36 @@ final class ClashApi {
 
     /** «n00012|1234»: текущая нода и задержка (мс), или null. */
     static String current(int controllerPort) {
+        // Маршрут идёт через селектор pick; если там «auto», смотрим urltest.
+        JSONObject pick = proxy(controllerPort, EngineConfig.PICK_TAG);
+        String picked = pick == null ? "" : pick.optString("now", "");
+        if (!picked.isEmpty() && !"auto".equals(picked)) {
+            return picked + "|" + lastDelay(pick);
+        }
+        JSONObject auto = proxy(controllerPort, "auto");
+        if (auto == null) {
+            return null;
+        }
+        String now = auto.optString("now", "");
+        return now.isEmpty() ? null : now + "|" + lastDelay(auto);
+    }
+
+    private static JSONObject proxy(int controllerPort, String tag) {
         try {
-            JSONObject object = new JSONObject(get("http://127.0.0.1:" + controllerPort + "/proxies/auto"));
-            String now = object.optString("now", "");
-            if (now.isEmpty()) {
-                return null;
-            }
-            int delay = -1;
-            JSONArray history = object.optJSONArray("history");
-            if (history != null && history.length() > 0) {
-                JSONObject last = history.optJSONObject(history.length() - 1);
-                if (last != null) {
-                    delay = last.optInt("delay", -1);
-                }
-            }
-            return now + "|" + delay;
+            return new JSONObject(get("http://127.0.0.1:" + controllerPort
+                    + "/proxies/" + encode(tag)));
         } catch (Exception error) {
             return null;
         }
+    }
+
+    private static int lastDelay(JSONObject proxy) {
+        JSONArray history = proxy.optJSONArray("history");
+        if (history == null || history.length() == 0) {
+            return -1;
+        }
+        JSONObject last = history.optJSONObject(history.length() - 1);
+        return last == null ? -1 : last.optInt("delay", -1);
     }
 
     /** Ноды пачки, у которых уже измерена задержка. */
@@ -83,6 +95,7 @@ final class ClashApi {
     /** Замер одной ноды через clash_api: задержка в мс или -1. */
     static int delay(int controllerPort, String tag, int timeoutMs) {
         try {
+            // Теги содержат пробелы («00001 proxy») — важно кодировать как %20.
             String url = "http://127.0.0.1:" + controllerPort + "/proxies/"
                     + encode(tag) + "/delay?url=" + encode("https://www.youtube.com/generate_204")
                     + "&timeout=" + timeoutMs;
@@ -104,9 +117,10 @@ final class ClashApi {
         }
     }
 
+    /** Кодирование для пути URL: пробел должен стать %20, а не «+». */
     private static String encode(String value) {
         try {
-            return java.net.URLEncoder.encode(value, "UTF-8");
+            return java.net.URLEncoder.encode(value, "UTF-8").replace("+", "%20");
         } catch (Exception error) {
             return value;
         }
