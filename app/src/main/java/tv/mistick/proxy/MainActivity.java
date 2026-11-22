@@ -53,7 +53,6 @@ public final class MainActivity extends Activity {
     private String searchStatus;
     private ColorStateList accent;
     private ColorStateList normalText;
-    private android.graphics.drawable.Drawable border;
     private Button updateButton;
     private Button toggleButton;
     private Button appsButton;
@@ -121,12 +120,14 @@ public final class MainActivity extends Activity {
         singBoxEngine.setTextSize(14);
         singBoxEngine.setFocusable(true);
         engineRow.addView(singBoxEngine);
+        applyFocusBorder(singBoxEngine);
 
         xrayEngine = new CheckBox(this);
         xrayEngine.setText("Xray");
         xrayEngine.setTextSize(14);
         xrayEngine.setFocusable(true);
         engineRow.addView(xrayEngine);
+        applyFocusBorder(xrayEngine);
 
         toggleButton = new Button(this);
         toggleButton.setText(R.string.connect);
@@ -136,12 +137,14 @@ public final class MainActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         toggleParams.setMargins(dp(12), 0, dp(12), 0);
         engineRow.addView(toggleButton, toggleParams);
+        applyFocusBorder(toggleButton);
 
         appsButton = new Button(this);
         appsButton.setFocusable(true);
         appsButton.setOnClickListener(view -> startActivity(new Intent(this, AppsActivity.class)));
         engineRow.addView(appsButton, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        applyFocusBorder(appsButton);
 
         Button accessButton = new Button(this);
         accessButton.setText("Проверить доступ");
@@ -151,6 +154,7 @@ public final class MainActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         accessParams.setMargins(dp(8), 0, 0, 0);
         engineRow.addView(accessButton, accessParams);
+        applyFocusBorder(accessButton);
 
         String savedEngine = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_ENGINE, "");
         if ("sing-box".equals(savedEngine)) {
@@ -192,6 +196,7 @@ public final class MainActivity extends Activity {
         subscriptionInput.setPadding(dp(6), dp(2), dp(6), dp(2));
         subscriptionRow.addView(subscriptionInput, new LinearLayout.LayoutParams(
                 dp(420), ViewGroup.LayoutParams.WRAP_CONTENT));
+        applyFocusBorder(subscriptionInput);
 
         Button pasteAndLoadButton = new Button(this);
         pasteAndLoadButton.setText("Вставить и загрузить");
@@ -202,6 +207,7 @@ public final class MainActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         pasteParams.setMargins(dp(8), 0, 0, 0);
         subscriptionRow.addView(pasteAndLoadButton, pasteParams);
+        applyFocusBorder(pasteAndLoadButton);
 
         // Строка 3: ноды, пачка и обновление — рядом.
         LinearLayout actionsRow = new LinearLayout(this);
@@ -215,12 +221,14 @@ public final class MainActivity extends Activity {
         refreshNodesButton.setFocusable(true);
         refreshNodesButton.setOnClickListener(view -> refreshPublicNodes());
         actionsRow.addView(refreshNodesButton);
+        applyFocusBorder(refreshNodesButton);
 
         fastSearchButton = new Button(this);
         fastSearchButton.setText("Быстрый поиск");
         fastSearchButton.setFocusable(true);
         fastSearchButton.setOnClickListener(view -> startFastSearch());
         actionsRow.addView(fastSearchButton);
+        applyFocusBorder(fastSearchButton);
 
         nextBatchButton = new Button(this);
         nextBatchButton.setText("Следующая пачка");
@@ -233,12 +241,14 @@ public final class MainActivity extends Activity {
             }
         });
         actionsRow.addView(nextBatchButton);
+        applyFocusBorder(nextBatchButton);
 
         updateButton = new Button(this);
         updateButton.setText("Обновить приложение");
         updateButton.setFocusable(true);
         updateButton.setOnClickListener(view -> checkUpdates(false));
         actionsRow.addView(updateButton);
+        applyFocusBorder(updateButton);
 
         accessView = new TextView(this);
         accessView.setTextSize(13);
@@ -677,22 +687,19 @@ public final class MainActivity extends Activity {
         }
         view.setTypeface(active ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         view.setAlpha(active || !dimInactive ? 1f : 0.65f);
-        // Фон и цвет текста не меняем — читаемость сохраняется. Активную кнопку
-        // обводим жёлтой рамкой в 1 dp.
-        if (view instanceof Button) {
-            view.setForeground(active ? borderDrawable() : null);
-            view.setTextColor(textColor());
-        } else {
-            view.setTextColor(active ? accentColor() : textColor());
-        }
+        // Рамку рисует фокус (см. applyFocusBorder); здесь только жирный шрифт
+        // и яркость, чтобы было видно выбранное состояние.
+        view.setTextColor(active ? accentColor() : textColor());
     }
 
-    /** Жёлтая рамка вокруг активной кнопки. */
-    private android.graphics.drawable.Drawable borderDrawable() {
-        if (border == null) {
-            border = getResources().getDrawable(R.drawable.active_border, getTheme());
+    /** Жёлтая рамка следует за фокусом: у выбранного пультом элемента. */
+    private void applyFocusBorder(View view) {
+        if (view == null) {
+            return;
         }
-        return border;
+        // Каждому элементу — свой экземпляр Drawable: общий на всех запоминает
+        // состояние последнего элемента и рисует рамку сразу у нескольких.
+        view.setForeground(getResources().getDrawable(R.drawable.focus_border, getTheme()).mutate());
     }
 
     /** Обычный цвет текста темы (когда выделение снимается). */
