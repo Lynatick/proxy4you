@@ -66,6 +66,9 @@ public final class ProxyVpnService extends VpnService {
     private static volatile java.util.List<String> batchTags = new java.util.ArrayList<>();
     /** Идёт ли быстрый поиск (для интерфейса). */
     static volatile boolean fastSearchRunning = false;
+    /** Идёт автопоиск по пачкам. */
+    static volatile boolean autoSearchRunning = false;
+    private static volatile boolean autoSearchCancel = false;
     /** Какое ядро запросил пользователь (даже если оно не поднялось). */
     static volatile String requestedEngine = null;
     /** Текущая пачка подписки и сколько их всего (для интерфейса). */
@@ -348,44 +351,102 @@ public final class ProxyVpnService extends VpnService {
             return;
         }
         final int next = (batchIndex + 1) % batchCount;
-        new Thread(() -> {
-            EngineRunner candidate = new EngineRunner(this);
-            java.util.List<org.json.JSONObject> nodes;
-            try {
-                nodes = EngineConfig.looksLikeJson(subscriptionFile)
-                        ? EngineConfig.batchFromFile(subscriptionFile, next)
-                        : EngineConfig.batchFromText(
-                                new String(readAll(subscriptionFile), StandardCharsets.UTF_8), next);
-                if (nodes.isEmpty()) {
-                    throw new IOException("пачка пуста");
-                }
-                candidate.start(engineKind, nodes, next);
-            } catch (Exception error) {
-                candidate.stop();
-                Log.w(TAG, "пачка " + (next + 1) + " не запустилась", error);
-                healthHandler.post(() -> {
-                    status = "Пачка " + (next + 1) + "/" + batchCount
-                            + " не запустилась: " + error.getMessage();
-                    updateNotification(status);
-                });
-                return;
-            }
-
-            EngineRunner old = engine;
-            engine = candidate;
-            batchIndex = next;
-            // Теги новой пачки: иначе быстрый поиск проверял бы ноды прежней пачки.
-            batchTags = tagsOf(nodes);
-            if (socks != null) {
-                socks.setEngine(candidate);
-            }
-            if (old != null) {
-                old.stop();
-            }
-            Log.i(TAG, "пачка " + (next + 1) + "/" + batchCount + " поднята");
-            healthHandler.post(ProxyVpnService.this::publishStatus);
-        }, "batch-switch").start();
+        new Thread(() -> switchToBatchSync(next), "batch-switch").start();
     }
+
+    /** Ставит пачку `next` (блокирующе). Возвращает false, если не поднялась. */
+    private boolean switchToBatchSync(int next) {
+        EngineRunner candidate = new EngineRunner(this);
+        java.util.List<org.json.JSONObject> nodes;
+        try {
+            nodes = EngineConfig.looksLikeJson(subscriptionFile)
+                    ? EngineConfig.batchFromFile(subscriptionFile, next)
+                    : EngineConfig.batchFromText(
+                            new String(readAll(subscriptionFile), StandardCharsets.UTF_8), next);
+            if (nodes.isEmpty()) {
+                throw new IOException("пачка пуста");
+            }
+            candidate.start(engineKind, nodes, next);
+        } catch (Exception error) {
+            candidate.stop();
+            Log.w(TAG, "пачка " + (next + 1) + " не запустилась", error);
+            status = "Пачка " + (next + 1) + "/" + batchCount
+                    + " не запустилась: " + error.getMessage();
+            healthHandler.post(() -> updateNotification(status));
+            return false;
+        }
+
+        EngineRunner old = engine;
+        engine = candidate;
+        batchIndex = next;
+        // Теги новой пачки: иначе быстрый поиск проверял бы ноды прежней пачки.
+        batchTags = tagsOf(nodes);
+        if (socks != null) {
+            socks.setEngine(candidate);
+        }
+        if (old != null) {
+            old.stop();
+        }
+        Log.i(TAG, "пачка " + (next + 1) + "/" + batchCount + " поднята");
+        healthHandler.post(ProxyVpnService.this::publishStatus);
+        return true;
+    }
+
+    /** Сколько пачек проверять за один запуск автопоиска. */
+    private static final int AUTO_SEARCH_BATCHES = 25;
+
+    /** Прерывание автопоиска из интерфейса. */
+    static void cancelAutoSearch() {
+        autoSearchCancel = true;
+    }
+
+    /**
+     * Автопоиск: проверяет пачку, а если рабочих нод нет — переключает на следующую
+     * и ищет снова. Останавливается на найденной ноде или после 25 пачек.
+     */
+    static void autoSearch(FastSearch.Listener listener) {
+        ProxyVpnService service = instance;
+        if (service == null || service.engine == null || !service.engine.isRunning()) {
+            listener.onNothing(0);
+            return;
+        }
+        if (autoSearchRunning) {
+            return;
+        }
+        autoSearchRunning = true;
+        autoSearchCancel = false;
+        final int total = service.batchCount;
+        final int start = service.batchIndex;
+        final int limit = Math.min(total, AUTO_SEARCH_BATCHES);
+
+        new Thread(() -> {
+            try {
+                for (int step = 0; step < limit; step++) {
+                    if (autoSearchCancel) {
+                        listener.onCancelled();
+                        return;
+                    }
+                    int index = (start + step) % total;
+                    if (step > 0 && !service.switchToBatchSync(index)) {
+                        continue;
+                    }
+                    listener.onBatch(index + 1, total);
+                    FastSearch.Hit hit = FastSearch.find(
+                            service.engine.controllerPort(), batchTags, 32, 2500,
+                            () -> autoSearchCancel);
+                    if (hit != null) {
+                        listener.onFound(hit.tag, hit.delayMs);
+                        return;
+                    }
+                }
+                listener.onNothing(limit);
+            } finally {
+                autoSearchRunning = false;
+                autoSearchCancel = false;
+            }
+        }, "auto-search").start();
+    }
+
 
     /** Вызывается после нескольких сбоев подряд: переходим на следующую пачку. */
     static void requestNextBatch() {

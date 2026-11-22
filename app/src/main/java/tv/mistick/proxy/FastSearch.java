@@ -25,6 +25,30 @@ final class FastSearch {
         void onFound(String tag, int delayMs);
 
         void onNothing(int total);
+
+        /** Началась проверка пачки `batch` из `total`. */
+        default void onBatch(int batch, int total) {
+        }
+
+        /** Поиск прерван пользователем. */
+        default void onCancelled() {
+        }
+    }
+
+    /** Проверка «поиск отменён». */
+    interface Cancel {
+        boolean cancelled();
+    }
+
+    /** Найденная нода. */
+    static final class Hit {
+        final String tag;
+        final int delayMs;
+
+        Hit(String tag, int delayMs) {
+            this.tag = tag;
+            this.delayMs = delayMs;
+        }
     }
 
     private FastSearch() {
@@ -37,6 +61,55 @@ final class FastSearch {
      * @param tags           теги нод текущей пачки
      * @param concurrency    сколько проверок идёт одновременно
      */
+    /** Синхронный поиск: null, если рабочих нод в наборе нет. */
+    static Hit find(int controllerPort, List<String> tags, int concurrency, int timeoutMs,
+                    Cancel cancelled) {
+        if (controllerPort <= 0 || tags == null || tags.isEmpty()) {
+            return null;
+        }
+        List<String> queue = new ArrayList<>(tags);
+        AtomicInteger next = new AtomicInteger();
+        AtomicBoolean finished = new AtomicBoolean(false);
+        final Hit[] found = {null};
+        int workers = Math.max(1, Math.min(concurrency, queue.size()));
+
+        List<Thread> pool = new ArrayList<>();
+        for (int worker = 0; worker < workers; worker++) {
+            Thread thread = new Thread(() -> {
+                while (!finished.get() && !cancelled.cancelled()) {
+                    int index = next.getAndIncrement();
+                    if (index >= queue.size()) {
+                        return;
+                    }
+                    String tag = queue.get(index);
+                    int delay = ClashApi.delay(controllerPort, tag, timeoutMs);
+                    if (delay > 0 && finished.compareAndSet(false, true)) {
+                        found[0] = new Hit(tag, delay);
+                        return;
+                    }
+                }
+            }, "fast-find-" + worker);
+            thread.setDaemon(true);
+            pool.add(thread);
+            thread.start();
+        }
+        for (Thread thread : pool) {
+            try {
+                thread.join();
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Hit hit = found[0];
+        if (hit != null && ClashApi.select(controllerPort, EngineConfig.PICK_TAG, hit.tag)) {
+            Log.i(TAG, "быстрый поиск: " + hit.tag + " ответила за " + hit.delayMs + " мс, включена");
+        } else if (hit != null) {
+            Log.i(TAG, "быстрый поиск: " + hit.tag + " ответила, но переключить не удалось");
+        }
+        return hit;
+    }
+
     static void run(int controllerPort, List<String> tags, int concurrency, Listener listener) {
         if (controllerPort <= 0 || tags == null || tags.isEmpty()) {
             listener.onNothing(0);

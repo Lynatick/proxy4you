@@ -584,33 +584,45 @@ public final class MainActivity extends Activity {
             statusView.setText("Сначала подключитесь — поиск идёт через ядро");
             return;
         }
-        if (ProxyVpnService.fastSearchRunning) {
+        if (ProxyVpnService.autoSearchRunning) {
+            ProxyVpnService.cancelAutoSearch();
+            setSearchStatus("Останавливаю поиск…", 0);
             return;
         }
-        fastSearchButton.setEnabled(false);
         setSearchStatus("Поиск рабочей ноды…", 0);
-        ProxyVpnService.fastSearch(new FastSearch.Listener() {
+        ProxyVpnService.autoSearch(new FastSearch.Listener() {
             @Override
             public void onProgress(int checked, int total) {
                 handler.post(() -> setSearchStatus("Поиск: " + checked + " из " + total, 0));
             }
 
             @Override
+            public void onBatch(int batch, int total) {
+                handler.post(() -> setSearchStatus(
+                        "Поиск: пачка " + batch + "/" + total + " — проверяю ноды", 0));
+            }
+
+            @Override
             public void onFound(String tag, int delayMs) {
                 handler.post(() -> {
-                    fastSearchButton.setEnabled(true);
                     setSearchStatus("Найдена нода " + tag + " · " + delayMs + " мс", 20000);
                     checkAccess();
                 });
             }
 
             @Override
-            public void onNothing(int total) {
+            public void onNothing(int batches) {
                 handler.post(() -> {
-                    fastSearchButton.setEnabled(true);
-                    setSearchStatus(total == 0
+                    setSearchStatus(batches == 0
                             ? "Поиск: нет нод для проверки"
-                            : "Рабочих нод нет среди " + total + " — смените пачку", 20000);
+                            : "Проверено пачек: " + batches + " — рабочих нод нет", 20000);
+                });
+            }
+
+            @Override
+            public void onCancelled() {
+                handler.post(() -> {
+                    setSearchStatus("Поиск остановлен", 8000);
                 });
             }
         });
