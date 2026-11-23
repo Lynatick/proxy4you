@@ -46,6 +46,8 @@ public final class ProxyVpnService extends VpnService {
     static volatile String currentNode = "—";
     /** Подробности подключения (ядро, пачка, приложения) — отдельная строка экрана. */
     static volatile String statusDetail = "";
+    /** Когда поднялся туннель (мс) — для счётчика времени подключения. */
+    static volatile long tunnelStartedAt = 0L;
     /** «пачка 2/5» для строки про ядро; пусто, если пачка одна или ядро не запущено. */
     static String batchLabel() {
         ProxyVpnService service = instance;
@@ -279,6 +281,7 @@ public final class ProxyVpnService extends VpnService {
             }
 
             running = true;
+            tunnelStartedAt = System.currentTimeMillis();
             instance = this;
             publishStatus();
             healthHandler.postDelayed(healthTask, 5000);
@@ -286,6 +289,7 @@ public final class ProxyVpnService extends VpnService {
             Log.e(TAG, "ошибка запуска", error);
             status = "Ошибка: " + error.getMessage();
             running = false;
+            tunnelStartedAt = 0L;
             teardown();
             stopSelf();
         }
@@ -555,6 +559,7 @@ public final class ProxyVpnService extends VpnService {
 
     private void teardown() {
         running = false;
+        tunnelStartedAt = 0L;
         instance = null;
         healthHandler.removeCallbacks(healthTask);
         try {

@@ -130,4 +130,28 @@ public class EngineConfigTest {
         assertEquals("первым в списке идёт auto", "auto", options.getString(0));
         assertTrue("в селекторе есть ноды пачки", options.length() >= 3);
     }
+
+    @Test
+    public void urlTestIsTunedLikeHiddify() throws Exception {
+        JSONObject object = new JSONObject(EngineConfig.singBox(JSON_SUBSCRIPTION, 18080, 0, 19090));
+        JSONArray outbounds = object.getJSONArray("outbounds");
+        JSONObject auto = null;
+        for (int i = 0; i < outbounds.length(); i++) {
+            JSONObject item = outbounds.getJSONObject(i);
+            if ("auto".equals(item.optString("tag"))) {
+                auto = item;
+            }
+        }
+        assertNotNull(auto);
+        assertEquals("urltest", auto.getString("type"));
+        assertEquals("1m", auto.getString("interval"));
+        assertEquals(50, auto.getInt("tolerance"));
+        assertEquals("https://www.youtube.com/generate_204", auto.getString("url"));
+    }
+
+    @Test
+    public void configKeepsSelectorForFastSearch() throws Exception {
+        JSONObject object = new JSONObject(EngineConfig.singBox(JSON_SUBSCRIPTION, 18080, 0, 19090));
+        assertEquals(EngineConfig.PICK_TAG, object.getJSONObject("route").getString("final"));
+    }
 }

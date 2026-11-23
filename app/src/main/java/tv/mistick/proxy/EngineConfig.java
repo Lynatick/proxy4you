@@ -47,8 +47,9 @@ final class EngineConfig {
         auto.put("tag", "auto");
         auto.put("outbounds", tags);
         auto.put("url", "https://www.youtube.com/generate_204");
-        auto.put("interval", "3m");
-        auto.put("tolerance", 100);
+        // Как в Hiddify: частая перепроверка и быстрый переход на живую ноду.
+        auto.put("interval", "1m");
+        auto.put("tolerance", 50);
         outbounds.put(auto);
 
         // Селектор нужен для быстрого поиска: найденную рабочую ноду можно

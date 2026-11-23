@@ -628,6 +628,47 @@ public final class MainActivity extends Activity {
         });
     }
 
+    /** Сколько времени прошло с момента подключения к туннелю. */
+    private String uptimeText() {
+        long started = ProxyVpnService.tunnelStartedAt;
+        if (started <= 0) {
+            return "только что";
+        }
+        long seconds = Math.max(0, (System.currentTimeMillis() - started) / 1000);
+        if (seconds < 60) {
+            return "меньше минуты";
+        }
+        long minutes = seconds / 60;
+        if (minutes < 60) {
+            return minutes + " " + plural(minutes, "минута", "минуты", "минут");
+        }
+        long hours = minutes / 60;
+        long restMinutes = minutes % 60;
+        if (hours < 24) {
+            String text = hours + " " + plural(hours, "час", "часа", "часов");
+            return restMinutes > 0
+                    ? text + " " + restMinutes + " " + plural(restMinutes, "минута", "минуты", "минут")
+                    : text;
+        }
+        long days = hours / 24;
+        return days + " " + plural(days, "день", "дня", "дней") + " " + (hours % 24) + " ч";
+    }
+
+    private static String plural(long value, String one, String few, String many) {
+        long mod100 = value % 100;
+        long mod10 = value % 10;
+        if (mod100 >= 11 && mod100 <= 14) {
+            return many;
+        }
+        if (mod10 == 1) {
+            return one;
+        }
+        if (mod10 >= 2 && mod10 <= 4) {
+            return few;
+        }
+        return many;
+    }
+
     /** Строка «Ядро: …» — только про ядро и пачку. */
     private String engineLine(String engine) {
         if (engine == null) {
@@ -732,7 +773,7 @@ public final class MainActivity extends Activity {
         String engine = selectedEngine();
 
         if (isRunning) {
-            statusView.setText(serviceStatus);
+            statusView.setText(serviceStatus + " · " + uptimeText());
             channelView.setText(engineLine(engine));
             toggleButton.setText(R.string.disconnect);
         } else {

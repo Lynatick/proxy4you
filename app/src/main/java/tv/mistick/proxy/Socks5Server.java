@@ -145,12 +145,11 @@ final class Socks5Server {
 
             // Что не входит в выбранные сервисы — идёт напрямую.
             // Весь трафик VPN идёт через прокси; ограничение — на уровне приложений.
+            // Как в Hiddify: при запущенном ядре весь трафик идёт через него,
+            // ноды пула не подмешиваются — выбором ноды занимается ядро (urltest).
             Socket upstream;
             if (engine != null && engine.isRunning()) {
                 upstream = openThroughEngine(host, targetPort);
-                if (upstream == null) {
-                    upstream = openThroughAnyNode(host, targetPort);
-                }
             } else {
                 upstream = openThroughAnyNode(host, targetPort);
             }
@@ -314,8 +313,7 @@ final class Socks5Server {
         try {
             if (engine != null && engine.isRunning()) {
                 upstream = openThroughEngine(host, port);
-            }
-            if (upstream == null) {
+            } else {
                 upstream = openThroughAnyNode(host, port);
             }
             if (upstream == null) {
