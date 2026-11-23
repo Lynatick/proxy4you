@@ -62,6 +62,8 @@ public final class ProxyVpnService extends VpnService {
     static volatile int lastProbeStatus = 0;
     static volatile int lastProbeLatencyMs = -1;
     static volatile long lastProbeAt = 0L;
+    /** Причина отказа последней проверки ноды (пусто, если всё хорошо). */
+    static volatile String lastProbeReason = "";
     /** Сколько нод исключено до обновления списка (для интерфейса). */
     static volatile int excludedNodes = 0;
     /** Теги нод текущей пачки — для быстрого поиска. */
@@ -103,11 +105,17 @@ public final class ProxyVpnService extends VpnService {
             if (engine != null && engine.isRunning()) {
                 final int enginePort = engine.port();
                 new Thread(() -> {
-                    int latency = Health.probe(ProxyVpnService.this,
+                    // Полная проверка через вход ядра: YouTube, видео, страна, ChatGPT.
+                    Health.Verdict verdict = Health.verify(ProxyVpnService.this,
                             new NodeStore.Node("127.0.0.1", enginePort, true), 8000);
+                    int latency = verdict.latencyMs;
                     lastProbeStatus = Health.lastStatus;
                     lastProbeLatencyMs = latency;
                     lastProbeAt = System.currentTimeMillis();
+                    lastProbeReason = verdict.ok ? "" : verdict.reason;
+                    if (!verdict.ok) {
+                        Log.i(TAG, "канал ядра не прошёл проверку: " + verdict.reason);
+                    }
                     healthHandler.post(() -> {
                         if (!running) {
                             return;
@@ -123,13 +131,16 @@ public final class ProxyVpnService extends VpnService {
             new Thread(() -> {
                 boolean switched = false;
                 if (active != null) {
-                    int latency = Health.probe(ProxyVpnService.this, active.node, 8000);
+                    // Полная проверка: YouTube, видео, страна выхода, ChatGPT.
+                    Health.Verdict verdict = Health.verify(ProxyVpnService.this, active.node, 8000);
                     lastProbeStatus = Health.lastStatus;
-                    lastProbeLatencyMs = latency;
+                    lastProbeLatencyMs = verdict.latencyMs;
                     lastProbeAt = System.currentTimeMillis();
-                    if (latency >= 0) {
-                        pool.recordSuccess(active, latency);
+                    lastProbeReason = verdict.ok ? "" : verdict.reason;
+                    if (verdict.ok) {
+                        pool.recordSuccess(active, verdict.latencyMs);
                     } else {
+                        Log.i(TAG, "нода " + active.label() + " не прошла проверку: " + verdict.reason);
                         pool.recordFailureAndExclude(active);
                         switched = true;
                     }
@@ -139,13 +150,15 @@ public final class ProxyVpnService extends VpnService {
 
                 if (switched) {
                     for (NodePool.Entry candidate : pool.candidates(3)) {
-                        int latency = Health.probe(ProxyVpnService.this, candidate.node, 8000);
-                        if (latency >= 0) {
-                            pool.recordSuccess(candidate, latency);
+                        Health.Verdict verdict = Health.verify(ProxyVpnService.this, candidate.node, 8000);
+                        if (verdict.ok) {
+                            pool.recordSuccess(candidate, verdict.latencyMs);
                             switchCount++;
-                            Log.i(TAG, "переключение на " + candidate.label() + " (" + latency + " мс)");
+                            Log.i(TAG, "переключение на " + candidate.label() + " ("
+                                    + verdict.latencyMs + " мс)");
                             break;
                         }
+                        Log.i(TAG, "нода " + candidate.label() + " не подошла: " + verdict.reason);
                         pool.recordFailureAndExclude(candidate);
                     }
                 }

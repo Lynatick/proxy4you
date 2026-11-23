@@ -691,6 +691,10 @@ public final class MainActivity extends Activity {
                 text.append(" · ").append(delay).append(" мс");
             }
         }
+        String reason = ProxyVpnService.lastProbeReason;
+        if (reason != null && !reason.isEmpty()) {
+            text.append(" · ").append(reason);
+        }
         text.append(" · всего ").append(total);
         if (excluded > 0) {
             text.append(" · исключено ").append(excluded);
